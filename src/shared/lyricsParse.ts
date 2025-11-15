@@ -110,8 +110,11 @@ const req = {
 }
 
 /**
- * NEW: This function parses the AI's formatted text output
- * and converts it into the LyricSegment[] structure.
+ * Parses the formatted Furigana text into LyricLine[] structure.
+ * 
+ * Exmaple:
+ * Input: `[00:15.570] 蝉（せみ）の 声（こえ）を 聞（き）く 度（たび）に`
+ * Output: { time: "00:15.570", lyric: [ ["蝉", "せみ"], "の", ["声", "こえ"], "を", ["聞", "き"], "く", ["度", "たび"], "に" ] }
  */
 function parseFuriganaText(text: string): LyricLine[] {
   const segments: LyricLine[] = []
@@ -147,10 +150,9 @@ function parseFuriganaText(text: string): LyricLine[] {
   return segments
 }
 
-
 /**
- * UPDATED: This function now gets text from the AI
- * and uses the new local parser.
+ * Let the AI parse the raw lyrics into furigana-formatted text,
+ * then use the local parser to convert that text into LyricLine[] structure.
  */
 export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
   const thisReq = JSON.parse(JSON.stringify(req))
