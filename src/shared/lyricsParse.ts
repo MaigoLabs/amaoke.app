@@ -136,17 +136,12 @@ function parseFuriganaText(text: string): LyricLine[] {
     let match
 
     while ((match = tokenRegex.exec(lyricText)) !== null) {
-      const kanji = match[1]
-      const furigana = match[2]
-      const plain = match[3]
-
+      const [, kanji, furigana, plain] = match
       if (kanji && furigana) lyric.push([kanji, furigana])
       else if (plain) lyric.push(plain)
     }
 
-    if (lyric.length > 0) {
-      segments.push({ time, lyric })
-    }
+    if (lyric.length > 0) segments.push({ time, lyric })
   }
 
   return segments
