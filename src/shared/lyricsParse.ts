@@ -114,54 +114,42 @@ const req = {
  * and converts it into the LyricSegment[] structure.
  */
 function parseFuriganaText(text: string): LyricLine[] {
-  const segments: LyricLine[] = [];
-  const lines = text.split('\n').filter(line => line.trim() !== '');
+  const segments: LyricLine[] = []
+  const lines = text.split('\n').filter(line => line.trim() !== '')
 
   // Regex to capture [timestamp] and (the rest of the line)
-  const lineRegex = /\[(\d+:\d+\.\d+)\](.*)/;
-  
-  // Regex to parse the lyric part:
-  // It captures either:
-  // 1. `Kanji(furigana)` -> match[1] = Kanji, match[2] = furigana
-  // 2. `PlainText` -> match[3] = PlainText
-  const tokenRegex = /([^（]+)（([^）]+)）|([^（]+)/g;
+  const lineRegex = /\[(\d+:\d+\.\d+)\](.*)/
 
   for (const line of lines) {
-    const lineMatch = line.trim().match(lineRegex);
+    const lineMatch = line.trim().match(lineRegex)
     if (!lineMatch) {
-      console.warn(`Skipping unparseable line: ${line}`);
-      continue;
+      console.warn(`Skipping unparseable line: ${line}`)
+      continue
     }
 
-    const time = lineMatch[1] as string;
-    const lyricText = lineMatch[2].trim();
-    const lyric: LyricSegment[] = [];
+    const time = lineMatch[1] as string
+    const lyricText = lineMatch[2].trim()
+    const lyric: LyricSegment[] = []
 
-    const matches = lyricText.matchAll(tokenRegex);
+    // Regex to match Kanji(furigana) or plain text
+    const tokenRegex = /([^（\s]+)（([^）]+)）|([^\s]+)/g
+    let match
 
-    for (const match of matches) {
-      const kanji = match[1];
-      const furigana = match[2];
-      const plain = match[3];
+    while ((match = tokenRegex.exec(lyricText)) !== null) {
+      const kanji = match[1]
+      const furigana = match[2]
+      const plain = match[3]
 
-      if (kanji !== undefined && furigana !== undefined) {
-        // This is a Kanji(furigana) group
-        lyric.push([kanji.trim(), furigana.trim()]);
-      } else if (plain) {
-        // This is a plain text group
-        const trimmedPlain = plain.trim();
-        if (trimmedPlain) {
-          lyric.push(trimmedPlain);
-        }
-      }
+      if (kanji && furigana) lyric.push([kanji, furigana])
+      else if (plain) lyric.push(plain)
     }
-    
+
     if (lyric.length > 0) {
-      segments.push({ time, lyric });
+      segments.push({ time, lyric })
     }
   }
 
-  return segments;
+  return segments
 }
 
 
@@ -185,6 +173,6 @@ export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
   } catch (e) {
     console.error('Failed to parse Furigana text from AI response:', responseText)
     console.error(e)
-    throw new Error('Failed to parse AI response text.');
+    throw new Error('Failed to parse AI response text.')
   }
 }
