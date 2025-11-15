@@ -1,38 +1,14 @@
-# sv
+# KashiDash
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+Practice Japanese Karaoke lyrics reading and typing at the same time with KashiDash!
 
-## Creating a project
+在这里可以同时练习日语卡拉 OK 歌词阅读速度和打字速度！
 
-If you're seeing this, you've probably already done this step. Congrats!
+## 功能
 
-```sh
-# create a new project in the current directory
-npx sv create
+1. 导入你的网易云歌单自动获取歌词
+2. 切换 furigana 显示模式 (显示/隐藏/仅显示假名/显示罗马音)
+3. 统计打字速度和准确率
+4. 历史成绩和进步曲线
+5. 纯前端存储数据
 
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
