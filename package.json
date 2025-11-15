@@ -31,5 +31,9 @@
 		"unocss": "^66.5.6",
 		"vite": "^7.1.10",
 		"wanakana": "^5.3.1"
+	},
+	"dependencies": {
+		"@neteasecloudmusicapienhanced/api": "^4.29.17",
+		"openai": "^6.9.0"
 	}
 }
