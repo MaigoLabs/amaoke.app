@@ -25,7 +25,7 @@ const cached = <T, R>(filePath: (arg: T) => Promise<string>, fn: (arg: T) => Pro
         }
         const result = await fn(arg)
         await fs.mkdir(path.dirname(file), { recursive: true })
-        await fs.writeFile(file, JSON.stringify(result, null, 2), 'utf-8')
+        await fs.writeFile(file, JSON.stringify(result), 'utf-8')
         return result
     }
 
@@ -51,7 +51,7 @@ const getPlaylistRaw = cached(
         for (const track of pl.playlist.tracks) {
             const p = path.join('data', 'songs', `${track.id}`, 'meta.json')
             await fs.mkdir(path.dirname(p), { recursive: true })
-            await fs.writeFile(p, JSON.stringify(track, null, 2), 'utf-8')
+            await fs.writeFile(p, JSON.stringify(track), 'utf-8')
         }
         return pl
     }
@@ -98,4 +98,4 @@ export const getLyricsProcessed = cached(
 )
 
 // console.log((await getSongsFromPlaylist('580208139')).length)
-console.log(await getLyricsProcessed(25723366, true))
+console.log(await getLyricsProcessed(25723366))
