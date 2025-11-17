@@ -34,10 +34,13 @@
 	},
 	"dependencies": {
 		"@fontsource/roboto": "^5.2.8",
+		"@iconify-json/material-symbols": "^1.2.46",
 		"@neteasecloudmusicapienhanced/api": "^4.29.17",
 		"@unocss/core": "^66.5.6",
 		"@unocss/extractor-svelte": "^66.5.6",
+		"@unocss/preset-attributify": "^66.5.6",
 		"@unocss/preset-icons": "^66.5.6",
+		"@unocss/reset": "^66.5.6",
 		"m3-svelte": "^5.14.1",
 		"openai": "^6.9.0",
 		"sass": "^1.94.0",

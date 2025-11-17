@@ -6,10 +6,13 @@
       "name": "kashi-dash",
       "dependencies": {
         "@fontsource/roboto": "^5.2.8",
+        "@iconify-json/material-symbols": "^1.2.46",
         "@neteasecloudmusicapienhanced/api": "^4.29.17",
         "@unocss/core": "^66.5.6",
         "@unocss/extractor-svelte": "^66.5.6",
+        "@unocss/preset-attributify": "^66.5.6",
         "@unocss/preset-icons": "^66.5.6",
+        "@unocss/reset": "^66.5.6",
         "m3-svelte": "^5.14.1",
         "openai": "^6.9.0",
         "sass": "^1.94.0",
@@ -141,6 +144,8 @@
     "@humanwhocodes/module-importer": ["@humanwhocodes/module-importer@1.0.1", "", {}, "sha512-bxveV4V8v5Yb4ncFTT3rPSgZBOpCkjfK0y4oVVVJwIuDVBRMDXrPyXRL988i5ap9m9bnyEEjWfm5WkBmtffLfA=="],
 
     "@humanwhocodes/retry": ["@humanwhocodes/retry@0.4.3", "", {}, "sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ=="],
+
+    "@iconify-json/material-symbols": ["@iconify-json/material-symbols@1.2.46", "", { "dependencies": { "@iconify/types": "*" } }, "sha512-cNWdSAa5Z3f0TlqdCt28rmeYWGKwe68J1ORdyHyqC4D6H7CWiVKBJXV3TDTocOQVDO372bz+cmsFeo4+pbRy+A=="],
 
     "@iconify/types": ["@iconify/types@2.0.0", "", {}, "sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg=="],
 
