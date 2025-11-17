@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Icon } from "m3-svelte";
   import IconButton from "../IconButton.svelte";
 
   let { title, account, settings }: {

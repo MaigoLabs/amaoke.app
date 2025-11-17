@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { NeteaseSongBrief } from "../shared/songs";
+  import type { NeteaseSongBrief } from "../shared/types";
 
   let { info }: { info: NeteaseSongBrief } = $props();
 </script>

@@ -24,3 +24,4 @@ vite.config.ts.timestamp-*
 data/
 
 public/assets/fonts/cache
+.idea
