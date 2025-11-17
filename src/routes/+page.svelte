@@ -21,9 +21,9 @@
   {/if}
 
   <div>
-    <TitleHeader title="最近播放"/>
+    <TitleHeader title="我的歌单"/>
     <div class="p-content">
-      最近播放的列表
+      TODO
     </div>
   </div>
 </div>
