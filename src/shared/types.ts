@@ -10,6 +10,15 @@ export interface Song {
     lyrics: LyricLine[]
 }
 
+export interface NeteaseSongBrief { 
+    id: number
+    name: string
+    album: string
+    albumId: number
+    albumPic: string
+    artists: { id: number, name: string }[]
+}
+
 export interface ProcessedLyricLine {
     jp: LyricSegment[]
     kanji: string

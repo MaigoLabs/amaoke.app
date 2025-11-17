@@ -2,6 +2,7 @@ import * as ne from '@neteasecloudmusicapienhanced/api';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { aiParseLyrics } from './lyricsParse';
+import type { NeteaseSongBrief } from './types';
 
 // Filesystem structure:
 // $data/playlists/{playlistId}/detail.json
@@ -62,15 +63,6 @@ export const getSongMeta = cached(
         const detail = await ne.song_detail({ ids: songId.toString() })
         return detail.body.songs[0]
     })
-
-export interface NeteaseSongBrief { 
-    id: number
-    name: string
-    album: string
-    albumId: number
-    albumPic: string
-    artists: { id: number, name: string }[]
-}
 
 export const parseBrief = (songData: any): NeteaseSongBrief => ({
     id: songData.id,
