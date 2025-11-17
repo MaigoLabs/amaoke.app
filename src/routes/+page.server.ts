@@ -1,5 +1,5 @@
 // import { log } from 'console';
-import { getSongMeta, parseBrief } from '../shared/songs';
+import { getSongMeta, parseBrief } from '../lib/server/songs';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
