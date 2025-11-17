@@ -1,0 +1,15 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb_dev
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: cat
+      MONGO_INITDB_ROOT_PASSWORD: meow
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
