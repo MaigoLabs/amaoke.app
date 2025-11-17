@@ -5,3 +5,24 @@
 body
     margin: 0
     background: rgb(var(--m3-scheme-background))
+
+.hbox
+    display: flex
+    flex-direction: row
+    align-items: center
+
+.vbox
+    display: flex
+    flex-direction: column
+
+.vcbox
+    @extend .vbox
+    align-items: center
+
+.cbox
+    display: flex
+    justify-content: center
+    align-items: center
+
+.p-content
+    padding: 0 16px

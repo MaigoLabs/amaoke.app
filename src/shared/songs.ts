@@ -54,8 +54,14 @@ const getPlaylistRaw = cached(
             await fs.writeFile(p, JSON.stringify(track), 'utf-8')
         }
         return pl
-    }
-)
+    })
+
+export const getSongMeta = cached(
+    async (songId: number) => path.join('data', 'songs', `${songId}`, 'meta.json'),
+    async (songId: number) => {
+        const detail = await ne.song_detail({ ids: songId.toString() })
+        return detail.body.songs[0]
+    })
 
 export interface NeteaseSongBrief { 
     id: number
@@ -66,20 +72,22 @@ export interface NeteaseSongBrief {
     artists: { id: number, name: string }[]
 }
 
+export const parseBrief = (songData: any): NeteaseSongBrief => ({
+    id: songData.id,
+    name: songData.name,
+    album: songData.al.name,
+    albumId: songData.al.id,
+    albumPic: songData.al.picUrl,
+    artists: songData.ar.map((ar: any) => ({ id: ar.id, name: ar.name }))
+})
+
 /**
  * Get a list of songs from a playlist reference.
  */
 export async function getSongsFromPlaylist(ref: string): Promise<any[]> {
     const playlistId = parsePlaylistRef(ref)
     const plData = await getPlaylistRaw({ id: playlistId })
-    return plData.playlist.tracks.map((track: any) => ({
-        id: track.id,
-        name: track.name,
-        album: track.al.name,
-        albumId: track.al.id,
-        albumPic: track.al.picUrl,
-        artists: track.ar.map((ar: any) => ({ id: ar.id, name: ar.name }))
-    }))
+    return plData.playlist.tracks.map(parseBrief)
 }
 
 interface NeteaseLyricsResponse { lrc: { lyric: string } }
@@ -98,4 +106,4 @@ export const getLyricsProcessed = cached(
 )
 
 // console.log((await getSongsFromPlaylist('580208139')).length)
-console.log(await getLyricsProcessed(25723366))
+// console.log(await getLyricsProcessed(25723366))

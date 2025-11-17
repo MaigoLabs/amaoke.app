@@ -105,11 +105,6 @@ export default defineConfig({
     })]
   ],
   shortcuts: {
-    // Azalea's shortcuts
-    'hbox': 'flex flex-row items-center',
-    'vbox': 'flex flex-col items-center',
-    'cbox': 'flex justify-center items-center',
-
     // Marina
     'form-error': 'text-3.5 font-medium text-destructive',
     'form-warning': 'text-3.5 font-medium text-warning',
