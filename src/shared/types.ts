@@ -43,3 +43,20 @@ export interface GameStats {
     startTime: number
     totalTime: number
 }
+
+export interface UserDocument {
+  _id?: any
+  registUA: string
+  createdAt: Date
+  sessions: string[]
+  syncCode?: string
+  syncCodeCreated?: Date
+
+  // User data
+  data?: UserData
+}
+
+export interface UserData {
+    myPlaylists?: number[]
+    playHistory?: GameStats[]
+}

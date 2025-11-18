@@ -1,16 +1,5 @@
 import { db } from "./db"
-
-type UserDocument = {
-  _id?: any
-  registUA: string
-  createdAt: Date
-  sessions: string[]
-  syncCode?: string
-  syncCodeCreated?: Date
-
-  // User data
-  data?: any
-}
+import type { UserDocument } from "../../shared/types.ts";
 
 const users = db.collection<UserDocument>("users")
 
