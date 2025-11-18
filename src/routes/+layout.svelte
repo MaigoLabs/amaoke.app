@@ -2,8 +2,8 @@
   import favicon from "$lib/assets/favicon.svg"
   import "@fontsource/roboto"
   import 'virtual:uno.css'
-  import "./app.sass"
-  import "./material.scss"
+  import "../style/app.sass"
+  import "../style/material.scss"
   import '@unocss/reset/normalize.css'
   import '@unocss/reset/tailwind-v4.css'
 

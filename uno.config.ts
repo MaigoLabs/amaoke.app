@@ -97,6 +97,13 @@ export default defineConfig({
     },
   }),
   rules: [
+    // Material 3 scheme helpers for background/foreground utilities
+    [/^mbg-([a-zA-Z0-9-]+)$/i, ([, token]) => ({
+      'background-color': `rgb(var(--m3-scheme-${token}) / 1)`,
+    })],
+    [/^mfg-([a-zA-Z0-9-]+)$/i, ([, token]) => ({
+      color: `rgb(var(--m3-scheme-${token}) / 1)`,
+    })],
     [/^dir-([a-zA-Z0-9-]+)$/, ([, dir]) => ({
       direction: dir,
     })],

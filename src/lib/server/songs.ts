@@ -46,6 +46,9 @@ const getPlaylistRaw = cached('playlists',
         return pl
     })
 
+export const listPlaylists = () => db.collection('playlists').find()
+  .map(it => it.data.playlist).toArray()
+
 export const getSongMeta = cached('songs',
     async (songId: number) => {
         const detail = await ne.song_detail({ ids: songId.toString() })
