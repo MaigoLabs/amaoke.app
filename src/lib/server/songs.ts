@@ -35,7 +35,7 @@ function parsePlaylistRef(ref: string): number {
 /**
  * Get raw playlist data from cache or netease API.
  */
-const getPlaylistRaw = cached('playlists',
+export const getPlaylistRaw = cached('playlists',
     async (id: number) => {
         const pl = ((await ne.playlist_detail({ id })).body as any)
 
@@ -67,10 +67,10 @@ export const parseBrief = (songData: any): NeteaseSongBrief => ({
 /**
  * Get a list of songs from a playlist reference.
  */
-export async function getSongsFromPlaylist(ref: string): Promise<any[]> {
+export async function getSongsFromPlaylist(ref: string): Promise<{meta: any, songs: NeteaseSongBrief[]}> {
     const playlistId = parsePlaylistRef(ref)
     const plData = await getPlaylistRaw(playlistId)
-    return plData.playlist.tracks.map(parseBrief)
+    return {meta: plData.playlist, songs: plData.playlist.tracks.map(parseBrief)}
 }
 
 interface NeteaseLyricsResponse { lrc: { lyric: string } }
@@ -85,3 +85,7 @@ export const getLyricsProcessed = cached('lyrics_processed',
         return aiParseLyrics(raw.lrc.lyric)
     })
 
+await getSongsFromPlaylist("13555799996")
+await getSongsFromPlaylist("https://music.163.com/playlist?id=14348145982")
+await getSongsFromPlaylist("https://music.163.com/playlist?id=14392963638")
+await getSongsFromPlaylist("https://music.163.com/playlist?id=580208139")

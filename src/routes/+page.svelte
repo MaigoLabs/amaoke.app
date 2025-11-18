@@ -11,7 +11,9 @@
 </script>
 
 
-<AppBar account={() => alert('Account clicked')} settings={() => alert('Settings clicked')} />
+<AppBar account={() => alert('Account clicked')} right={[
+  {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
+]} />
 
 <div class="vbox gap-16px">
   {#if data.last}
@@ -49,13 +51,13 @@
     <TitleHeader title="推荐歌单"/>
     <div class="p-content hbox gap-8px w-auto overflow-x-auto py-8px">
       {#each data.recPlaylists as playlist}
-        <div class="vbox flex-shrink-0 p-8px gap-8px rounded-12px mbg-surface-container-high">
+        <a class="vbox flex-shrink-0 p-8px gap-8px rounded-12px mbg-surface-container-high" href="/playlist/{playlist.id}">
           <img src="{playlist.coverImgUrl}" alt="" class="size-116px rounded-8px">
           <div>
             <div class="m3-font-title-small font-bold truncate">{playlist.name}</div>
             <div class="m3-font-body-small truncate">{playlist.creator.nickname} 创建</div>
           </div>
-        </div>
+        </a>
       {/each}
     </div>
   </div>

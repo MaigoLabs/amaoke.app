@@ -1,10 +1,15 @@
 <script lang="ts">
   import IconButton from "../IconButton.svelte";
 
-  let { title, account, settings }: {
+  interface Icon {
+    icon: string
+    onclick: () => void
+  }
+
+  let { title, account, right }: {
     title?: string
     account?: () => void
-    settings?: () => void
+    right?: Icon[]
   } = $props()
 </script>
 
@@ -15,7 +20,11 @@
     <IconButton icon="i-material-symbols:arrow-back-rounded" onclick={() => history.back()} aria-label="Account" />
   {/if}
   <div class="m3-font-title-large flex-1">{title}</div>
-  {#if settings}
-    <IconButton icon="i-material-symbols:settings-rounded" onclick={settings} aria-label="Settings" />
-  {/if}
+  <!--{#if right}-->
+<!--    <IconButton icon="i-material-symbols:settings-rounded" onclick={right} aria-label="Settings" />-->
+<!--  {/if}-->
+
+  {#each right as item}
+    <IconButton icon={item.icon} onclick={item.onclick} />
+  {/each}
 </div>
