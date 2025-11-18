@@ -2,6 +2,7 @@
 import type { PageProps } from "./$types"
 import AppBar from "../../../components/appbar/AppBar.svelte";
 import Button from "../../../components/Button.svelte";
+  import SongInfo from "../../../components/SongInfo.svelte";
 
 let { data }: PageProps = $props()
 
@@ -25,4 +26,16 @@ let {meta, songs} = data.playlist
       <Button>开始练习</Button>
     </div>
   </div>
+</div>
+
+<div class="vbox gap-12px">
+  <div class="hbox gap-12px items-end! h-48px p-content">
+    <div class="m3-font-headline-small">歌曲列表</div>
+    <div class="m3-font-label-small pb-3px">{songs.length} 首歌曲</div>
+  </div>
+  {#each songs as song, index}
+    <a href="/song/{song.id}" class="p-content">
+      <SongInfo info={song} />
+    </a>
+  {/each}
 </div>
