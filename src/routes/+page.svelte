@@ -1,7 +1,7 @@
 <script lang="ts">
   import AppBar from "../components/appbar/AppBar.svelte";
   import TitleHeader from "../components/TitleHeader.svelte";
-  import SongInfo from "../components/SongInfo.svelte";
+  import SongInfo from "../components/listitem/SongInfo.svelte";
   import type { PageProps } from "./$types";
   import Button from "../components/Button.svelte";
 

@@ -2,7 +2,7 @@
 import type { PageProps } from "./$types"
 import AppBar from "../../../components/appbar/AppBar.svelte";
 import Button from "../../../components/Button.svelte";
-  import SongInfo from "../../../components/SongInfo.svelte";
+  import SongInfo from "../../../components/listitem/SongInfo.svelte";
 
 let { data }: PageProps = $props()
 
