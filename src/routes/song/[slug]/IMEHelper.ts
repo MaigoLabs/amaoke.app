@@ -1,4 +1,17 @@
 import { toHiragana } from "wanakana";
+import type { LyricSegment } from "../../../shared/types";
+
+export type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
+export type ProcLrcLine = { parts: ProcLrcSeg[], totalLen: number }
+export function processLrcLine(line: LyricSegment[]): ProcLrcLine {
+  let result: any[] = line.map(part => (typeof part === "string" ? { kana: part } : { kanji: part[0], kana: part[1] }))
+  let swi = 0
+  for (let item of result) {
+    item['swi'] = swi
+    swi += item.kana.length
+  }
+  return { parts: result, totalLen: swi }
+}
 
 // Fuzzy matching rules
 const fuzzyMatch = [['わ', 'は'], ['を', 'お']]

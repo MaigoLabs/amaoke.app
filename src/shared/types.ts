@@ -56,6 +56,19 @@ export interface UserDocument {
   data?: UserData
 }
 
+export interface ResultDocument {
+  _id?: any
+  userId?: any // Optional, if we want to link to user
+  songId: number
+  totalTyped: number
+  totalRight: number
+  startTime: number
+  endTime: number
+  realTimeFactor: number
+  statsHistory: { t: number, cpm: number, acc: number }[]
+  createdAt: Date
+}
+
 export const typingSettingsDefault = {
   isFuri: true,
   allKata: false,

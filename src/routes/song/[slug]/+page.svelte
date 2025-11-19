@@ -5,11 +5,13 @@
   import { onMount, tick } from "svelte";
   import { typingSettingsDefault, type LyricSegment } from "../../../shared/types.ts";
   import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana";
-  import { composeList, fuzzyEquals } from "./IMEHelper.ts";
+  import { composeList, fuzzyEquals, processLrcLine, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts";
   import MenuItem from "../../../components/material3/MenuItem.svelte";
   import "../../../shared/ext.ts"
-  import { saveUserData } from "$lib/user";
+  import { API } from "$lib/client.ts";
   import { animateCaret } from "./animation.ts";
+  import { goto } from '$app/navigation';
+    import { artistAndAlbum } from "../../../shared/tools.ts";
 
   let { data }: PageProps = $props()
 
@@ -22,23 +24,12 @@
 
   // Settings stored in user data
   let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
-  $effect(() => { saveUserData({ typingSettings: settings }) })
+  $effect(() => { API.saveUserData({ typingSettings: settings }) })
   const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
   const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
-  type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
-  type ProcLrcLine = { parts: ProcLrcSeg[], totalLen: number }
-  function processLrcLine(line: LyricSegment[]): ProcLrcLine {
-    let result: any[] = line.map(part => (typeof part === "string" ? { kana: part } : { kanji: part[0], kana: part[1] }))
-    let swi = 0
-    for (let item of result) {
-      item['swi'] = swi
-      swi += item.kana.length
-    }
-    return { parts: result, totalLen: swi }
-  }
-  let processedLrc: ProcLrcLine[] = data.lrc.map(line => processLrcLine(line.lyric))
+  let processedLrc: ProcLrcLine[] = data.lrc.map(line => processLrcLine(line.lyric)).slice(0, 2)
 
   // State tracking for each kana character: UNSEEN, RIGHT, WRONG
   let states = $state(processedLrc.map(line => new Array(line.totalLen).fill('unseen')))
@@ -51,8 +42,15 @@
   }
 
   // For computing stats
-  let startTime = $state<number | null>(null)
+  let startTime = $state(0)
   let now = $state(Date.now())
+  let statsHistory = $state<{ t: number, cpm: number, acc: number }[]>([])
+
+  // Computed stats
+  let flat = $derived(states.flat())
+  let progress = $derived(Math.min(100, Math.floor((flat.filter(s => s !== 'unseen').length / flat.length) * 100)))
+  let totalTyped = $derived(flat.filter(s => s !== 'unseen').length)
+  let totalRight = $derived(flat.filter(s => s === 'right' || s === 'fuzzy').length)
 
   onMount(() => {
     // Auto focus & refocus
@@ -87,9 +85,19 @@
       if (res === 'wrong' && !imeUsed && !isComposed && composeList.includes(exp)) return // Need to compose, stop here
       states[li][wi] = res
 
+      // Record stats
+      const elapsed = (Date.now() - startTime) / 60000
+      const cpm = totalTyped / elapsed
+      const acc = (totalRight / totalTyped) * 100
+      statsHistory.push({ t: Date.now(), cpm, acc })
+
       // Move index
       wi += 1
-      if (wi >= cLine.totalLen) { li += 1; wi = 0 }
+      if (wi >= cLine.totalLen) { 
+        li += 1; 
+        wi = 0 
+        if (li >= processedLrc.length) submitResult()
+      }
       inp = inp.slice(1)
     }
 
@@ -105,15 +113,20 @@
   // Caret: Typing indicator
   let caret: HTMLDivElement
   $effect(() => { li; wi; animateCaret(caret) })
-  
-  // Computed stats
-  let flat = $derived(states.flat())
-  let progress = $derived(Math.min(100, Math.floor((flat.filter(s => s !== 'unseen').length / flat.length) * 100)))
-  let totalTyped = $derived(flat.filter(s => s !== 'unseen').length)
-  let totalRight = $derived(flat.filter(s => s === 'right' || s === 'fuzzy').length)
+
+  // Result is stored on the server and is fetched from a separate results page
+  async function submitResult() {
+    const res = await API.saveResult({
+      songId: data.raw.id,
+      endTime: Date.now(),
+      realTimeFactor: (Date.now() - startTime) / (data.raw.dt / 1000),
+      totalTyped, totalRight, startTime, statsHistory
+    })
+    goto(`/results/${res.id}`)
+  }
 </script>
 
-<AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album}>
+<AppBar title={data.brief.name} sub={artistAndAlbum(data.brief)}>
   <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
   <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
@@ -132,7 +145,6 @@
     <div>正確率: {totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 100)}%</div>
   </div>
   <div class="hbox justify-between">
-    <!-- <div>进度: {progress}%</div> -->
     <div>正确：{flat.filter(s => s === 'right').length}</div>
     <div>模糊：{flat.filter(s => s === 'fuzzy').length}</div>
     <div>错误：{flat.filter(s => s === 'wrong').length}</div>
