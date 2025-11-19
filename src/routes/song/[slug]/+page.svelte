@@ -40,12 +40,21 @@
     return 'typing'
   }
 
+  // For computing stats
+  let startTime = $state<number | null>(null)
+  let now = $state(Date.now())
+
   onMount(() => {
     hiddenInput.focus()
+    const interval = setInterval(() => {
+      if (startTime) now = Date.now()
+    })
+    return () => clearInterval(interval)
   })
 
   // On input changed: Convert to hiragana, compare with current position, update states
   function inputChanged(input: string, isComposed: boolean) {
+    if (!startTime && input) startTime = Date.now()
     console.log(`input changed: ${input}`)
     // Convert to hiragana
     inp = toHiragana(inp, { IMEMode: true })
@@ -78,7 +87,10 @@
 
   $effect(() => inputChanged(inp, false))
   
-  let progress = $derived(Math.min(100, Math.floor((states.flat().filter(s => s !== 'unseen').length / states.flat().length) * 100)))
+  let flat = $derived(states.flat())
+  let progress = $derived(Math.min(100, Math.floor((flat.filter(s => s !== 'unseen').length / flat.length) * 100)))
+  let totalTyped = $derived(flat.filter(s => s !== 'unseen').length)
+  let totalRight = $derived(flat.filter(s => s === 'right' || s === 'fuzzy').length)
 </script>
 
 <AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album} right={[
@@ -93,15 +105,15 @@
 <!-- Stats -->
 <div class="vbox p-content py-12px mfg-on-surface-variant m3-font-body-medium">
   <div class="hbox justify-between">
-    <div>速度: 10cpm</div>
-    <div>正確率: 90%</div>
+    <div>速度: {startTime ? Math.round(totalTyped / (Math.max(1, (now - startTime)) / 60000)) : '-'} cpm</div>
+    <div>正確率: {totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 100)}%</div>
   </div>
   <div class="hbox justify-between">
     <!-- <div>进度: {progress}%</div> -->
-    <div>正确：{states.flat().filter(s => s === 'right').length}</div>
-    <div>模糊：{states.flat().filter(s => s === 'fuzzy').length}</div>
-    <div>错误：{states.flat().filter(s => s === 'wrong').length}</div>
-    <div>剩余：{states.flat().filter(s => s === 'unseen').length}</div>
+    <div>正确：{flat.filter(s => s === 'right').length}</div>
+    <div>模糊：{flat.filter(s => s === 'fuzzy').length}</div>
+    <div>错误：{flat.filter(s => s === 'wrong').length}</div>
+    <div>剩余：{flat.filter(s => s === 'unseen').length}</div>
   </div>
 </div>
 
