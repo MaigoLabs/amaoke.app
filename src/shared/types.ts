@@ -56,7 +56,13 @@ export interface UserDocument {
   data?: UserData
 }
 
+export const typingSettingsDefault = {
+  isFuri: true,
+  allKata: false
+}
+
 export interface UserData {
-    myPlaylists?: number[]
-    playHistory?: GameStats[]
+  myPlaylists?: number[]
+  playHistory?: GameStats[]
+  typingSettings?: typeof typingSettingsDefault
 }

@@ -3,12 +3,12 @@
   import type { PageProps } from "./$types"
   import { LinearProgress } from "m3-svelte";
   import { onMount } from "svelte";
-  import type { LyricSegment } from "../../../shared/types.ts";
+  import { typingSettingsDefault, type LyricSegment } from "../../../shared/types.ts";
   import { isKana, isKanji, toHiragana, toKatakana } from "wanakana";
   import { composeList, fuzzyEquals } from "./IMEHelper.ts";
   import MenuItem from "../../../components/material3/MenuItem.svelte";
   import "../../../shared/ext.ts"
-  import { browser } from "$app/environment";
+  import { saveUserData } from "$lib/user";
 
   let { data }: PageProps = $props()
 
@@ -19,13 +19,9 @@
   let hiddenInput: HTMLInputElement
   let inp = $state("")
 
-  // Settings stored in localStorage
-  let settingDefaults = {
-    isFuri: true,
-    allKata: false
-  }
-  let settings = $state(browser ? (localStorage.getItem('kashi-dash-settings')?.let((it) => JSON.parse(it)) ?? settingDefaults) : settingDefaults)
-  $effect(() => { if (browser) localStorage.setItem('kashi-dash-settings', JSON.stringify(settings)) })
+  // Settings stored in user data
+  let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
+  $effect(() => { saveUserData({ typingSettings: settings }) })
   const preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
 
   // Process each line into segments with swi (start word index) and kanji/kana

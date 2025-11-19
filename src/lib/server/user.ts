@@ -1,5 +1,5 @@
 import { db } from "./db"
-import type { UserDocument } from "../../shared/types.ts";
+import type { UserDocument, UserData } from "../../shared/types.ts";
 
 const users = db.collection<UserDocument>("users")
 
@@ -42,5 +42,13 @@ export async function createSyncCode(session: string): Promise<string> {
   return code
 }
 
-  
-  
+/**
+ * Update user data.
+ * @param session Session token
+ * @param data Data to update (partial)
+ */
+export async function updateUserData(session: string, data: Partial<UserData>): Promise<void> {
+  const user = await login(session)
+  const newData = { ...(user.data || {}), ...data }
+  await users.updateOne({ _id: user._id }, { $set: { data: newData } })
+}
