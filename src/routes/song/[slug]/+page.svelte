@@ -24,7 +24,7 @@
   let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
   $effect(() => { saveUserData({ typingSettings: settings }) })
   const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
-  const preprocessKana = (kana: string) => settings.showRomaji ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
+  const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || state === 'wrong') ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
   type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
@@ -149,13 +149,13 @@
       {#each line.parts as seg}
         {#if !seg.kanji}
           {#each seg.kana as char, c}
-            <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char)}</span>
+            <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l][seg.swi + c])}</span>
           {/each}
         {:else}
           <ruby>
             <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
               {#each seg.kana as char, c}
-                <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char)}</span>
+                <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l][seg.swi + c])}</span>
               {/each}
             </rt>{/if}
           </ruby>
