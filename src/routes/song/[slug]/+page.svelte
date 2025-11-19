@@ -24,7 +24,7 @@
   let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
   $effect(() => { saveUserData({ typingSettings: settings }) })
   const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
-  const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || state === 'wrong') ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
+  const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
   type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
@@ -117,6 +117,7 @@
   <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
   <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
+  <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? "不在错误时显示罗马音" : "错误时显示罗马音"}</MenuItem>
 </AppBar>
 
 <LinearProgress percent={progress} />
