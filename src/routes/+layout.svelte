@@ -18,6 +18,6 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="vbox min-h-screen box-border">
+<div class="vbox h-screen min-h-screen box-border overflow-hidden">
   {@render children()}
 </div>

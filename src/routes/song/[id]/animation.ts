@@ -3,11 +3,13 @@ import { tick } from "svelte";
 export function animateCaret(caret: HTMLDivElement) {
   tick().then(() => {
     const el = document.querySelector(".here") as HTMLElement;
+    const container = document.querySelector(".lrc-content") as HTMLElement;
     const update = () => {
       const rect = el?.getBoundingClientRect();
-      if (!rect) return;
-      caret.style.left = `${rect.left + window.scrollX}px`;
-      caret.style.top = `${rect.top + window.scrollY}px`;
+      const containerRect = container?.getBoundingClientRect();
+      if (!rect || !containerRect) return;
+      caret.style.left = `${rect.left - containerRect.left}px`;
+      caret.style.top = `${rect.top - containerRect.top}px`;
       caret.style.height = `${rect.height}px`;
     };
     update();

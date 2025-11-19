@@ -166,32 +166,34 @@
 </div>
 
 <!-- Lines -->
-<div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75"></div>
-<div class="vbox gap-12px py-32px lrc-wrapper" lang="ja-JP">
-  {#each processedLrc as line, l}
-    <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
-      onclick={() => hiddenInput.focus()} 
-      onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hiddenInput.focus(); } }}>
-      {#each line.parts as seg}
-        {#if !seg.kanji}
-          {#each seg.kana as char, c}
-            <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}
-              class:punctuation={!isKana(char) && !isKanji(char)}>
-              {@html preprocessKana(char, states[l][seg.swi + c])}
-            </span>
-          {/each}
-        {:else}
-          <ruby>
-            <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
-              {#each seg.kana as char, c}
-                <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l][seg.swi + c])}</span>
-              {/each}
-            </rt>{/if}
-          </ruby>
-        {/if}
-      {/each}
-    </div>
-  {/each}
+<div class="lrc-wrapper flex-1 overflow-y-auto" lang="ja-JP">
+  <div class="vbox gap-12px py-32px relative min-h-full lrc-content">
+    <div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75 z-10"></div>
+    {#each processedLrc as line, l}
+      <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
+        onclick={() => hiddenInput.focus()} 
+        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hiddenInput.focus(); } }}>
+        {#each line.parts as seg}
+          {#if !seg.kanji}
+            {#each seg.kana as char, c}
+              <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}
+                class:punctuation={!isKana(char) && !isKanji(char)}>
+                {@html preprocessKana(char, states[l][seg.swi + c])}
+              </span>
+            {/each}
+          {:else}
+            <ruby>
+              <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
+                {#each seg.kana as char, c}
+                  <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l][seg.swi + c])}</span>
+                {/each}
+              </rt>{/if}
+            </ruby>
+          {/if}
+        {/each}
+      </div>
+    {/each}
+  </div>
 </div>
 
 <style lang="sass">
