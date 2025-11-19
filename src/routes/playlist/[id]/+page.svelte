@@ -48,7 +48,7 @@
   <div class="m3-font-headline-small">歌曲列表</div>
   <div class="m3-font-label-small pb-3px">{songs.length} 首歌曲</div>
 </div>
-<div class="vbox gap-12px mt-12px min-h-0 overflow-y-auto">
+<div class="vbox gap-12px mt-12px pb-12px min-h-0 flex-shrink-1 overflow-y-auto">
   {#each songs as song, index}
     <a href="/song/{song.id}" class="p-content">
       <SongInfo info={song} />

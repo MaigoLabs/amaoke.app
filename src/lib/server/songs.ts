@@ -50,16 +50,30 @@ const getPlaylistRaw = cached('playlists_raw',
 function normalizeTimestamps(text: string): string {
     // Replace all [dd:dd:dd] wit [dd:dd.dd]
     return text.replace(/\[(\d+):(\d+):(\d+)\]/g, '[$1:$2.$3]')
+      .replace(/\[(\d+):(\d+)\]/g, '[$1:$2.00]')
 }
 
 interface NeteaseLyricsResponse { lrc: { lyric: string }, lang: string }
-const getLyricsRaw = cached('lyrics_raw',
-    async (songId: number) => {
-        const raw = (await ne.lyric({ id: songId })).body as any as NeteaseLyricsResponse
-        const lang = franc(raw.lrc.lyric.replace(/\[.*?\]/g, '').replace(/\s+/g, ' ').trim())
-        raw.lrc.lyric = normalizeTimestamps(raw.lrc.lyric)
-        return { ...raw, lang }
-    })
+const _getLyricsRaw = cached('lyrics_raw',
+  async (songId: number) => {
+    const raw = (await ne.lyric({ id: songId })).body as any as NeteaseLyricsResponse
+    const lang = franc(raw.lrc.lyric.replace(/\[.*?\]/g, '').replace(/\s+/g, ' ').trim())
+    return { ...raw, lang }
+  })
+
+const getLyricsRaw = async (songId: number): Promise<NeteaseLyricsResponse & { lang: string }> => {
+  const raw = await _getLyricsRaw(songId)
+  raw.lrc.lyric = normalizeTimestamps(raw.lrc.lyric)
+  // Remove lines in the beginning of the lyrics that follow the pattern /\[.+\].+[:：].+/ until the first line that doesn't match
+  const lines = raw.lrc.lyric.split('\n')
+  let startIndex = 0
+  for (let i = 0; i < lines.length; i++) {
+    if (/^\[.+\].+[:：].+/.test(lines[i])) startIndex = i + 1
+    else break
+  }
+  raw.lrc.lyric = lines.slice(startIndex).join('\n')
+  return raw
+}
 
 export const getSongRaw = cached('songs_raw',
     async (songId: number) => {

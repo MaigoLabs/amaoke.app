@@ -26,12 +26,11 @@ const req = {
 このテキストを解析し、指定された形式の「ふりがな・読み仮名付きテキスト」に変換してください。
 
 処理ルール
-1.  **メタデータの除外**: "作词"、"作曲"、"编曲"など、歌詞以外の情報を含む行はすべて除外してください。
-2.  **出力形式とタイムスタンプ**: 1行につき \`[タイムスタンプ] ふりがな付き歌詞\` の形式で出力してください。
+1.  **出力形式とタイムスタンプ**: 1行につき \`[タイムスタンプ] ふりがな付き歌詞\` の形式で出力してください。
     * **重要**: タイムスタンプの形式（例: \`[mm:ss.sss]\`）や数値は一切変更せず、入力されたままの状態で維持してください。
-3.  **ふりがな（漢字）**: 歌詞本文では、**全ての漢字**に \`漢字（ふりがな）\` の形式でふりがな（ルビ）を付けてください。
-4.  **読み仮名（非日本語）**: 英語などの非日本語の単語には、\`Word（カタカナ読み）\` の形式でカタカナの読み仮名を付けてください。（例: \`Good（グッド）\`）。
-5.  **その他**: ひらがな、カタカナ、句読点などはそのまま出力してください。
+2.  **ふりがな（漢字）**: 歌詞本文では、**全ての漢字**に \`漢字（ふりがな）\` の形式でふりがな（ルビ）を付けてください。
+3.  **読み仮名（非日本語）**: 英語などの非日本語の単語には、\`Word（カタカナ読み）\` の形式でカタカナの読み仮名を付けてください。（例: \`Good（グッド）\`）。
+4.  **その他**: ひらがな、カタカナ、句読点などはそのまま出力してください。
 
 重要
 * **全ての漢字および非日本語単語に読み仮名を付けてください。** 読み方が不明な場合でも、文脈から最も一般的だと思われる読み方を付けてください。漢字をそのまま残してはいけません。
@@ -49,10 +48,7 @@ const req = {
     },
     {
       role: "user",
-      content: `[00:00.000] 作词 : 椎名林檎
-[00:01.000] 作曲 : 椎名林檎
-[00:02.000] 编曲 : 亀田誠治
-[00:15.570]蝉の声を聞く度に
+      content: `[00:15.570]蝉の声を聞く度に
 [00:19.270]目に浮かぶ九十九里浜
 [00:22.600]皺々の祖母の手を離れ
 [00:25.880]独りで訪れた歓楽街
@@ -72,7 +68,13 @@ const req = {
 [01:24.480]女王と云う肩書きを誇らしげに掲げる
 [01:58.370]女に成ったあたしが
 [02:01.950]売るのは自分だけで
-[02:05.440]同情を欲したときに`
+[02:05.440]同情を欲したときに
+[02:08.790]全てを失うだろう
+[02:12.720]JR新宿駅の東口を出たら
+[02:19.740]其処はあたしの庭
+[02:23.030]大遊戯場歌舞伎町
+[02:33.740]今夜からは此の町で
+[02:39.300]娘のあたしが女王`
     },
     {
       "role": "assistant",
@@ -96,7 +98,13 @@ const req = {
 [01:24.480] 女王（じょおう）と 云（い）う 肩書（かたが）きを 誇（ほこ）らしげに 掲（かか）げる
 [01:58.370] 女（おんな）に 成（な）ったあたしが
 [02:01.950] 売（う）るのは 自分（じぶん）だけで
-[02:05.440] 同情（どうじょう）を 欲（ほ）したときに`
+[02:05.440] 同情（どうじょう）を 欲（ほ）したときに
+[02:08.790] 全（すべ）てを 失（うしな）うだろう
+[02:12.720] JR 新宿駅（しんじゅくえき）の 東口（ひがしぐち）を 出（で）たら
+[02:19.740] 其処（そこ）はあたしの 庭（にわ）
+[02:23.030] 大遊戯場（だいゆうぎじょう） 歌舞伎町（かぶきちょう）
+[02:33.740] 今夜（こんや）からは 此（こ）の 町（まち）で
+[02:39.300] 娘（むすめ）のあたしが 女王（じょおう）`
     },
     {
       role: "user",
@@ -150,7 +158,7 @@ function parseFuriganaText(text: string): LyricLine[] {
       if (kanji && furigana) {
         let splitIndex = -1
         for (let i = kanji.length - 1; i >= 0; i--) {
-          if (!isKanji(kanji[i])) {
+          if (!isKanji(kanji[i]) && !('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.includes(kanji[i]))) {
             splitIndex = i
             break
           }
@@ -178,7 +186,7 @@ function parseFuriganaText(text: string): LyricLine[] {
  * Let the AI parse the raw lyrics into furigana-formatted text,
  * then use the local parser to convert that text into LyricLine[] structure.
  */
-export async function aiParseLyricsRaw(raw: string): Promise<LyricLine[]> {
+export async function aiParseLyricsRaw(raw: string, tries: number = 5): Promise<LyricLine[]> {
   const thisReq = JSON.parse(JSON.stringify(req))
   thisReq.messages[thisReq.messages.length - 1].content = raw
   
@@ -190,11 +198,29 @@ export async function aiParseLyricsRaw(raw: string): Promise<LyricLine[]> {
   console.log('AI request:\n', raw)
   console.log('AI response:\n', responseText)
   console.log(`Finish reason: ${response.choices[0].finish_reason}`)
+
+  async function fail() {
+    if (tries > 0) {
+      console.warn(`Retrying AI parsing, ${tries} tries left...`)
+      return await aiParseLyricsRaw(raw, tries - 1)
+    }
+    throw new Error('AI parsing failed after multiple attempts.')
+  }
+
   // If response does not contain any timestamp, something is wrong
   if (!/\[\d+:\d+\.\d+\]/.test(responseText)) {
     console.error('AI response does not contain any timestamps, indicating a failure. Request:', raw)
     console.error('AI response text:', responseText)
-    throw new Error('AI response parsing failed, no timestamps found.')
+    await fail()
+  }
+
+  // If response doesn't contain a similar number of lines (+-3), something is wrong
+  const inputLineCount = raw.split('\n').filter(line => line.trim() !== '').length
+  const outputLineCount = responseText.split('\n').filter(line => line.trim() !== '').length
+  if (Math.abs(inputLineCount - outputLineCount) > 3) {
+    console.error(`AI response line count (${outputLineCount}) differs significantly from input (${inputLineCount}). Request:`, raw)
+    console.error('AI response text:', responseText)
+    await fail()
   }
 
   try {
@@ -208,12 +234,13 @@ export async function aiParseLyricsRaw(raw: string): Promise<LyricLine[]> {
 }
 
 export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
-    // Split into maximum 20 lines per request
-    const lines = raw.split('\n').filter(line => line.trim() !== '')
-    const chunks: string[] = []
-    for (let i = 0; i < lines.length; i += 20) {
-        chunks.push(lines.slice(i, i + 20).join('\n'))
-    }
-    const results = await Promise.all(chunks.map(aiParseLyricsRaw))
-    return results.flat()
+  // Split into maximum n lines per request
+  const n = 30
+  const lines = raw.split('\n').filter(line => line.trim() !== '')
+  const chunks: string[] = []
+  for (let i = 0; i < lines.length; i += n) {
+      chunks.push(lines.slice(i, i + n).join('\n'))
+  }
+  const results = await Promise.all(chunks.map(it => aiParseLyricsRaw(it, 5)))
+  return results.flat()
 }
