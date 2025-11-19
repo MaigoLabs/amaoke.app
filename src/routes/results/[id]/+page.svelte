@@ -77,12 +77,13 @@
             y: {
               position: "left",
               max: 300,
-              ticks: { display: false }
+              ticks: { display: false },
+              grid: { drawTicks: false }
             },
             y1: {
               position: "right",
               max: 100,
-              grid: { display: false },
+              grid: { drawTicks: false, display: false },
               ticks: { display: false }
             },
           },
