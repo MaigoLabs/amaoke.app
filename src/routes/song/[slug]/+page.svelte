@@ -77,7 +77,8 @@
   }
 
   $effect(() => inputChanged(inp, false))
-
+  
+  let progress = $derived(Math.min(100, Math.floor((states.flat().filter(s => s !== 'unseen').length / states.flat().length) * 100)))
 </script>
 
 <AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album} right={[
@@ -85,13 +86,26 @@
   {icon: "i-material-symbols:more-vert", onclick: () => alert('More clicked')}
 ]} />
 
-<LinearProgress percent={30} />
+<LinearProgress percent={progress} />
 
-<input bind:this={hiddenInput} oncompositionend={() => {
-  inputChanged(inp, true)
-  console.log("Event: input")
-}} bind:value={inp} class="absolute opacity-0 top-[-9999px] left-[-9999px]" />
+<input bind:this={hiddenInput} oncompositionend={() => inputChanged(inp, true)} bind:value={inp} class="absolute opacity-0 top-[-9999px] left-[-9999px]" />
 
+<!-- Stats -->
+<div class="vbox p-content py-12px mfg-on-surface-variant m3-font-body-medium">
+  <div class="hbox justify-between">
+    <div>速度: 10cpm</div>
+    <div>正確率: 90%</div>
+  </div>
+  <div class="hbox justify-between">
+    <!-- <div>进度: {progress}%</div> -->
+    <div>正确：{states.flat().filter(s => s === 'right').length}</div>
+    <div>模糊：{states.flat().filter(s => s === 'fuzzy').length}</div>
+    <div>错误：{states.flat().filter(s => s === 'wrong').length}</div>
+    <div>剩余：{states.flat().filter(s => s === 'unseen').length}</div>
+  </div>
+</div>
+
+<!-- Lines -->
 <div class="vbox gap-12px py-32px lrc-wrapper" lang="ja-JP">
   {#each processedLrc as line, l}
     <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
@@ -126,6 +140,7 @@
     font-weight: 500
     font-size: 20px
     opacity: 0.6
+    transition: all 0.2s ease-in-out
 
     &.active
       opacity: 1
