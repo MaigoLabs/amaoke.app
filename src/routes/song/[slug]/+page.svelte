@@ -2,9 +2,9 @@
   import AppBar from "../../../components/appbar/AppBar.svelte";
   import type { PageProps } from "./$types"
   import { LinearProgress } from "m3-svelte";
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
   import { typingSettingsDefault, type LyricSegment } from "../../../shared/types.ts";
-  import { isKana, isKanji, toHiragana, toKatakana } from "wanakana";
+  import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana";
   import { composeList, fuzzyEquals } from "./IMEHelper.ts";
   import MenuItem from "../../../components/material3/MenuItem.svelte";
   import "../../../shared/ext.ts"
@@ -22,7 +22,8 @@
   // Settings stored in user data
   let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
   $effect(() => { saveUserData({ typingSettings: settings }) })
-  const preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
+  const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
+  const preprocessKana = (kana: string) => settings.showRomaji ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
   type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
@@ -110,6 +111,7 @@
 <AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album}>
   <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
+  <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
 </AppBar>
 
 <LinearProgress percent={progress} />
@@ -141,13 +143,13 @@
       {#each line.parts as seg}
         {#if !seg.kanji}
           {#each seg.kana as char, c}
-            <span class="{states[l][seg.swi + c]}">{preprocessKana(char)}</span>
+            <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char)}</span>
           {/each}
         {:else}
           <ruby>
             <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
               {#each seg.kana as char, c}
-                <span class="{states[l][seg.swi + c]}">{preprocessKana(char)}</span>
+                <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char)}</span>
               {/each}
             </rt>{/if}
           </ruby>

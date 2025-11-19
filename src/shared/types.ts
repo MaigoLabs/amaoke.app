@@ -58,7 +58,8 @@ export interface UserDocument {
 
 export const typingSettingsDefault = {
   isFuri: true,
-  allKata: false
+  allKata: false,
+  showRomaji: true
 }
 
 export interface UserData {
