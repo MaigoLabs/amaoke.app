@@ -4,6 +4,7 @@
   import { LinearProgress } from "m3-svelte";
   import { onMount } from "svelte";
   import type { LyricSegment } from "../../../shared/types.ts";
+  import { isKana, isKanji, toHiragana } from "wanakana";
 
   let { data }: PageProps = $props()
 
@@ -41,6 +42,56 @@
   onMount(() => {
     hiddenInput.focus()
   })
+
+  // Fuzzy matching rules
+  const fuzzyMatch = [['わ', 'は'], ['を', 'お']]
+  function fuzzyEquals(kana1: string, kana2: string): string {
+    [kana1, kana2] = [toHiragana(kana1), toHiragana(kana2)]
+    if (kana1 === kana2) return 'right'
+    if (fuzzyMatch.some(([a, b]) => (kana1 === a && kana2 === b) || (kana1 === b && kana2 === a))) return 'fuzzy'
+    return 'wrong'
+  }
+
+  // List of characters need to be composed instead of directly typed
+  const composeList = [
+    'っ', 'ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ',
+    'が', 'ぎ', 'ぐ', 'げ', 'ご',
+    'ざ', 'じ', 'ず', 'ぜ', 'ぞ',
+    'だ', 'ぢ', 'づ', 'で', 'ど',
+    'ば', 'び', 'ぶ', 'べ', 'ぼ',
+    'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ'
+  ]
+
+  // On input changed: Convert to hiragana, compare with current position, update states
+  function inputChanged(input: string, isComposed: boolean) {
+    console.log(`input changed: ${input}`)
+    // Convert to hiragana
+    inp = toHiragana(inp, { IMEMode: true })
+
+    // While it has kana or kanji, pop from input
+    while (inp.length && (isKana(inp[0]) || isKanji(inp[0]))) {
+      let char = inp[0]
+
+      // Check if it matches current character
+      let cLine = processedLrc[li]
+      let cSeg = cLine.parts.find(seg => wi >= seg.swi && wi < seg.swi + seg.kana.length)!
+      let exp = cSeg.kana[wi - cSeg.swi]
+      let res = fuzzyEquals(char, exp)
+      if (res === 'wrong' && !isComposed && composeList.includes(exp)) return // Need to compose, stop here
+      states[li][wi] = res
+
+      // Move index
+      wi += 1
+      if (wi >= cLine.totalLen) {
+        li += 1
+        wi = 0
+      }
+      inp = inp.slice(1)
+    }
+  }
+
+  $effect(() => inputChanged(inp, false))
+
 </script>
 
 <AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album} right={[
@@ -50,7 +101,11 @@
 
 <LinearProgress percent={30} />
 
-<input bind:this={hiddenInput} bind:value={inp} style="position: absolute; top: -9999px; left: -9999px;" autofocus/>
+<input bind:this={hiddenInput} oncompositionend={() => {
+  inputChanged(inp, true)
+  console.log("Event: input")
+}} bind:value={inp} autofocus />
+<!--       class="absolute opacity-0 top-[-9999px] left-[-9999px]"-->
 
 <div class="vbox gap-12px py-32px" lang="ja-JP">
   {#each processedLrc as line, l}
@@ -88,6 +143,9 @@
   .wrong
     color: #e55757
     background-color: rgba(229, 87, 87, 0.1)
+  .fuzzy
+    color: #e5a657
+    background-color: rgba(229, 166, 87, 0.1)
   .right
     color: #7b78c2
 </style>
