@@ -1,11 +1,9 @@
 import type { PageServerLoad } from './$types';
-import { listPlaylists } from "$lib/server/songs.ts";
+import { listMyPlaylists, listRecPlaylists } from "$lib/server/songs.ts";
 
-// TODO: slug should be "my" or "recommended", fetch accordingly
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, parent }) => {
+  const { user } = await parent()
   const isMine = params.category === 'my'
-  return {
-    playlists: await listPlaylists(),
-    isMine
-  }
+  const playlists = isMine ? await listMyPlaylists(user) : await listRecPlaylists()
+  return { playlists, isMine }
 }

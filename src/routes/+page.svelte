@@ -8,7 +8,7 @@
 
   let { data }: PageProps = $props()
 
-  console.log(data.myPlaylists)
+  console.log(data.recPlaylists)
 </script>
 
 

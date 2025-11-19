@@ -1,9 +1,11 @@
 import * as ne from '@neteasecloudmusicapienhanced/api'
 import { aiParseLyrics } from './tools/lyrics'
-import type { NeteaseSongBrief } from '../../shared/types'
+import type { NeteaseSongBrief, UserDocument } from '../../shared/types'
 import { db } from './db'
 import { franc } from 'franc'
 import { error } from '@sveltejs/kit'
+import type { ObjectId } from 'mongodb'
+import '../../shared/ext'
 
 /**
  * Functional wrapper to cache API results to MongoDB.
@@ -39,17 +41,22 @@ function parsePlaylistRef(ref: string): number {
  */
 export const getPlaylistRaw = cached('playlists',
     async (id: number) => {
-        const pl = ((await ne.playlist_detail({ id })).body as any)
+        const pl = ((await ne.playlist_detail({ id })).body as any).playlist
 
         // Save each song
-        for (const track of pl.playlist.tracks) {
+        for (const track of pl.tracks) {
             await db.collection('songs').replaceOne({ _id: track.id }, { _id: track.id, data: track }, { upsert: true })
         }
         return pl
     })
 
-export const listPlaylists = () => db.collection('playlists').find()
-  .map(it => it.data.playlist).toArray()
+// TODO: A better recommendation system
+export const listRecPlaylists = async () => await db.collection('playlists').find()
+  .map(it => it.data).toArray()
+
+export const listMyPlaylists = async (user: UserDocument) => (await user.data.myPlaylists?.let(pl => db.collection('playlists').find({
+  _id: { $in: pl as any as ObjectId[] }
+}).map(it => it.data).toArray())) ?? []
 
 export const getSongMeta = cached('songs',
     async (songId: number) => {
@@ -72,7 +79,7 @@ export const parseBrief = (songData: any): NeteaseSongBrief => ({
 export async function getSongsFromPlaylist(ref: string): Promise<{meta: any, songs: NeteaseSongBrief[]}> {
     const playlistId = parsePlaylistRef(ref)
     const plData = await getPlaylistRaw(playlistId)
-    return {meta: plData.playlist, songs: plData.playlist.tracks.map(parseBrief)}
+    return {meta: plData, songs: plData.tracks.map(parseBrief)}
 }
 
 interface NeteaseLyricsResponse { lrc: { lyric: string }, lang: string }

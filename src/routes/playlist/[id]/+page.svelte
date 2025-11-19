@@ -1,16 +1,32 @@
 <script lang="ts">
-import type { PageProps } from "./$types"
-import AppBar from "../../../components/appbar/AppBar.svelte";
-import Button from "../../../components/Button.svelte";
+  import type { PageProps } from "./$types"
+  import AppBar from "../../../components/appbar/AppBar.svelte";
+  import Button from "../../../components/Button.svelte";
   import SongInfo from "../../../components/listitem/SongInfo.svelte";
+  import { API } from "$lib/client";
 
-let { data }: PageProps = $props()
+  let { data }: PageProps = $props()
 
-let {meta, songs} = data.playlist
+  let meta = $derived(data.playlist.meta)
+  let songs = $derived(data.playlist.songs)
+  let isFavorite = $derived(data.user.data.myPlaylists?.includes(meta.id) ?? false)
+
+  async function toggleFavorite() {
+    if (isFavorite) {
+      data.user.data.myPlaylists = data.user.data.myPlaylists?.filter(pl => pl !== meta.id)
+    } else {
+      data.user.data.myPlaylists = [...(data.user.data.myPlaylists || []), meta.id]
+    }
+    await API.saveUserData(data.user.data)
+    isFavorite = !isFavorite
+  }
 </script>
 
 <AppBar title="歌单详情" right={[
-  {icon: "i-material-symbols:bookmark-add-outline-rounded", onclick: () => alert('Bookmark clicked')},
+  {
+    icon: isFavorite ? "i-material-symbols:bookmark-rounded" : "i-material-symbols:bookmark-add-outline-rounded", 
+    onclick: toggleFavorite
+  },
   {icon: "i-material-symbols:more-vert", onclick: () => alert('More clicked')}
 ]} />
 

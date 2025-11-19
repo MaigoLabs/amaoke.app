@@ -1,16 +1,15 @@
-import { json } from '@sveltejs/kit'
+import { error, json } from '@sveltejs/kit'
 import { updateUserData } from '$lib/server/user'
 import type { RequestHandler } from './$types'
+import { login } from '$lib/server/user'
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
-  const session = cookies.get('session')
-  if (!session) {
-    return json({ error: 'Unauthorized' }, { status: 401 })
-  }
+  const user = await login(cookies.get('session'))
+  if (!user) throw error(401, 'Unauthorized')
 
   try {
     const data = await request.json()
-    await updateUserData(session, data)
+    await updateUserData(user, data)
     return json({ success: true })
   } catch (e) {
     console.error('Failed to update user data', e)

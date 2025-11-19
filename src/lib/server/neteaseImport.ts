@@ -1,10 +1,11 @@
 import { getSongsFromPlaylist, getLyricsRaw } from './songs'
 import { db } from './db'
-import type { NeteaseSongBrief } from '../../shared/types'
+import type { NeteaseSongBrief, UserDocument } from '../../shared/types'
 
 export interface ImportSession {
     id: string
     playlistId: number
+    userId: any
     songs: {
         song: NeteaseSongBrief
         status: 'importing' | 'success' | 'failed-not-japanese' | 'failed-unknown'
@@ -19,15 +20,17 @@ export const getSession = (id: string) => sessions.get(id)
 /**
  * Start an import session
  * @param link Netease playlist link
+ * @param userId User ID to associate the imported playlist with
  * @returns Import session
  */
-export async function startImport(link: string): Promise<ImportSession> {
+export async function startImport(link: string, user: UserDocument): Promise<ImportSession> {
     const { meta, songs } = await getSongsFromPlaylist(link)
     const importId = crypto.randomUUID()
     
     const session: ImportSession = {
         id: importId,
         playlistId: meta.id,
+        userId: user._id,
         songs: songs.map(s => ({ song: s, status: 'importing' })),
         done: false
     }
@@ -85,6 +88,12 @@ async function processImport(session: ImportSession) {
                 importedAt: new Date()
             },
             { upsert: true }
+        )
+        
+        // Add to user's favorites
+        await db.collection('users').updateOne(
+            { _id: session.userId },
+            { $addToSet: { "data.myPlaylists": session.playlistId } }
         )
     }
 }

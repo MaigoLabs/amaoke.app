@@ -53,7 +53,7 @@ export interface UserDocument {
   syncCodeCreated?: Date
 
   // User data
-  data?: UserData
+  data: UserData
 }
 
 export interface ResultDocument {

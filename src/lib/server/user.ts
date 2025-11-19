@@ -1,5 +1,5 @@
 import { db } from "./db"
-import type { UserDocument, UserData } from "../../shared/types.ts";
+import { type UserDocument, type UserData } from "../../shared/types.ts";
 import { error } from "@sveltejs/kit";
 
 const users = db.collection<UserDocument>("users")
@@ -15,7 +15,7 @@ void users.createIndex({ syncCode: 1 }, { name: "users_sync_code_idx" })
  */
 export async function createUser(registUA: string): Promise<string> {
   const ses = `${crypto.randomUUID()}-${Date.now().toString(36)}`
-  await users.insertOne({ registUA, createdAt: new Date(), sessions: [ses] })
+  await users.insertOne({ registUA, createdAt: new Date(), sessions: [ses], data: {} })
   return ses
 }
 
@@ -49,8 +49,7 @@ export async function createSyncCode(session: string): Promise<string> {
  * @param session Session token
  * @param data Data to update (partial)
  */
-export async function updateUserData(session: string, data: Partial<UserData>): Promise<void> {
-  const user = await login(session)
+export async function updateUserData(user: UserDocument, data: Partial<UserData>): Promise<void> {
   const newData = { ...(user.data || {}), ...data }
   await users.updateOne({ _id: user._id }, { $set: { data: newData } })
 }

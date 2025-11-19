@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types'
-import { getLyricsProcessed, getSongMeta, listPlaylists, parseBrief } from "$lib/server/songs.ts";
+import { getLyricsProcessed, getSongMeta, listRecPlaylists, parseBrief } from "$lib/server/songs.ts";
 
 export const load: PageServerLoad = async ({ params }) => {
   const songId = +params.id
