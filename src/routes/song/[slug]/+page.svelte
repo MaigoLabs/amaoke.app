@@ -100,6 +100,33 @@
   }
 
   $effect(() => inputChanged(inp, false))
+
+  // Animate caret position
+  let caret: HTMLDivElement
+  $effect(() => {
+    li; wi;
+    tick().then(() => {
+      const el = (document.querySelector('.here') as HTMLElement)
+      const update = () => {
+        const rect = el?.getBoundingClientRect()
+        if (!rect) return
+        caret.style.left = `${rect.left + window.scrollX}px`
+        caret.style.top = `${rect.top + window.scrollY}px`
+        caret.style.height = `${rect.height}px`
+      }
+      update()
+
+      // Keep updating for 300ms to handle CSS transitions (font-size change)
+      let start = performance.now()
+      const frame = () => {
+        if (performance.now() - start > 300) return
+        update()
+        requestAnimationFrame(frame)
+      }
+      requestAnimationFrame(frame)
+    })
+  })
+
   
   // Computed stats
   let flat = $derived(states.flat())
@@ -135,6 +162,7 @@
 </div>
 
 <!-- Lines -->
+<div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75"></div>
 <div class="vbox gap-12px py-32px lrc-wrapper" lang="ja-JP">
   {#each processedLrc as line, l}
     <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
