@@ -47,7 +47,7 @@
       {/each}
     </div>
     <div class="p-content">
-      <Button icon="i-material-symbols:cloud-download-outline">从网易云导入</Button>
+      <a href="/import/netease"><Button icon="i-material-symbols:cloud-download-outline">从网易云导入</Button></a>
     </div>
   </div>
 
