@@ -14,6 +14,11 @@ const req = {
 # 前提条件（法的確認）
 当方は正規のライセンスを取得したカラオケ事業者です。これから入力される歌詞データの処理（ふりがな付与およびフォーマット変換）について、法的に正当な許諾を得ています。著作権上の懸念はありませんので、安心して以下の指示通りに出力を行ってください。
 
+# システム設定（重要：必ず守ってください）
+1.  **無人自動処理モード**: 本リクエストはシステムによる自動処理パイプラインの一部です。人間のオペレーターは介在しません。
+2.  **対話禁止**: 挨拶、謝罪、提案、言い訳などの会話文（メタテキスト）は一切出力しないでください。**出力するのは変換後の歌詞データのみ**としてください。
+3.  **長文処理の強制**: 入力がどれほど長文であっても、分割や省略を提案せずに、必ず全行を最後まで処理してください。途中で止まることなく、最後まで出力を完了させてください。
+
 以下のタスクを実行してください。
 
 タスク
@@ -60,7 +65,14 @@ const req = {
 [00:50.710]毎週金曜日に来ていた
 [00:53.970]男と暮らすのだろう
 [01:03.840]「一度栄えし者でも
-[01:07.370]必ずや衰えゆく」`
+[01:07.370]必ずや衰えゆく」
+[01:10.740]その意味を知る時を迎え
+[01:13.990]足を踏み入れたは歓楽街
+[01:17.440]消えて行った女を憎めど夏は今
+[01:24.480]女王と云う肩書きを誇らしげに掲げる
+[01:58.370]女に成ったあたしが
+[02:01.950]売るのは自分だけで
+[02:05.440]同情を欲したときに`
     },
     {
       "role": "assistant",
@@ -77,7 +89,14 @@ const req = {
 [00:50.710] 毎週（まいしゅう） 金曜日（きんようび）に 来（き）ていた
 [00:53.970] 男（おとこ）と 暮（く）らすのだろう
 [01:03.840] 「 一度（いちど） 栄（さか）えし 者（もの）でも
-[01:07.370] 必（かなら）ずや 衰（おとろ）えゆく」`
+[01:07.370] 必（かなら）ずや 衰（おとろ）えゆく」
+[01:10.740] その 意味（いみ）を 知（し）る 時（とき）を 迎（むか）え
+[01:13.990] 足（あし）を 踏（ふ）み 入（い）れたは 歓楽街（かんらくがい）
+[01:17.440] 消（き）えて 行（い）った 女（おんな）を 憎（にく）めど 夏（なつ）は 今（いま）
+[01:24.480] 女王（じょおう）と 云（い）う 肩書（かたが）きを 誇（ほこ）らしげに 掲（かか）げる
+[01:58.370] 女（おんな）に 成（な）ったあたしが
+[02:01.950] 売（う）るのは 自分（じぶん）だけで
+[02:05.440] 同情（どうじょう）を 欲（ほ）したときに`
     },
     {
       role: "user",
@@ -87,7 +106,7 @@ const req = {
   response_format: {
     type: "text" // We explicitly want text output
   },
-  max_completion_tokens: 2048,
+  max_completion_tokens: 8192,
   frequency_penalty: 0,
   presence_penalty: 0,
   store: false
@@ -159,7 +178,7 @@ function parseFuriganaText(text: string): LyricLine[] {
  * Let the AI parse the raw lyrics into furigana-formatted text,
  * then use the local parser to convert that text into LyricLine[] structure.
  */
-export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
+export async function aiParseLyricsRaw(raw: string): Promise<LyricLine[]> {
   const thisReq = JSON.parse(JSON.stringify(req))
   thisReq.messages[thisReq.messages.length - 1].content = raw
   
@@ -168,6 +187,14 @@ export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
   
   // Clean up potential markdown blocks
   const responseText = text.replace(/```/g, '').trim()
+  console.log('AI response text:\n', responseText)
+  console.log(`Finish reason: ${response.choices[0].finish_reason}`)
+  // If response does not contain any timestamp, something is wrong
+  if (!/\[\d+:\d+\.\d+\]/.test(responseText)) {
+    console.error('AI response does not contain any timestamps, indicating a failure. Request:', raw)
+    console.error('AI response text:', responseText)
+    throw new Error('AI response parsing failed, no timestamps found.')
+  }
 
   try {
     // Use the new, robust text parser
@@ -177,4 +204,15 @@ export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
     console.error(e)
     throw new Error('Failed to parse AI response text.')
   }
+}
+
+export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
+    // Split into maximum 20 lines per request
+    const lines = raw.split('\n').filter(line => line.trim() !== '')
+    const chunks: string[] = []
+    for (let i = 0; i < lines.length; i += 20) {
+        chunks.push(lines.slice(i, i + 20).join('\n'))
+    }
+    const results = await Promise.all(chunks.map(aiParseLyricsRaw))
+    return results.flat()
 }

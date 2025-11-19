@@ -90,5 +90,6 @@ await getSongsFromPlaylist("13555799996")
 await getSongsFromPlaylist("https://music.163.com/playlist?id=14348145982")
 await getSongsFromPlaylist("https://music.163.com/playlist?id=14392963638")
 await getSongsFromPlaylist("https://music.163.com/playlist?id=580208139")
+await getSongsFromPlaylist("https://music.163.com/playlist?id=17404030548")
 
 // TODO: Filter out non-Japanese songs
