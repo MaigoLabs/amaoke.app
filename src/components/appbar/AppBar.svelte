@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fly, slide } from "svelte/transition";
+  import { fly, slide, fade } from "svelte/transition";
   import { Menu } from "m3-svelte";
   import IconButton from "../IconButton.svelte";
 
@@ -42,9 +42,11 @@
 </div>
 
 {#if children && showMenu}
-  <div class="absolute right-0 p-16px mt-[-16px]" transition:fly={{ duration: 200, y: -10 }}>
-    <Menu>
-      {@render children()}
-    </Menu>
-  </div>  
+  <div class="absolute inset-0 bg-black bg-opacity-20 backdrop-blur-sm z-10" onclick={() => showMenu = false} transition:fade={{ duration: 200 }} aria-hidden="true">
+    <div class="absolute right-0 top-48px p-16px mt-[-16px] z-11" transition:fly={{ duration: 200, y: -10 }}>
+      <Menu>
+        {@render children()}
+      </Menu>
+    </div>
+  </div>
 {/if}
