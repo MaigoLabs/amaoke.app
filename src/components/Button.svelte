@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { Layer } from "m3-svelte";
+
 let { icon, children, ...rest }: {
   icon?: string
   children?: any
@@ -6,7 +8,8 @@ let { icon, children, ...rest }: {
 } = $props();
 </script>
 
-<button class="hbox h-40px rounded-12px px-16px py-10px gap-8px mfg-on-primary-container mbg-inverse-primary m3-font-label-large" {...rest}>
+<button class="hbox h-40px rounded-12px px-16px py-10px gap-8px mfg-on-primary-container mbg-inverse-primary m3-font-label-large relative" {...rest}>
+  <Layer/>
   {#if icon}
     <span class="size-20px {icon}"></span>
   {/if}

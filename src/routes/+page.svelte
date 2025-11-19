@@ -4,6 +4,7 @@
   import SongInfo from "../components/listitem/SongInfo.svelte";
   import type { PageProps } from "./$types";
   import Button from "../components/Button.svelte";
+    import { Layer } from "m3-svelte";
 
   let { data }: PageProps = $props()
 
@@ -36,10 +37,13 @@
     <TitleHeader title="我的歌单"/>
     <div class="p-content hbox gap-8px w-auto overflow-x-auto py-8px">
       {#each data.myPlaylists as playlist}
-        <div class="vbox flex-shrink-0 gap-4px w-96px">
-          <img src="{playlist.coverImgUrl}" alt="" class="size-96px rounded-16px">
+        <a class="vbox flex-shrink-0 gap-4px w-96px relative" href="/playlist/{playlist.id}">
+          <div class="relative rounded-16px overflow-hidden">
+            <img src="{playlist.coverImgUrl}" alt="" class="size-96px">
+            <Layer/>
+          </div>
           <div class="m3-font-label-large truncate">{playlist.name}</div>
-        </div>
+        </a>
       {/each}
     </div>
     <div class="p-content">
@@ -51,7 +55,8 @@
     <TitleHeader title="推荐歌单"/>
     <div class="p-content hbox gap-8px w-auto overflow-x-auto py-8px">
       {#each data.recPlaylists as playlist}
-        <a class="vbox flex-shrink-0 p-8px gap-8px rounded-12px mbg-surface-container-high" href="/playlist/{playlist.id}">
+        <a class="vbox flex-shrink-0 p-8px gap-8px rounded-12px mbg-surface-container-high relative" href="/playlist/{playlist.id}">
+          <Layer/>
           <img src="{playlist.coverImgUrl}" alt="" class="size-116px rounded-8px">
           <div>
             <div class="m3-font-title-small font-bold truncate">{playlist.name}</div>

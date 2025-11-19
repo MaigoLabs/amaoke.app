@@ -82,6 +82,7 @@ export const getLyricsRaw = cached('lyrics_raw',
 export const getLyricsProcessed = cached('lyrics_processed',
     async (songId: number) => {
         const raw = await getLyricsRaw(songId)
+        console.log(`Processing lyrics for song ${songId}`)
         return aiParseLyrics(raw.lrc.lyric)
     })
 

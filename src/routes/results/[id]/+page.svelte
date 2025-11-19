@@ -99,7 +99,7 @@
 
 <AppBar title={data.brief.name} sub={artistAndAlbum(data.brief)} />
 
-<div class="vbox gap-16px p-content">
+<div class="vbox gap-16px p-content flex-1 overflow-y-auto">
   <div class="hbox gap-12px items-end! h-48px">
     <div class="m3-font-headline-small">练习结果</div>
   </div>
@@ -124,7 +124,7 @@
 
   <div class="flex-1"></div>
 
-  <div class="hbox justify-end pt-8px">
-    <Button onclick={() => goto(`/song/${songId}`)}>下一首</Button>
+  <div class="hbox justify-end pt-8px pb-16px w-full">
+    <Button w-full onclick={() => goto(`/song/${songId}`)}>下一首</Button>
   </div>
 </div>

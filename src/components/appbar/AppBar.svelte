@@ -25,10 +25,10 @@
   {:else}
     <IconButton icon="i-material-symbols:arrow-back-rounded" onclick={() => history.back()} aria-label="Account" />
   {/if}
-  <div class="vbox flex-1">
-    <div class="m3-font-title-large">{title}</div>
+  <div class="vbox flex-1 min-w-0">
+    <div class="m3-font-title-large truncate">{title}</div>
     {#if sub}
-      <div class="m3-font-body-small mfg-on-surface-variant">{sub}</div>
+      <div class="m3-font-body-small mfg-on-surface-variant truncate">{sub}</div>
     {/if}
   </div>
 
