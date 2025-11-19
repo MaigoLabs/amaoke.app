@@ -2,6 +2,8 @@ import * as ne from '@neteasecloudmusicapienhanced/api'
 import { aiParseLyrics } from './tools/lyrics'
 import type { NeteaseSongBrief } from '../../shared/types'
 import { db } from './db'
+import { franc } from 'franc'
+import { error } from '@sveltejs/kit'
 
 /**
  * Functional wrapper to cache API results to MongoDB.
@@ -73,15 +75,20 @@ export async function getSongsFromPlaylist(ref: string): Promise<{meta: any, son
     return {meta: plData.playlist, songs: plData.playlist.tracks.map(parseBrief)}
 }
 
-interface NeteaseLyricsResponse { lrc: { lyric: string } }
+interface NeteaseLyricsResponse { lrc: { lyric: string }, lang: string }
 
 export const getLyricsRaw = cached('lyrics_raw',
-    async (songId: number) => (await ne.lyric({ id: songId })).body as any as NeteaseLyricsResponse
+    async (songId: number) => {
+        const raw = (await ne.lyric({ id: songId })).body as any as NeteaseLyricsResponse
+        const lang = franc(raw.lrc.lyric)
+        return { ...raw, lang }
+    }
 )
 
 export const getLyricsProcessed = cached('lyrics_processed',
     async (songId: number) => {
         const raw = await getLyricsRaw(songId)
+        if (raw.lang !== 'ja') throw error(400, 'Lyrics are not in Japanese')
         console.log(`Processing lyrics for song ${songId}`)
         return aiParseLyrics(raw.lrc.lyric)
     })
