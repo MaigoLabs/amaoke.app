@@ -1,1 +1,0 @@
-const DATA_DIR = './data'

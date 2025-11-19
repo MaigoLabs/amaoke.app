@@ -1,5 +1,5 @@
 import * as ne from '@neteasecloudmusicapienhanced/api'
-import { aiParseLyrics } from '../../shared/lyricsParse'
+import { aiParseLyrics } from './tools/lyrics'
 import type { NeteaseSongBrief } from '../../shared/types'
 import { db } from './db'
 

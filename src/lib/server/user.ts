@@ -1,5 +1,6 @@
 import { db } from "./db"
 import type { UserDocument, UserData } from "../../shared/types.ts";
+import { error } from "@sveltejs/kit";
 
 const users = db.collection<UserDocument>("users")
 
@@ -23,9 +24,10 @@ export async function createUser(registUA: string): Promise<string> {
  * @returns User document or null if not found
  */
 export const getUserBySession = (session: string) => users.findOne({ sessions: session })
-export async function login(session: string): Promise<UserDocument> {
+export async function login(session?: string): Promise<UserDocument> {
+  if (!session) throw error(401, 'Invalid session')
   const user = await getUserBySession(session)
-  if (!user) throw new Error('Invalid session')
+  if (!user) throw error(401, 'Invalid session')
   return user
 }
 

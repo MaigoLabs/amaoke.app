@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import type { LyricLine, LyricSegment } from './types'
+import type { LyricLine, LyricSegment } from '../../../shared/types'
 
 // Please put OPENAI_API_KEY in your environment variables.
 const client = new OpenAI()
