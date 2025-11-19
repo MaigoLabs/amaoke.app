@@ -8,7 +8,13 @@ export async function post(endpoint: string, data: any) {
         headers: {
             'Content-Type': 'application/json'
         }
-    }).then(res => res.json())
+    }).then(async res => {
+        if (res.status >= 400) throw new Error(`错误 ${res.status}：${await res.text()}`)
+        return res.json()
+    }).catch(e => {
+        console.error(e)
+        throw e
+    })
 }
 
 export const API = {

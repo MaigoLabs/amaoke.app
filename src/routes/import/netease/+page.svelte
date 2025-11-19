@@ -4,6 +4,7 @@
   import Button from "../../../components/Button.svelte"
   import type { NeteaseSongBrief } from "../../../shared/types"
   import { API } from "../../../lib/client"
+    import ErrorDialog from "../../../components/status/ErrorDialog.svelte";
 
   let link = $state('')
 
@@ -18,6 +19,8 @@
     total: songs.length,
     done: songs.filter(song => song.status !== 'importing').length
   })
+  let error = $state('')
+  let id = $state('')
 
   function statusToIcon(stat: string): string {
     switch (stat) {
@@ -34,51 +37,33 @@
     status = 'importing'
     songs = []
 
-    try {
-      const data = await API.netease.startImport(link)
-      
-      if (data.error) {
-        alert(data.error)
-        status = 'error'
-        return
-      }
-
-      const importId = data.id
-      songs = data.songs
-
-      pollProgress(importId)
-    } catch (e) {
-      console.error(e)
-      status = 'error'
-      alert('Failed to start import')
-    }
-  }
-
-  async function pollProgress(id: string) {
-    const interval = setInterval(async () => {
-      try {
-        const data = await API.netease.checkProgress(id)
-
-        if (data.error) {
-          clearInterval(interval)
-          return
-        }
-
+    API.netease.startImport(link)
+      .catch(e => error = e.message)
+      .then(data => {
+        id = data.playlistId
         songs = data.songs
 
-        if (data.done) {
-          clearInterval(interval)
-          status = 'success'
-        }
-      } catch (e) {
-        console.error(e)
-        clearInterval(interval)
-      }
-    }, 1000)
+        const interval = setInterval(() => {
+          API.netease.checkProgress(data.id)
+            .catch(e => {
+              error = e.message
+              clearInterval(interval)
+            })
+            .then(data => {
+              songs = data.songs
+              if (data.done) {
+                clearInterval(interval)
+                status = 'success'
+              }
+            })
+        }, 1000)
+      })
   }
 </script>
 
 <AppBar title="从网易云导入"/>
+
+<ErrorDialog error={error} />
 
 <div class="vbox gap-16px flex-1 min-h-0">
   <div class="m3-font-body-medium mfg-on-surface-variant py-12px p-content">
@@ -113,6 +98,12 @@
   </div>
 
   <div class="py-16px p-content">
-    <Button big icon="i-material-symbols:download" onclick={startImport} disabled={status === 'importing'}>开始导入</Button>
+    {#if status === 'idle'}
+      <Button big icon="i-material-symbols:download" onclick={startImport}>开始导入</Button>
+    {:else if status === 'success'}
+      <a href="/playlist/{id}">
+        <Button big icon="i-material-symbols:right-arrow">查看歌单</Button>
+      </a>
+    {/if}
   </div>
 </div>
