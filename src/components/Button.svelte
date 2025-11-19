@@ -2,6 +2,7 @@
 let { icon, children, ...rest }: {
   icon?: string
   children?: any
+  [key: string]: any
 } = $props();
 </script>
 
