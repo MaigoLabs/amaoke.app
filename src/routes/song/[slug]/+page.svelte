@@ -7,7 +7,8 @@
   import { isKana, isKanji, toHiragana, toKatakana } from "wanakana";
   import { composeList, fuzzyEquals } from "./IMEHelper.ts";
   import MenuItem from "../../../components/material3/MenuItem.svelte";
-  import "scope-extensions-js";
+  import "../../../shared/ext.ts"
+  import { browser } from "$app/environment";
 
   let { data }: PageProps = $props()
 
@@ -19,11 +20,12 @@
   let inp = $state("")
 
   // Settings stored in localStorage
-  let settings = $state(localStorage.getItem('kashi-dash-settings')?.let(it => JSON.parse(it)) ?? {
+  let settingDefaults = {
     isFuri: true,
     allKata: false
-  })
-  $effect(() => localStorage.setItem('kashi-dash-settings', JSON.stringify(settings)))
+  }
+  let settings = $state(browser ? (localStorage.getItem('kashi-dash-settings')?.let((it) => JSON.parse(it)) ?? settingDefaults) : settingDefaults)
+  $effect(() => { if (browser) localStorage.setItem('kashi-dash-settings', JSON.stringify(settings)) })
   const preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
 
   // Process each line into segments with swi (start word index) and kanji/kana
