@@ -5,6 +5,7 @@
   import { onMount } from "svelte";
   import type { LyricSegment } from "../../../shared/types.ts";
   import { isKana, isKanji, toHiragana } from "wanakana";
+  import { composeList, fuzzyEquals } from "./IMEHelper.ts";
 
   let { data }: PageProps = $props()
 
@@ -43,25 +44,6 @@
     hiddenInput.focus()
   })
 
-  // Fuzzy matching rules
-  const fuzzyMatch = [['わ', 'は'], ['を', 'お']]
-  function fuzzyEquals(kana1: string, kana2: string): string {
-    [kana1, kana2] = [toHiragana(kana1), toHiragana(kana2)]
-    if (kana1 === kana2) return 'right'
-    if (fuzzyMatch.some(([a, b]) => (kana1 === a && kana2 === b) || (kana1 === b && kana2 === a))) return 'fuzzy'
-    return 'wrong'
-  }
-
-  // List of characters need to be composed instead of directly typed
-  const composeList = [
-    'っ', 'ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ',
-    'が', 'ぎ', 'ぐ', 'げ', 'ご',
-    'ざ', 'じ', 'ず', 'ぜ', 'ぞ',
-    'だ', 'ぢ', 'づ', 'で', 'ど',
-    'ば', 'び', 'ぶ', 'べ', 'ぼ',
-    'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ'
-  ]
-
   // On input changed: Convert to hiragana, compare with current position, update states
   function inputChanged(input: string, isComposed: boolean) {
     console.log(`input changed: ${input}`)
@@ -82,10 +64,7 @@
 
       // Move index
       wi += 1
-      if (wi >= cLine.totalLen) {
-        li += 1
-        wi = 0
-      }
+      if (wi >= cLine.totalLen) { li += 1; wi = 0 }
       inp = inp.slice(1)
     }
   }
