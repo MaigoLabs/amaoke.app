@@ -1,11 +1,12 @@
 <script lang="ts">
   import AppBar from "../../../components/appbar/AppBar.svelte";
   import type { PageProps } from "./$types"
-  import { LinearProgress, MenuItem } from "m3-svelte";
+  import { LinearProgress } from "m3-svelte";
   import { onMount } from "svelte";
   import type { LyricSegment } from "../../../shared/types.ts";
-  import { isKana, isKanji, toHiragana } from "wanakana";
+  import { isKana, isKanji, toHiragana, toKatakana } from "wanakana";
   import { composeList, fuzzyEquals } from "./IMEHelper.ts";
+  import MenuItem from "../../../components/material3/MenuItem.svelte";
 
   let { data }: PageProps = $props()
 
@@ -15,6 +16,12 @@
 
   let hiddenInput: HTMLInputElement
   let inp = $state("")
+  // TODO: Persist settings
+  let settings = $state({
+    isFuri: true,
+    allKata: false
+  })
+  const preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
 
   // Process each line into segments with swi (start word index) and kanji/kana
   type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
@@ -45,10 +52,8 @@
   let now = $state(Date.now())
 
   onMount(() => {
-    hiddenInput.focus()
-    const interval = setInterval(() => {
-      if (startTime) now = Date.now()
-    }, 1000)
+    hiddenInput.focus()  // TODO: auto focus when focus lost
+    const interval = setInterval(() => { if (startTime) now = Date.now() }, 1000)
     return () => clearInterval(interval)
   })
 
@@ -87,6 +92,7 @@
 
   $effect(() => inputChanged(inp, false))
   
+  // Computed stats
   let flat = $derived(states.flat())
   let progress = $derived(Math.min(100, Math.floor((flat.filter(s => s !== 'unseen').length / flat.length) * 100)))
   let totalTyped = $derived(flat.filter(s => s !== 'unseen').length)
@@ -94,7 +100,8 @@
 </script>
 
 <AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album}>
-  <MenuItem onclick={() => console.log("clicked")}>Mewo</MenuItem>
+  <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
+  <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
 </AppBar>
 
 <LinearProgress percent={progress} />
@@ -126,15 +133,15 @@
       {#each line.parts as seg}
         {#if !seg.kanji}
           {#each seg.kana as char, c}
-            <span class="{states[l][seg.swi + c]}">{char}</span>
+            <span class="{states[l][seg.swi + c]}">{preprocessKana(char)}</span>
           {/each}
         {:else}
           <ruby>
-            <span class="{getKanjiState(l, seg)}">{seg.kanji}</span><rt>
+            <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
               {#each seg.kana as char, c}
-                <span class="{states[l][seg.swi + c]}">{char}</span>
+                <span class="{states[l][seg.swi + c]}">{preprocessKana(char)}</span>
               {/each}
-            </rt>
+            </rt>{/if}
           </ruby>
         {/if}
       {/each}
