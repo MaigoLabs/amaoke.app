@@ -9,6 +9,7 @@
   import MenuItem from "../../../components/material3/MenuItem.svelte";
   import "../../../shared/ext.ts"
   import { saveUserData } from "$lib/user";
+  import { animateCaret } from "./animation.ts";
 
   let { data }: PageProps = $props()
 
@@ -101,32 +102,9 @@
 
   $effect(() => inputChanged(inp, false))
 
-  // Animate caret position
+  // Caret: Typing indicator
   let caret: HTMLDivElement
-  $effect(() => {
-    li; wi;
-    tick().then(() => {
-      const el = (document.querySelector('.here') as HTMLElement)
-      const update = () => {
-        const rect = el?.getBoundingClientRect()
-        if (!rect) return
-        caret.style.left = `${rect.left + window.scrollX}px`
-        caret.style.top = `${rect.top + window.scrollY}px`
-        caret.style.height = `${rect.height}px`
-      }
-      update()
-
-      // Keep updating for 300ms to handle CSS transitions (font-size change)
-      let start = performance.now()
-      const frame = () => {
-        if (performance.now() - start > 300) return
-        update()
-        requestAnimationFrame(frame)
-      }
-      requestAnimationFrame(frame)
-    })
-  })
-
+  $effect(() => { li; wi; animateCaret(caret) })
   
   // Computed stats
   let flat = $derived(states.flat())
