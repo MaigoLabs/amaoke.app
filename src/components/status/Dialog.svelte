@@ -13,12 +13,12 @@
   } = $props()
 
   let buttons = $derived(p.buttons ?? [{
-    text: '取消', onclick: () => open = false
+    text: '关闭', onclick: () => open = false
   }])
 </script>
 
 {#if open}
-<div class="cbox absolute inset-0 drop-shadow-xl" transition:fade>
+<div class="cbox absolute inset-0 drop-shadow-xl" transition:fade={{ duration: 200 }}>
   <div class="vbox rounded-28px mbg-surface-container-high w-312px">
     <div class="vbox gap-16px p-26px pb-0">
       <div class="m3-font-headline-small mfg-on-surface">{p.title}</div>
