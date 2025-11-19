@@ -1,7 +1,7 @@
 import { error, json } from '@sveltejs/kit';
-import { startImport } from '$lib/server/neteaseImport';
 import { login } from '$lib/server/user';
 import type { RequestHandler } from './$types';
+import { startImport } from '$lib/server/songs';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
     const { link } = await request.json();
@@ -11,7 +11,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     if (!user) throw error(401, 'Unauthorized');
 
     try {
-        return json(await startImport(link, user))
+        return json(await startImport(link, user._id))
     } catch (e) {
         console.error(e)
         throw error(500, 'Failed to start import')

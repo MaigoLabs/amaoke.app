@@ -187,7 +187,8 @@ export async function aiParseLyricsRaw(raw: string): Promise<LyricLine[]> {
   
   // Clean up potential markdown blocks
   const responseText = text.replace(/```/g, '').trim()
-  console.log('AI response text:\n', responseText)
+  console.log('AI request:\n', raw)
+  console.log('AI response:\n', responseText)
   console.log(`Finish reason: ${response.choices[0].finish_reason}`)
   // If response does not contain any timestamp, something is wrong
   if (!/\[\d+:\d+\.\d+\]/.test(responseText)) {

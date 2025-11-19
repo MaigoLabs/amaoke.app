@@ -1,8 +1,9 @@
 <script lang="ts">
-  import type { NeteaseSongBrief } from "../../shared/types.ts";
+  import { artistAndAlbum } from "../../shared/tools.ts";
+  import type { NeteaseSong } from "../../shared/types.ts";
   import ImageListItem from "./ImageListItem.svelte";
 
-  let { info }: { info: NeteaseSongBrief } = $props();
+  let { info }: { info: NeteaseSong } = $props();
 </script>
 
-<ImageListItem photoUrl={info.albumPic} title={info.name} text={`${info.artists.map(a => a.name).join(", ")} - ${info.album}`} />
+<ImageListItem photoUrl={info.al.picUrl} title={info.name} text={artistAndAlbum(info)} />

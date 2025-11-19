@@ -10,13 +10,26 @@ export interface Song {
     lyrics: LyricLine[]
 }
 
-export interface NeteaseSongBrief { 
+export interface NeteaseSong { 
     id: number
     name: string
-    album: string
-    albumId: number
-    albumPic: string
-    artists: { id: number, name: string }[]
+    al: {
+        id: number
+        name: string
+        picUrl: string
+    }
+    ar: { id: number, name: string }[]
+    dt: number
+}
+
+export interface NeteasePlaylist {
+    id: number
+    name: string
+    coverImgUrl: string
+    creator: {
+        nickname: string
+    }
+    tracks: NeteaseSong[]
 }
 
 export interface ProcessedLyricLine {

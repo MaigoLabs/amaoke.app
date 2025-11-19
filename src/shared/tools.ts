@@ -1,3 +1,3 @@
-import type { NeteaseSongBrief } from "./types";
+import type { NeteaseSong } from "./types";
 
-export const artistAndAlbum = (song: NeteaseSongBrief) => `${song.artists.map(it => it.name).join(', ')} - ${song.album}`
+export const artistAndAlbum = (song: NeteaseSong) => `${song.ar.map(it => it.name).join(', ')} - ${song.al.name}`

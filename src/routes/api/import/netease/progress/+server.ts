@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit';
-import { getSession } from '$lib/server/neteaseImport';
+import { getSession } from '$lib/server/songs';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {

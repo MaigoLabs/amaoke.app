@@ -97,7 +97,7 @@
   });
 </script>
 
-<AppBar title={data.brief.name} sub={artistAndAlbum(data.brief)} />
+<AppBar title={data.song.name} sub={artistAndAlbum(data.song)} />
 
 <div class="vbox gap-16px p-content flex-1 overflow-y-auto">
   <div class="hbox gap-12px items-end! h-48px">

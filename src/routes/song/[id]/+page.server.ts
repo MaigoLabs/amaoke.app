@@ -1,10 +1,9 @@
 import type { PageServerLoad } from './$types'
-import { getLyricsProcessed, getSongMeta, listRecPlaylists, parseBrief } from "$lib/server/songs.ts";
+import { getLyricsProcessed, getSongRaw, listRecPlaylists } from "$lib/server/songs.ts";
 
 export const load: PageServerLoad = async ({ params }) => {
   const songId = +params.id
-  const raw = await getSongMeta(songId)
-  const brief = parseBrief(raw)
+  const song = await getSongRaw(songId)
   const lrc = await getLyricsProcessed(songId)
-  return { raw, brief, lrc }
+  return { song, lrc }
 }

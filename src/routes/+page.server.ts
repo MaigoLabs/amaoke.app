@@ -1,9 +1,9 @@
 // import { log } from 'console';
-import { getSongMeta, listMyPlaylists, listRecPlaylists, parseBrief } from '../lib/server/songs';
+import { listMyPlaylists, listRecPlaylists } from '../lib/server/songs';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params, parent }) => {
-  let last = parseBrief(await getSongMeta(25723366))
+  let last = undefined
   const { user } = await parent()
   let myPlaylists = await listMyPlaylists(user)
   let recPlaylists = await listRecPlaylists()

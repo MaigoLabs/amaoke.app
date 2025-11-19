@@ -7,8 +7,8 @@
 
   let { data }: PageProps = $props()
 
-  let meta = $derived(data.playlist.meta)
-  let songs = $derived(data.playlist.songs)
+  let meta = $derived(data.playlist)
+  let songs = $derived(data.playlist.tracks)
   let isFavorite = $derived(data.user.data.myPlaylists?.includes(meta.id) ?? false)
 
   async function toggleFavorite() {
@@ -44,11 +44,11 @@
   </div>
 </div>
 
-<div class="vbox gap-12px">
-  <div class="hbox gap-12px items-end! h-48px p-content">
-    <div class="m3-font-headline-small">歌曲列表</div>
-    <div class="m3-font-label-small pb-3px">{songs.length} 首歌曲</div>
-  </div>
+<div class="hbox gap-12px items-end! h-48px p-content">
+  <div class="m3-font-headline-small">歌曲列表</div>
+  <div class="m3-font-label-small pb-3px">{songs.length} 首歌曲</div>
+</div>
+<div class="vbox gap-12px mt-12px min-h-0 overflow-y-auto">
   {#each songs as song, index}
     <a href="/song/{song.id}" class="p-content">
       <SongInfo info={song} />

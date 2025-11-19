@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { getSongsFromPlaylist, listRecPlaylists } from "$lib/server/songs.ts";
+import { getPlaylist } from "$lib/server/songs.ts";
 
 export const load: PageServerLoad = async ({ params }) => ({
-  playlist: await getSongsFromPlaylist(params.id)
+  playlist: await getPlaylist(params.id)
 })

@@ -2,14 +2,14 @@
   import { LinearProgress, TextFieldOutlined } from "m3-svelte"
   import AppBar from "../../../components/appbar/AppBar.svelte"
   import Button from "../../../components/Button.svelte"
-  import type { NeteaseSongBrief } from "../../../shared/types"
+  import type { NeteaseSong } from "../../../shared/types"
   import { API } from "../../../lib/client"
     import ErrorDialog from "../../../components/status/ErrorDialog.svelte";
 
   let link = $state('')
 
   interface SongImportStatus {
-    song: NeteaseSongBrief
+    song: NeteaseSong
     status: 'importing' | 'success' | 'failed-not-japanese' | 'failed-unknown'
   }
 
@@ -90,7 +90,7 @@
           <span class="{statusToIcon(song.status)} text-xl"></span>
           <div class="vbox">
             <span class="m3-font-title-medium">{song.song.name}</span>
-            <span class="m3-font-body-small mfg-on-surface-variant">{song.song.artists.map(a => a.name).join(', ')}</span>
+            <span class="m3-font-body-small mfg-on-surface-variant">{song.song.ar.map(a => a.name).join(', ')}</span>
           </div>
         </div>
       {/each}

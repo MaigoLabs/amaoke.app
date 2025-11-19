@@ -146,16 +146,16 @@
   // Result is stored on the server and is fetched from a separate results page
   async function submitResult() {
     const res = await API.saveResult({
-      songId: data.raw.id,
+      songId: data.song.id,
       endTime: Date.now(),
-      realTimeFactor: (Date.now() - startTime) / (data.raw.dt / 1000),
+      realTimeFactor: (Date.now() - startTime) / (data.song.dt / 1000),
       totalTyped, totalRight, startTime, statsHistory
     })
     goto(`/results/${res.id}`)
   }
 </script>
 
-<AppBar title={data.brief.name} sub={artistAndAlbum(data.brief)}>
+<AppBar title={data.song.name} sub={artistAndAlbum(data.song)}>
   <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
   <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
