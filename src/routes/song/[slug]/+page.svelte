@@ -1,7 +1,7 @@
 <script lang="ts">
   import AppBar from "../../../components/appbar/AppBar.svelte";
   import type { PageProps } from "./$types"
-  import { LinearProgress } from "m3-svelte";
+  import { LinearProgress, MenuItem } from "m3-svelte";
   import { onMount } from "svelte";
   import type { LyricSegment } from "../../../shared/types.ts";
   import { isKana, isKanji, toHiragana } from "wanakana";
@@ -93,12 +93,12 @@
   let totalRight = $derived(flat.filter(s => s === 'right' || s === 'fuzzy').length)
 </script>
 
-<AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album} right={[
-  // TODO
-  {icon: "i-material-symbols:more-vert", onclick: () => alert('More clicked')}
-]} />
+<AppBar title={data.brief.name} sub={data.brief.artists.map(a => a.name).join(", ") + " - " + data.brief.album}>
+  <MenuItem onclick={() => console.log("clicked")}>Mewo</MenuItem>
+</AppBar>
 
 <LinearProgress percent={progress} />
+
 
 <input bind:this={hiddenInput} oncompositionend={() => inputChanged(inp, true)} bind:value={inp} class="absolute opacity-0 top-[-9999px] left-[-9999px]" />
 

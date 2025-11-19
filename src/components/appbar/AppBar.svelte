@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { fly, slide } from "svelte/transition";
+  import { Menu } from "m3-svelte";
   import IconButton from "../IconButton.svelte";
 
   interface Icon {
@@ -6,12 +8,15 @@
     onclick: () => void
   }
 
-  let { title, sub, account, right }: {
+  let { title, sub, account, right, children }: {
     title?: string
     sub?: string
     account?: () => void
     right?: Icon[]
+    children?: any
   } = $props()
+
+  let showMenu = $state(false)
 </script>
 
 <div class="hbox h-64px">
@@ -30,4 +35,16 @@
   {#each right as item}
     <IconButton icon={item.icon} onclick={item.onclick} />
   {/each}
+
+  {#if children}
+    <IconButton icon="i-material-symbols:more-vert" onclick={() => showMenu = !showMenu} />
+  {/if}
 </div>
+
+{#if children && showMenu}
+  <div class="absolute right-0 p-16px mt-[-16px]" transition:fly={{ duration: 200, y: -10 }}>
+    <Menu>
+      {@render children()}
+    </Menu>
+  </div>  
+{/if}
