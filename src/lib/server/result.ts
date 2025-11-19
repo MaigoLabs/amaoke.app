@@ -1,3 +1,4 @@
+import type { ResultDocument } from "../../shared/types"
 import { db } from "./db"
 import { ObjectId } from "mongodb"
 
