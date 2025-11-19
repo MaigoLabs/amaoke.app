@@ -49,9 +49,10 @@
     console.log(`input changed: ${input}`)
     // Convert to hiragana
     inp = toHiragana(inp, { IMEMode: true })
+    const imeUsed = input !== inp
 
     // While it has kana or kanji, pop from input
-    while (inp.length && (isKana(inp[0]) || isKanji(inp[0]))) {
+    while (inp && (isKana(inp[0]) || isKanji(inp[0]))) {
       let char = inp[0]
 
       // Check if it matches current character
@@ -59,13 +60,19 @@
       let cSeg = cLine.parts.find(seg => wi >= seg.swi && wi < seg.swi + seg.kana.length)!
       let exp = cSeg.kana[wi - cSeg.swi]
       let res = fuzzyEquals(char, exp)
-      if (res === 'wrong' && !isComposed && composeList.includes(exp)) return // Need to compose, stop here
+      if (res === 'wrong' && !imeUsed && !isComposed && composeList.includes(exp)) return // Need to compose, stop here
       states[li][wi] = res
 
       // Move index
       wi += 1
       if (wi >= cLine.totalLen) { li += 1; wi = 0 }
       inp = inp.slice(1)
+    }
+
+    // Prevent IME stuck
+    if (imeUsed && inp && !isKana(inp[0]) && inp.split('').some(c => isKana(c)) ) {
+      console.log("Clearing input to prevent IME stuck")
+      inp = ""
     }
   }
 
@@ -83,12 +90,13 @@
 <input bind:this={hiddenInput} oncompositionend={() => {
   inputChanged(inp, true)
   console.log("Event: input")
-}} bind:value={inp} autofocus />
-<!--       class="absolute opacity-0 top-[-9999px] left-[-9999px]"-->
+}} bind:value={inp} class="absolute opacity-0 top-[-9999px] left-[-9999px]" />
 
-<div class="vbox gap-12px py-32px" lang="ja-JP">
+<div class="vbox gap-12px py-32px lrc-wrapper" lang="ja-JP">
   {#each processedLrc as line, l}
-    <div class="lrc p-content text-center m3-font-body-large" class:active={l === li}>
+    <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
+      onclick={() => hiddenInput.focus()} 
+      onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hiddenInput.focus(); } }}>
       {#each line.parts as seg}
         {#if !seg.kanji}
           {#each seg.kana as char, c}
@@ -109,12 +117,18 @@
 </div>
 
 <style lang="sass">
+  .lrc-wrapper
+    *
+      transition: font-size 0.2s ease-in-out
+
   .lrc
     color: #8b8b8b
     font-weight: 500
     font-size: 20px
+    opacity: 0.6
 
     &.active
+      opacity: 1
       font-size: 24px
       color: rgb(var(--m3-scheme-on-surface))
       //background-color: rgba(var(--m3-scheme-secondary-container) / 0.5)
