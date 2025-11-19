@@ -14,5 +14,10 @@ export async function post(endpoint: string, data: any) {
 export const API = {
     post,
     saveUserData: async (data: Partial<UserData>) => await post('/api/user', data),
-    saveResult: async (data: Omit<ResultDocument, "_id" | "createdAt">) => await post('/api/result', data)
+    saveResult: async (data: Omit<ResultDocument, "_id" | "createdAt">) => await post('/api/result', data),
+    
+    netease: {
+        startImport: async (link: string) => await post('/api/import/netease/start', { link }),
+        checkProgress: async (id: string) => await post('/api/import/netease/progress', { id })
+    }
 }

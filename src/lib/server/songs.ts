@@ -88,7 +88,7 @@ export const getLyricsRaw = cached('lyrics_raw',
 export const getLyricsProcessed = cached('lyrics_processed',
     async (songId: number) => {
         const raw = await getLyricsRaw(songId)
-        if (raw.lang !== 'ja') throw error(400, 'Lyrics are not in Japanese')
+        if (raw.lang !== 'jpn') throw error(400, 'Lyrics are not in Japanese')
         console.log(`Processing lyrics for song ${songId}`)
         return aiParseLyrics(raw.lrc.lyric)
     })
