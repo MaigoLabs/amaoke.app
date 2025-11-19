@@ -7,6 +7,7 @@
   import { isKana, isKanji, toHiragana, toKatakana } from "wanakana";
   import { composeList, fuzzyEquals } from "./IMEHelper.ts";
   import MenuItem from "../../../components/material3/MenuItem.svelte";
+  import "scope-extensions-js";
 
   let { data }: PageProps = $props()
 
@@ -16,11 +17,13 @@
 
   let hiddenInput: HTMLInputElement
   let inp = $state("")
-  // TODO: Persist settings
-  let settings = $state({
+
+  // Settings stored in localStorage
+  let settings = $state(localStorage.getItem('kashi-dash-settings')?.let(it => JSON.parse(it)) ?? {
     isFuri: true,
     allKata: false
   })
+  $effect(() => localStorage.setItem('kashi-dash-settings', JSON.stringify(settings)))
   const preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
 
   // Process each line into segments with swi (start word index) and kanji/kana
@@ -52,9 +55,16 @@
   let now = $state(Date.now())
 
   onMount(() => {
-    hiddenInput.focus()  // TODO: auto focus when focus lost
+    // Auto focus & refocus
+    hiddenInput.focus()
+    const onBlur = () => setTimeout(() => hiddenInput?.focus(), 10)
+    hiddenInput.addEventListener('blur', onBlur)
+
     const interval = setInterval(() => { if (startTime) now = Date.now() }, 1000)
-    return () => clearInterval(interval)
+    return () => {
+      clearInterval(interval)
+      hiddenInput?.removeEventListener('blur', onBlur)
+    }
   })
 
   // On input changed: Convert to hiragana, compare with current position, update states
