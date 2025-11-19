@@ -48,7 +48,7 @@
     hiddenInput.focus()
     const interval = setInterval(() => {
       if (startTime) now = Date.now()
-    })
+    }, 1000)
     return () => clearInterval(interval)
   })
 
