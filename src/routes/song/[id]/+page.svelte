@@ -29,7 +29,7 @@
   const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
-  let processedLrc: ProcLrcLine[] = data.lrc.map(line => processLrcLine(line.lyric)).slice(0, 2)
+  let processedLrc: ProcLrcLine[] = data.lrc.map(line => processLrcLine(line.lyric))
 
   // State tracking for each kana character: UNSEEN, RIGHT, WRONG
   let states = $state(processedLrc.map(line => new Array(line.totalLen).fill('unseen')))
@@ -73,14 +73,29 @@
     inp = toHiragana(inp, { IMEMode: true })
     const imeUsed = input !== inp
 
+    function findLoc() {
+      let cLine = processedLrc[li]
+      let cSeg = cLine.parts.find(seg => wi >= seg.swi && wi < seg.swi + seg.kana.length)!
+      let exp = cSeg.kana[wi - cSeg.swi]
+      return { cLine, cSeg, exp }
+    }
+
+    function incr(cLine: ProcLrcLine) {
+      wi += 1
+      if (wi >= cLine.totalLen) {
+        li += 1;
+        wi = 0
+        if (li >= processedLrc.length) submitResult()
+      }
+      return true
+    }
+
     // While it has kana or kanji, pop from input
     while (inp && (isKana(inp[0]) || isKanji(inp[0]))) {
       let char = inp[0]
 
       // Check if it matches current character
-      let cLine = processedLrc[li]
-      let cSeg = cLine.parts.find(seg => wi >= seg.swi && wi < seg.swi + seg.kana.length)!
-      let exp = cSeg.kana[wi - cSeg.swi]
+      let { cLine, cSeg, exp } = findLoc()
       let res = fuzzyEquals(char, exp)
       if (res === 'wrong' && !imeUsed && !isComposed && composeList.includes(exp)) return // Need to compose, stop here
       states[li][wi] = res
@@ -92,14 +107,12 @@
       statsHistory.push({ t: Date.now(), cpm, acc })
 
       // Move index
-      wi += 1
-      if (wi >= cLine.totalLen) { 
-        li += 1; 
-        wi = 0 
-        if (li >= processedLrc.length) submitResult()
-      }
+      incr(cLine)
       inp = inp.slice(1)
     }
+
+    // Check next expected character, if it's neither kana nor kanji, skip it
+    while (findLoc().let(({ exp, cLine }) => !isKana(exp) && !isKanji(exp) && incr(cLine)));
 
     // Prevent IME stuck
     if (imeUsed && inp && !isKana(inp[0]) && inp.split('').some(c => isKana(c)) ) {
@@ -162,7 +175,10 @@
       {#each line.parts as seg}
         {#if !seg.kanji}
           {#each seg.kana as char, c}
-            <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l][seg.swi + c])}</span>
+            <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}
+              class:punctuation={!isKana(char) && !isKanji(char)}>
+              {@html preprocessKana(char, states[l][seg.swi + c])}
+            </span>
           {/each}
         {:else}
           <ruby>
@@ -204,4 +220,6 @@
     background-color: rgba(229, 166, 87, 0.1)
   .right
     color: #7b78c2
+  .punctuation
+    opacity: 0.5
 </style>
