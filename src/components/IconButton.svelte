@@ -5,6 +5,6 @@
 </script>
 
 <button class="cbox size-48px relative rounded-8px" {...rest}>
-  <Layer/>
+  <!-- <Layer/> -->
   <span class="size-24px {icon}"></span>
 </button>

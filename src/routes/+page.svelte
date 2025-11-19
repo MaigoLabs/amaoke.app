@@ -16,7 +16,7 @@
   {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
 ]} />
 
-<div class="vbox gap-16px">
+<div class="vbox gap-16px overflow-y-auto">
   {#if data.last}
     <div>
       <TitleHeader title="从暂停的位置继续"/>
@@ -34,7 +34,7 @@
   </div>
 
   <div>
-    <TitleHeader title="我的歌单"/>
+    <a href="/playlists/my"><TitleHeader title="我的歌单"/></a>
     <div class="p-content hbox gap-8px w-auto overflow-x-auto py-8px">
       {#each data.myPlaylists as playlist}
         <a class="vbox flex-shrink-0 gap-4px w-96px relative" href="/playlist/{playlist.id}">
@@ -52,7 +52,7 @@
   </div>
 
   <div>
-    <TitleHeader title="推荐歌单"/>
+    <a href="/playlists/rec"><TitleHeader title="推荐歌单"/></a>
     <div class="p-content hbox gap-8px w-auto overflow-x-auto py-8px">
       {#each data.recPlaylists as playlist}
         <a class="vbox flex-shrink-0 p-8px gap-8px rounded-12px mbg-surface-container-high relative" href="/playlist/{playlist.id}">

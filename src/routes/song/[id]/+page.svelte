@@ -127,6 +127,22 @@
   let caret: HTMLDivElement
   $effect(() => { li; wi; animateCaret(caret) })
 
+  // Auto scroll to active line
+  let lrcWrapper: HTMLDivElement
+  $effect(() => {
+    li
+    if (!lrcWrapper) return
+    tick().then(() => {
+      const activeEl = lrcWrapper.querySelector('.active') as HTMLElement
+      if (activeEl) {
+        lrcWrapper.scrollTo({
+          top: activeEl.offsetTop - lrcWrapper.clientHeight / 2 + activeEl.clientHeight / 2,
+          behavior: 'smooth'
+        })
+      }
+    })
+  })
+
   // Result is stored on the server and is fetched from a separate results page
   async function submitResult() {
     const res = await API.saveResult({
@@ -166,7 +182,7 @@
 </div>
 
 <!-- Lines -->
-<div class="lrc-wrapper flex-1 overflow-y-auto" lang="ja-JP">
+<div bind:this={lrcWrapper} class="lrc-wrapper flex-1 overflow-y-auto" lang="ja-JP">
   <div class="vbox gap-12px py-32px relative min-h-full lrc-content">
     <div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75 z-10"></div>
     {#each processedLrc as line, l}
