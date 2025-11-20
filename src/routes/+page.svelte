@@ -9,6 +9,9 @@
   let { data }: PageProps = $props()
 
   console.log(data.recPlaylists)
+
+  const loc = data.user.data.loc
+  const href = loc?.isFinished && loc?.lastResultId ? `/results/${loc.lastResultId}` : `/song/${data.last?.id}`
 </script>
 
 
@@ -18,12 +21,12 @@
 
 <div class="vbox gap-16px overflow-y-auto">
   {#if data.last}
-    <div>
+    <a {href}>
       <TitleHeader title="从暂停的位置继续"/>
       <div class="p-content">
         <SongInfo info={data.last}></SongInfo>
       </div>
-    </div>
+    </a>
   {/if}
 
   <div>
