@@ -25,6 +25,11 @@
   // Settings stored in user data
   let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
   $effect(() => { API.saveUserData({ typingSettings: settings }) })
+
+  // Playlist location state
+  let loc = $state(data.user.data.loc)
+  $effect(() => { API.saveUserData({ loc }) })
+
   const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
   const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
@@ -152,10 +157,10 @@
       totalTyped, totalRight, startTime, statsHistory
     })
 
-    if (data.user.data.loc?.currentPlaylistId) {
-      data.user.data.loc.isFinished = true;
-      data.user.data.loc.lastResultId = res.id;
-      await API.saveUserData({ loc: data.user.data.loc });
+    if (loc?.currentPlaylistId) {
+      loc.isFinished = true;
+      loc.lastResultId = res.id;
+      await API.saveUserData({ loc });
     }
 
     goto(`/results/${res.id}`, { replaceState: true })
@@ -167,6 +172,10 @@
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
   <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
   <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? "不在错误时显示罗马音" : "错误时显示罗马音"}</MenuItem>
+  {#if loc}
+    <MenuItem icon={loc.playMode === 'random' ? "i-material-symbols:shuffle-rounded" : "i-material-symbols:repeat-rounded"} onclick={() =>
+    loc.playMode = loc.playMode === 'random' ? 'sequential' : 'random'}>{loc.playMode === 'random' ? "当前：随机播放" : "当前：顺序播放"}</MenuItem>
+  {/if}
 </AppBar>
 
 <LinearProgress percent={progress} />
