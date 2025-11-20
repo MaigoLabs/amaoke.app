@@ -1,5 +1,5 @@
 import { toHiragana } from "wanakana";
-import type { LyricSegment } from "../../../shared/types";
+import type { LyricLine, LyricSegment } from "../../../shared/types";
 
 export type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
 export type ProcLrcLine = { parts: ProcLrcSeg[], totalLen: number }
@@ -34,3 +34,17 @@ export const composeList = [
   'ば', 'び', 'ぶ', 'べ', 'ぼ',
   'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ'
 ]
+
+/**
+ * Remove duplicate lyric lines based on their content.
+ */
+export function dedupLines(lrc: LyricLine[], hide: boolean) {
+  if (!hide) return lrc;
+  const seen = new Set<string>();
+  return lrc.filter(line => {
+    const key = JSON.stringify(line.lyric);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}

@@ -5,13 +5,13 @@
   import { onMount, tick } from "svelte";
   import { typingSettingsDefault, type LyricSegment } from "../../../shared/types.ts";
   import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana";
-  import { composeList, fuzzyEquals, processLrcLine, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts";
+  import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts";
   import MenuItem from "../../../components/material3/MenuItem.svelte";
   import "../../../shared/ext.ts"
   import { API } from "$lib/client.ts";
   import { animateCaret } from "./animation.ts";
   import { goto } from '$app/navigation';
-    import { artistAndAlbum } from "../../../shared/tools.ts";
+  import { artistAndAlbum } from "../../../shared/tools.ts";
 
   let { data }: PageProps = $props()
 
@@ -34,11 +34,21 @@
   const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
-  let processedLrc: ProcLrcLine[] = data.lrc.map(line => processLrcLine(line.lyric))
-
+  let processedLrc: ProcLrcLine[] = $derived(dedupLines(data.lrc, settings.hideRepeated).map(line => processLrcLine(line.lyric)))
   // State tracking for each kana character: UNSEEN, RIGHT, WRONG
-  let states = $state(processedLrc.map(line => new Array(line.totalLen).fill('unseen')))
-  const allStates = (l: number, seg: ProcLrcSeg) => states[l].slice(seg.swi, seg.swi + seg.kana.length)
+  let states = $state(dedupLines(data.lrc, settings.hideRepeated).map(line => processLrcLine(line.lyric)).map(line => new Array(line.totalLen).fill('unseen')))
+  
+  $effect(() => {
+    // Reset when processedLrc changes (settings changed)
+    states = processedLrc.map(line => new Array(line.totalLen).fill('unseen'))
+    li = 0
+    wi = 0
+    inp = ""
+    startTime = 0
+    statsHistory = []
+  })
+
+  const allStates = (l: number, seg: ProcLrcSeg) => states[l]?.slice(seg.swi, seg.swi + seg.kana.length) ?? []
   const getKanjiState = (l: number, seg: ProcLrcSeg) => {
     let sts = allStates(l, seg)
     if (sts.every(s => s === 'right')) return 'right'
@@ -72,6 +82,7 @@
 
   // On input changed: Convert to hiragana, compare with current position, update states
   function inputChanged(input: string, isComposed: boolean) {
+    if (!processedLrc[li] || !states[li]) return;
     if (!startTime && input) startTime = Date.now()
     console.log(`input changed: ${input}`)
     // Convert to hiragana
@@ -125,7 +136,6 @@
       inp = ""
     }
   }
-
   $effect(() => inputChanged(inp, false))
 
   // Caret: Typing indicator
@@ -175,6 +185,7 @@
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
   <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
   <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? "不在错误时显示罗马音" : "错误时显示罗马音"}</MenuItem>
+  <MenuItem icon="i-material-symbols:compress-rounded" onclick={() => settings.hideRepeated = !settings.hideRepeated}>{settings.hideRepeated ? "显示重复行" : "隐藏重复行"}</MenuItem>
   {#if loc}
     <MenuItem icon={loc.playMode === 'random' ? "i-material-symbols:shuffle-rounded" : "i-material-symbols:repeat-rounded"} onclick={() =>
     loc.playMode = loc.playMode === 'random' ? 'sequential' : 'random'}>{loc.playMode === 'random' ? "当前：随机播放" : "当前：顺序播放"}</MenuItem>
@@ -211,16 +222,16 @@
         {#each line.parts as seg}
           {#if !seg.kanji}
             {#each seg.kana as char, c}
-              <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}
+              <span class="{states[l]?.[seg.swi + c] ?? ''}" class:here={l === li && wi === seg.swi + c}
                 class:punctuation={!isKana(char) && !isKanji(char)}>
-                {@html preprocessKana(char, states[l][seg.swi + c])}
+                {@html preprocessKana(char, states[l]?.[seg.swi + c])}
               </span>
             {/each}
           {:else}
             <ruby>
               <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
                 {#each seg.kana as char, c}
-                  <span class="{states[l][seg.swi + c]}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l][seg.swi + c])}</span>
+                  <span class="{states[l]?.[seg.swi + c] ?? ''}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l]?.[seg.swi + c])}</span>
                 {/each}
               </rt>{/if}
             </ruby>
@@ -228,6 +239,7 @@
         {/each}
       </div>
     {/each}
+    <div class="h-30vh"></div>
   </div>
 </div>
 

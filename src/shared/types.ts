@@ -87,6 +87,7 @@ export const typingSettingsDefault = {
   allKata: false,
   showRomaji: true,
   showRomajiOnError: true,
+  hideRepeated: false,
 };
 
 export interface UserData {
