@@ -148,10 +148,17 @@
     const res = await API.saveResult({
       songId: data.song.id,
       endTime: Date.now(),
-      realTimeFactor: (Date.now() - startTime) / (data.song.dt / 1000),
+      realTimeFactor: data.song.dt / (Date.now() - startTime),
       totalTyped, totalRight, startTime, statsHistory
     })
-    goto(`/results/${res.id}`)
+
+    if (data.user.data.loc?.currentPlaylistId) {
+      data.user.data.loc.isFinished = true;
+      data.user.data.loc.lastResultId = res.id;
+      await API.saveUserData({ loc: data.user.data.loc });
+    }
+
+    goto(`/results/${res.id}`, { replaceState: true })
   }
 </script>
 

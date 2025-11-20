@@ -1,9 +1,10 @@
 import { error } from '@sveltejs/kit'
 import { getResult } from '$lib/server/result'
 import type { PageServerLoad } from './$types'
-import { getLyricsProcessed, getSongRaw } from "$lib/server/songs.ts";
+import { getLyricsProcessed, getSongRaw, getPlaylist } from "$lib/server/songs.ts";
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, parent }) => {
+  const { user } = await parent()
   const result = await getResult(params.id)
   if (!result) throw error(404, 'Result not found')
 
@@ -12,6 +13,7 @@ export const load: PageServerLoad = async ({ params }) => {
   return { 
     result: structuredClone(result),
     lrc: await getLyricsProcessed(result.songId),
-    song
+    song,
+    playlist: await user.data?.loc?.currentPlaylistId?.let(getPlaylist)
   }
 }

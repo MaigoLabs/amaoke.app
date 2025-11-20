@@ -1,39 +1,34 @@
 <script lang="ts">
-  import type { PageProps } from "./$types";
-  import { goto } from "$app/navigation";
-  import AppBar from "../../../components/appbar/AppBar.svelte";
-  import { artistAndAlbum } from "../../../shared/tools";
-  import Button from "../../../components/Button.svelte";
+  import type { PageProps } from "./$types"
+  import { goto } from "$app/navigation"
+  import AppBar from "../../../components/appbar/AppBar.svelte"
+  import { artistAndAlbum } from "../../../shared/tools"
+  import Button from "../../../components/Button.svelte"
 
-  import Chart from "chart.js/auto";
+  import Chart from "chart.js/auto"
+  import { API } from "$lib/client"
 
-  let { data }: PageProps = $props();
-  let { result, lrc } = data;
+  import type { NeteaseSong, UserData } from "../../../shared/types"
+
+  let { data }: PageProps = $props()
 
   // Destructure result for easier access
-  let { totalTyped, startTime, endTime, totalRight, statsHistory, songId } = result;
+  let { totalTyped, startTime, endTime, totalRight, statsHistory, songId } = data.result
 
   // Calculate duration for display
-  let duration = endTime - startTime;
+  let duration = endTime - startTime
 
   let fields = [
-    {
-      label: "速度",
-      value: Math.round(totalTyped / (Math.max(1, duration) / 60000)),
-    },
-    {
-      label: "准确率",
-      value:
-        totalTyped === 0
-          ? 100
-          : Math.round((totalRight / totalTyped) * 10000) / 100,
-    },
+    { label: "速度", value: Math.round(totalTyped / (Math.max(1, duration) / 60000)) },
+    { label: "准确率", value: totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 10000) / 100 },
     { label: "实时率", value: data.result.realTimeFactor.toFixed(2) + "x" },
     { label: "字数", value: totalTyped },
-  ];
+    { label: "用时", value: new Date(duration).toISOString().slice(14, 19) },
+    { label: "歌曲时长", value: new Date(data.song.dt).toISOString().slice(14, 19) }
+  ]
 
-  let chartCanvas: HTMLCanvasElement;
-  let chart: Chart;
+  let chartCanvas: HTMLCanvasElement
+  let chart: Chart
 
   $effect(() => {
     if (chartCanvas && statsHistory.length > 0) {
@@ -44,7 +39,7 @@
           datasets: [
             {
               label: "速度 (CPM)",
-              data: statsHistory.map((h: any) => h.cpm),
+              data: statsHistory.map((h: { cpm: number }) => h.cpm),
               tension: 0.4,
               pointRadius: 0,
               fill: true,
@@ -53,7 +48,7 @@
             },
             {
               label: "准确率 (%)",
-              data: statsHistory.map((h: any) => h.acc),
+              data: statsHistory.map((h: { acc: number }) => h.acc),
               tension: 0.4,
               yAxisID: "y1",
               pointRadius: 0,
@@ -88,13 +83,73 @@
             },
           },
         },
-      });
+      })
     }
 
     return () => {
-      if (chart) chart.destroy();
-    };
-  });
+      if (chart) chart.destroy()
+    }
+  })
+
+  // Playlist Navigation Logic
+  let nextSongId = $state<number | null>(null)
+  let isPlaylistFinished = $state(false)
+
+  const loc = data.user.data.loc
+  const playlist = data.playlist
+  // Check if this is the latest result for the current playlist session
+  const isCurrentResult = loc?.lastResultId === data.result._id
+
+  // Compute next state immediately
+  if (playlist && loc && isCurrentResult) {
+    if (loc.playMode === 'random') {
+      const unplayed = playlist.tracks.filter((t: NeteaseSong) => !loc.playedSongIds.includes(t.id))
+      if (unplayed.length > 0) {
+        const nextSong = unplayed[Math.floor(Math.random() * unplayed.length)]
+        nextSongId = nextSong.id
+      } else isPlaylistFinished = true
+    } else {
+      const nextIndex = loc.currentSongIndex + 1
+      if (nextIndex < playlist.tracks.length) {
+        nextSongId = playlist.tracks[nextIndex].id
+      } else isPlaylistFinished = true
+    }
+  }
+
+  async function handleNext() {
+    if (nextSongId !== null) {
+      if (!data.user.data.loc || !data.playlist) return
+
+      const nextIndex = data.playlist.tracks.findIndex((t: NeteaseSong) => t.id === nextSongId)
+      
+      const newLoc = {
+        ...data.user.data.loc,
+        currentSongIndex: nextIndex,
+        isFinished: false
+      }
+      
+      if (!newLoc.playedSongIds.includes(nextSongId)) {
+        newLoc.playedSongIds = [...newLoc.playedSongIds, nextSongId]
+      }
+
+      data.user.data.loc = newLoc
+      await API.saveUserData({ loc: newLoc })
+      goto(`/song/${nextSongId}`, { replaceState: true })
+    } else if (isPlaylistFinished) {
+      // Clear playlist state
+      await API.saveUserData({ loc: null as any })
+      goto(`/playlist/${data.playlist!.id}`)
+    } else {
+      // Restart
+      goto(`/song/${songId}`, { replaceState: true })
+    }
+  }
+
+  let buttonText = $derived(
+    nextSongId !== null ? "下一首" :
+    isPlaylistFinished ? "返回歌单" :
+    "再来一次"
+  )
 </script>
 
 <AppBar title={data.song.name} sub={artistAndAlbum(data.song)} />
@@ -125,6 +180,6 @@
   <div class="flex-1"></div>
 
   <div class="hbox justify-end pt-8px pb-16px w-full">
-    <Button w-full onclick={() => goto(`/song/${songId}`)}>下一首</Button>
+    <Button big w-full onclick={handleNext}>{buttonText}</Button>
   </div>
 </div>

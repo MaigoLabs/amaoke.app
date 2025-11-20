@@ -5,7 +5,8 @@ import { isKanji } from 'wanakana'
 // Please put OPENAI_API_KEY in your environment variables.
 const client = new OpenAI()
 const req = {
-  model: "gpt-5.1-chat-latest",
+  // model: "gpt-5.1-chat-latest",
+  model: "gpt-4.1",
   messages: [
     {
       role: "system",

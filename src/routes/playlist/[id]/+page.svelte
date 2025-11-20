@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
+  import { goto } from "$app/navigation";
   import AppBar from "../../../components/appbar/AppBar.svelte";
   import Button from "../../../components/Button.svelte";
   import SongInfo from "../../../components/listitem/SongInfo.svelte";
@@ -20,6 +21,25 @@
     await API.saveUserData(data.user.data)
     isFavorite = !isFavorite
   }
+
+  async function startPractice() {
+    if (songs.length === 0) return;
+    
+    const firstIndex = 0;
+    const firstSong = songs[firstIndex];
+    
+    data.user.data.loc = {
+      currentPlaylistId: meta.id,
+      currentSongIndex: firstIndex,
+      playedSongIds: [firstSong.id],
+      playMode: 'sequential',
+      isFinished: false,
+      lastResultId: null
+    };
+    
+    await API.saveUserData({ loc: data.user.data.loc });
+    goto(`/song/${firstSong.id}`);
+  }
 </script>
 
 <AppBar title="歌单详情" right={[
@@ -39,7 +59,7 @@
       <div class="m3-font-body-small text-surface-variant">歌曲数: {meta.trackCount}</div>
     </div>
     <div>
-      <Button>开始练习</Button>
+      <Button onclick={startPractice}>开始练习</Button>
     </div>
   </div>
 </div>
