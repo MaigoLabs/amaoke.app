@@ -75,7 +75,7 @@
     if (!startTime && input) startTime = Date.now()
     console.log(`input changed: ${input}`)
     // Convert to hiragana
-    inp = toHiragana(inp, { IMEMode: true })
+    inp = toHiragana(inp.replaceAll(' ', ''), { IMEMode: true })
     const imeUsed = input !== inp
 
     function findLoc() {
@@ -166,6 +166,9 @@
     goto(`/results/${res.id}`, { replaceState: true })
   }
 </script>
+
+<svelte:window onresize={() => caret && animateCaret(caret)} />
+
 
 <AppBar title={data.song.name} sub={artistAndAlbum(data.song)}>
   <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>

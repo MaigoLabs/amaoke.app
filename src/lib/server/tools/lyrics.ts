@@ -1,12 +1,16 @@
-import OpenAI from 'openai'
+import { OpenRouter } from '@openrouter/sdk'
 import type { LyricLine, LyricSegment } from '../../../shared/types'
-import { isKanji } from 'wanakana'
+import { isKana, isKanji } from 'wanakana'
 
-// Please put OPENAI_API_KEY in your environment variables.
-const client = new OpenAI()
+// Please put OPENROUTER_API_KEY in your environment variables.
+if (!process.env.OPENROUTER_API_KEY) throw new Error('Please set OPENROUTER_API_KEY in your environment variables.')
+const client = new OpenRouter({
+  apiKey: process.env.OPENROUTER_API_KEY!
+})
 const req = {
-  // model: "gpt-5.1-chat-latest",
-  model: "gpt-4.1",
+  model: "openai/gpt-5",
+  // model: "gpt-4.1",
+  // model: 'x-ai/grok-4.1-fast:free',
   messages: [
     {
       role: "system",
@@ -32,6 +36,9 @@ const req = {
 2.  **ふりがな（漢字）**: 歌詞本文では、**全ての漢字**に \`漢字（ふりがな）\` の形式でふりがな（ルビ）を付けてください。
 3.  **読み仮名（非日本語）**: 英語などの非日本語の単語には、\`Word（カタカナ読み）\` の形式でカタカナの読み仮名を付けてください。（例: \`Good（グッド）\`）。
 4.  **その他**: ひらがな、カタカナ、句読点などはそのまま出力してください。
+5.  **冗長なふりがなの禁止と混在処理（重要）**:
+    * **カタカナ・ひらがなのみの単語**: 元からカタカナやひらがなで表記されている単語には、ふりがなを付けないでください（例: \`アニメ\` はそのまま \`アニメ\` とし、\`アニメ（アニメ）\` としない）。
+    * **漢字とかなの混在**: \`のど飴\` のように漢字とかなが混ざっている表現は、全体を括るのではなく、**漢字部分にのみ**ふりがなを付けてください（例: \`のど 飴（あめ）\`）。 \`のど飴（のどあめ）\` のように、かな部分を含めてふりがなを振ることは禁止です。
 
 重要
 * **全ての漢字および非日本語単語に読み仮名を付けてください。** 読み方が不明な場合でも、文脈から最も一般的だと思われる読み方を付けてください。漢字をそのまま残してはいけません。
@@ -156,10 +163,11 @@ function parseFuriganaText(text: string): LyricLine[] {
 
     while ((match = tokenRegex.exec(lyricText)) !== null) {
       const [, kanji, furigana, plain] = match
-      if (kanji && furigana) {
+      if (kanji && kanji == furigana) lyric.push(kanji)
+      else if (kanji && furigana) {
         let splitIndex = -1
         for (let i = kanji.length - 1; i >= 0; i--) {
-          if (!isKanji(kanji[i]) && !('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.includes(kanji[i]))) {
+          if (!isKanji(kanji[i]) && !isKana(kanji[i]) && !('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.includes(kanji[i]))) {
             splitIndex = i
             break
           }
@@ -191,14 +199,14 @@ export async function aiParseLyricsRaw(raw: string, tries: number = 5): Promise<
   const thisReq = JSON.parse(JSON.stringify(req))
   thisReq.messages[thisReq.messages.length - 1].content = raw
   
-  const response = await client.chat.completions.create(thisReq)
-  const text = response.choices[0].message?.content || ''
+  const response = await client.chat.send(thisReq)
+  const text = response.choices[0].message?.content as string || ''
   
   // Clean up potential markdown blocks
   const responseText = text.replace(/```/g, '').trim()
   console.log('AI request:\n', raw)
   console.log('AI response:\n', responseText)
-  console.log(`Finish reason: ${response.choices[0].finish_reason}`)
+  console.log(`Finish reason: ${response.choices[0].finishReason}`)
 
   async function fail() {
     if (tries > 0) {
@@ -236,11 +244,16 @@ export async function aiParseLyricsRaw(raw: string, tries: number = 5): Promise<
 
 export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
   // Split into maximum n lines per request
-  const n = 30
+  const maxLines = 30
   const lines = raw.split('\n').filter(line => line.trim() !== '')
+  if (lines.length === 0) return []
+
+  const numChunks = Math.ceil(lines.length / maxLines)
+  const linesPerChunk = Math.ceil(lines.length / numChunks)
+
   const chunks: string[] = []
-  for (let i = 0; i < lines.length; i += n) {
-      chunks.push(lines.slice(i, i + n).join('\n'))
+  for (let i = 0; i < lines.length; i += linesPerChunk) {
+      chunks.push(lines.slice(i, i + linesPerChunk).join('\n'))
   }
   const results = await Promise.all(chunks.map(it => aiParseLyricsRaw(it, 5)))
   return results.flat()
