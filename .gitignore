@@ -25,3 +25,4 @@ data/
 
 public/assets/fonts/cache
 .idea
+static/audio

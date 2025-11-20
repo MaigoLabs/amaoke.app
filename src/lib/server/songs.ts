@@ -6,6 +6,10 @@ import { franc } from 'franc'
 import { error } from '@sveltejs/kit'
 import type { ObjectId } from 'mongodb'
 import '../../shared/ext'
+import { promises as fs } from 'fs'
+import path from 'path'
+
+const CACHE_DIR = path.resolve('static/audio')
 
 /**
  * Functional wrapper to cache API results to MongoDB.
@@ -88,6 +92,30 @@ export const getLyricsProcessed = cached('lyrics_processed',
         console.log(`Processing lyrics for song ${songId}`)
         return aiParseLyrics(raw.lrc.lyric)
     })
+
+export const getSongUrl = async (id: number | string) => {
+    await fs.mkdir(CACHE_DIR, { recursive: true })
+
+    const filePath = path.join(CACHE_DIR, `${id}/standard.mp3`)
+    const publicUrl = `/audio/${id}/standard.mp3`
+    if (await fs.exists(filePath)) return publicUrl
+
+    console.log(`Downloading song ${id}...`)
+    // @ts-ignore
+    const res = await ne.song_url_v1({ id: id.toString(), level: 'standard' })
+    const url = (res.body as any).data?.[0]?.url
+
+    if (!url) throw error(404, 'Song URL not found')
+
+    const audioRes = await fetch(url)
+    if (!audioRes.ok) throw error(500, 'Failed to download song')
+    
+    const buffer = await audioRes.arrayBuffer()
+    await fs.writeFile(filePath, Buffer.from(buffer))
+    console.log(`Song ${id} cached to ${filePath}`)
+
+    return publicUrl
+}
 
 
 export interface ImportSession {
