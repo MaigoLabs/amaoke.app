@@ -19,12 +19,12 @@
   let duration = endTime - startTime
 
   let fields = [
-    { label: "速度", value: Math.round(totalTyped / (Math.max(1, duration) / 60000)) },
-    { label: "准确率", value: totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 10000) / 100 },
-    { label: "实时率", value: data.result.realTimeFactor.toFixed(2) + "x" },
-    { label: "字数", value: totalTyped },
-    { label: "用时", value: new Date(duration).toISOString().slice(14, 19) },
-    { label: "歌曲时长", value: new Date(data.song.dt).toISOString().slice(14, 19) }
+    { label: "速度", value: Math.round(totalTyped / (Math.max(1, duration) / 60000)), unit: "CPM" },
+    { label: "准确率", value: totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 10000) / 100, unit: "%" },
+    { label: "实时率", value: data.result.realTimeFactor.toFixed(2), unit: "x" },
+    { label: "字数", value: totalTyped, unit: "字" },
+    { label: "用时", value: new Date(duration).toISOString().slice(14, 19), unit: "" },
+    { label: "歌曲时长", value: new Date(data.song.dt).toISOString().slice(14, 19), unit: "" }
   ]
 
   let chartCanvas: HTMLCanvasElement
@@ -165,8 +165,11 @@
         <div class="m3-font-title-medium mfg-on-surface-variant">
           {field.label}
         </div>
-        <div class="m3-font-headline-large font-medium mfg-on-surface">
+        <div class="hbox items-baseline! gap-4px m3-font-headline-large font-medium mfg-on-surface">
           {field.value}
+          {#if field.unit}
+            <span class="m3-font-title-medium mfg-on-surface-variant">{field.unit}</span>
+          {/if}
         </div>
       </div>
     {/each}
