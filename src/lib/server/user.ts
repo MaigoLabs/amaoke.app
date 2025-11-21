@@ -53,3 +53,33 @@ export async function updateUserData(user: UserDocument, data: Partial<UserData>
   const newData = { ...(user.data || {}), ...data }
   await users.updateOne({ _id: user._id }, { $set: { data: newData } })
 }
+
+/**
+ * Login with sync code.
+ * @param code Sync code
+ * @param newUA User Agent of the new device
+ * @returns New session token
+ */
+export async function loginWithSyncCode(code: string, newUA: string): Promise<string> {
+  const user = await users.findOne({ syncCode: code })
+  if (!user) throw error(401, 'Invalid sync code')
+
+  // Check expiration (7 days)
+  if (user.syncCodeCreated && (Date.now() - user.syncCodeCreated.getTime() > 7 * 24 * 60 * 60 * 1000)) {
+    await users.updateOne({ _id: user._id }, { $unset: { syncCode: "", syncCodeCreated: "" } })
+    throw error(401, 'Sync code expired')
+  }
+
+  const ses = `${crypto.randomUUID()}-${Date.now().toString(36)}`
+
+  // Add new session and clear sync code (one-time use)
+  await users.updateOne(
+    { _id: user._id },
+    {
+      $push: { sessions: ses },
+      $unset: { syncCode: "", syncCodeCreated: "" }
+    }
+  )
+
+  return ses
+}

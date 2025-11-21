@@ -5,6 +5,7 @@
   import type { PageProps } from "./$types";
   import Button from "../components/Button.svelte";
     import { Layer } from "m3-svelte";
+    import { goto } from "$app/navigation";
 
   let { data }: PageProps = $props()
 
@@ -15,7 +16,7 @@
 </script>
 
 
-<AppBar account={() => alert('Account clicked')} right={[
+<AppBar account={() => goto('/user')} right={[
   {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
 ]} />
 

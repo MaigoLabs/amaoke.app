@@ -11,7 +11,7 @@
 <Dialog title="错误" bind:open buttons={[{
   text: "刷新重试",
   onclick: () => location.reload()
-}]}>
+}]} noClose>
   <div class="text-red-500">
     {p.error}
   </div>

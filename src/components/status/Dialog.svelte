@@ -9,12 +9,13 @@
       text: string,
       onclick: () => void
     }[]
-    open: boolean
+    open: boolean,
+    noClose?: boolean
   } = $props()
 
-  let buttons = $derived(p.buttons ?? [{
+  let buttons = $derived([...(p.buttons ?? []), ...(p.noClose ? [] : [{
     text: '关闭', onclick: () => open = false
-  }])
+  }])])
 </script>
 
 {#if open}

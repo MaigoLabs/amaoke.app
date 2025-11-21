@@ -1,17 +1,43 @@
 <script lang="ts">
-    import { TextFieldOutlined } from "m3-svelte";
-  import AppBar from "../../components/appbar/AppBar.svelte";
-  import Button from "../../components/Button.svelte";
-  import Dialog from "../../components/status/Dialog.svelte";
+  import { TextFieldOutlined } from "m3-svelte"
+  import AppBar from "../../components/appbar/AppBar.svelte"
+  import Button from "../../components/Button.svelte"
+  import Dialog from "../../components/status/Dialog.svelte"
+  import { API } from "$lib/client"
+  import ErrorDialog from "../../components/status/ErrorDialog.svelte"
 
-  let open = $state(false)
+  let showCodeOpen = $state(false)
+  let loginSuccessOpen = $state(false)
   let loginMode = $state(false)
   let loginCode = $state('')
+  let generatedCode = $state('')
+  let error = $state('')
+
+  const generateCode = async () => await API.user.createSyncCode()
+    .then(res => {
+      generatedCode = res.code
+      showCodeOpen = true
+    }).catch(e => error = e.message)
+
+  const doLogin = async () => await API.user.loginWithSyncCode(loginCode)
+    .then(() => loginSuccessOpen = true).catch(e => error = e.message)
 </script>
 
-<Dialog title="生成引继码" bind:open>引继码生成成功！生成的引继码是：01234-56789-ABCDE-F0123
+<ErrorDialog error={error}/>
+
+<Dialog title="登录成功" bind:open={loginSuccessOpen} buttons={[{
+  text: '跳转', onclick: () => location.href = '/'
+}]}>
+  登录成功！
+</Dialog>
+
+<Dialog title="生成引继码" bind:open={showCodeOpen} buttons={[{
+  text: '复制', onclick: () => navigator.clipboard.writeText(generatedCode)
+}]}>
+  引继码生成成功！生成的引继码是：{generatedCode}
   <br><br>
-这个引继码将会在使用之后、或者未使用的 7 天后会失效</Dialog>
+  这个引继码将会在使用之后、或者未使用的 7 天后会失效
+</Dialog>
 
 <AppBar title="账号管理"/>
 
@@ -30,15 +56,13 @@
   </div>
 {/if}
 
-<div class="vbox gap-16px flex-1 min-h-0">
-    
-</div>
+<div class="vbox gap-16px flex-1 min-h-0"></div>
 
 <div class="hbox p-16px gap-16px">
   {#if !loginMode}
-    <Button big secondary icon="i-material-symbols:add" disabled={open} onclick={() => open = true}>生成引继码</Button>
-    <Button big secondary icon="i-material-symbols:login" disabled={open} onclick={() => loginMode = true}>用引继码登录</Button>
+    <Button big secondary icon="i-material-symbols:add" disabled={showCodeOpen} onclick={generateCode}>生成引继码</Button>
+    <Button big secondary icon="i-material-symbols:login" disabled={showCodeOpen} onclick={() => loginMode = true}>用引继码登录</Button>
   {:else}
-    <Button big secondary icon="i-material-symbols:login" disabled={open} onclick={() => alert("TODO")}>登录</Button>
+    <Button big secondary icon="i-material-symbols:login" disabled={showCodeOpen} onclick={doLogin}>登录</Button>
   {/if}
 </div>

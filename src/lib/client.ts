@@ -9,7 +9,7 @@ export async function post(endpoint: string, data: any) {
             'Content-Type': 'application/json'
         }
     }).then(async res => {
-        if (res.status >= 400) throw new Error(`错误 ${res.status}：${await res.text()}`)
+        if (res.status >= 400) throw new Error(`${res.status}: ${await res.json().then(json => json['message'])}`)
         return res.json()
     }).catch(e => {
         console.error(e)
@@ -25,5 +25,10 @@ export const API = {
     netease: {
         startImport: async (link: string) => await post('/api/import/netease/start', { link }),
         checkProgress: async (id: string) => await post('/api/import/netease/progress', { id })
+    },
+
+    user: {
+        createSyncCode: async () => await post('/api/user/sync-code', {}),
+        loginWithSyncCode: async (code: string) => await post('/api/auth/login', { code })
     }
 }
