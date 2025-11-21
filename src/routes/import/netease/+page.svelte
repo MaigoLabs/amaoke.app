@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { LinearProgress, TextFieldOutlined } from "m3-svelte"
+  import { TextFieldOutlined } from "m3-svelte"
   import AppBar from "../../../components/appbar/AppBar.svelte"
   import Button from "../../../components/Button.svelte"
   import type { NeteaseSong } from "../../../shared/types"
   import { API } from "../../../lib/client"
-    import ErrorDialog from "../../../components/status/ErrorDialog.svelte";
+  import ErrorDialog from "../../../components/status/ErrorDialog.svelte";
+  import ProgressList from "./ProgressList.svelte";
 
   let link = $state('')
 
@@ -15,12 +16,13 @@
 
   let status = $state<'idle' | 'importing' | 'success' | 'error'>('idle')
   let songs = $state<SongImportStatus[]>([])
+  let error = $state('')
+  let id = $state('')
+
   let progress = $derived({
     total: songs.length,
     done: songs.filter(song => song.status !== 'importing').length
   })
-  let error = $state('')
-  let id = $state('')
 
   function statusToIcon(stat: string): string {
     switch (stat) {
@@ -31,6 +33,15 @@
     }
     return ''
   }
+
+  let listTitle = $derived(status === 'idle' ? '' : (status === 'importing' ? '正在导入' : (status === 'success' ? '导入完成' : '导入出错')));
+  let listSubtitle = $derived(`${progress.done} / ${progress.total} 首歌曲`);
+  let listPercent = $derived(progress.total ? progress.done / progress.total * 100 : 0);
+  let listItems = $derived(songs.map(song => ({
+    title: song.song.name,
+    subtitle: song.song.ar.map(a => a.name).join(', '),
+    icon: statusToIcon(song.status)
+  })));
 
   async function startImport() {
     if (!link) return
@@ -73,29 +84,7 @@
     <TextFieldOutlined label="网易云歌单链接 / ID" bind:value={link} />
   </div>
 
-  {#if status !== 'idle'}
-    <div class="hbox gap-12px items-end! h-48px p-content">
-      <div class="m3-font-headline-small">
-        {#if status === 'importing'}正在导入{:else if status === 'success'}导入完成{:else}导入出错{/if}
-      </div>
-      <div class="m3-font-label-small pb-3px">{progress.done} / {progress.total} 首歌曲</div>
-    </div>
-    <LinearProgress percent={progress.total ? progress.done / progress.total * 100 : 0}/>
-  {/if}
-
-  <div class="vbox p-content scroll-here gap-8px">
-    {#if status !== 'idle'}
-      {#each songs as song}
-        <div class="hbox gap-12px items-center">
-          <span class="{statusToIcon(song.status)} text-xl"></span>
-          <div class="vbox">
-            <span class="m3-font-title-medium">{song.song.name}</span>
-            <span class="m3-font-body-small mfg-on-surface-variant">{song.song.ar.map(a => a.name).join(', ')}</span>
-          </div>
-        </div>
-      {/each}
-    {/if}
-  </div>
+  <ProgressList title={listTitle} subtitle={listSubtitle} percentage={listPercent} items={listItems} />
 
   <div class="py-16px p-content">
     {#if status === 'idle'}

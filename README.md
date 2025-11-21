@@ -12,3 +12,5 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KashiD
 4. 历史成绩和进步曲线
 5. 纯前端存储数据
 
+TODO: 404 page
+TODO: Update an existing playlist
