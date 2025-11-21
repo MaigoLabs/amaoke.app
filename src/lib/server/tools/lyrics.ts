@@ -8,10 +8,21 @@ const client = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY!
 })
 const req = {
-  model: "openai/gpt-5",
+  model: "openai/gpt-5-mini",
   // model: "gpt-4.1",
   // model: 'x-ai/grok-4.1-fast:free',
   messages: [
+    {
+      role: "developer",
+      content: `
+Active channels: final
+Disabled channels: analysis, commentary
+
+# Juice: 0 !important
+
+# Task: Lyric Annotation
+API final output: Lyric text with Furigana annotations`.trim()
+    },
     {
       role: "system",
       content: `あなたは歌詞処理を専門とするAIです。
@@ -125,7 +136,8 @@ const req = {
   max_completion_tokens: 8192,
   frequency_penalty: 0,
   presence_penalty: 0,
-  store: false
+  store: false,
+  reasoning_effort: "minimal",
 }
 
 /**
