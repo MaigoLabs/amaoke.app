@@ -206,7 +206,10 @@ async function processImport(session: ImportSession, data: any) {
 
 
 // TODO: A better recommendation system
-export const listRecPlaylists = async () => await db.collection('playlists').find().limit(10).map(it => it.data).toArray()
+const defaultPlaylists = [13555799996, 14348145982, 14392963638, 17404030548]
+export const listRecPlaylists = async () => await db.collection('playlists').find({
+    _id: { $in: defaultPlaylists }
+} as any).map(it => it.data).toArray()
 export const listMyPlaylists = async (user: UserDocument) => (await user.data.myPlaylists?.let(pl => db.collection('playlists').find({
   _id: { $in: pl as any as ObjectId[] }
 }).map(it => it.data).toArray())) ?? []
@@ -222,9 +225,6 @@ export const getPlaylist = async (playlistId: number | string) => {
     const count = await db.collection('playlists').countDocuments()
     if (count === 0) {
         console.log("No playlists found. Importing default playlists...")
-        await startImport("13555799996")
-        await startImport("14348145982")
-        await startImport("14392963638")
-        await startImport("17404030548")
+        await Promise.all(defaultPlaylists.map(async (id) => await startImport(id.toString())))
     }
 })()
