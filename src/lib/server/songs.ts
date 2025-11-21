@@ -11,6 +11,9 @@ import path from 'path'
 
 const CACHE_DIR = path.resolve('static/audio')
 
+const checkNetease = async () => (await ne.login_status({}) as any).body.data.account
+const eToString = (e: any) => e.message ?? e.body.message
+
 /**
  * Functional wrapper to cache API results to MongoDB.
  * @param collectionName Name of the MongoDB collection.
@@ -37,17 +40,14 @@ function parsePlaylistRef(ref: string): number {
     const urlMatch = ref.match(/playlist\?id=(\d+)/)
     if (urlMatch) return +urlMatch[1]
     if (/^\d+$/.test(ref)) return +ref
-    throw new Error('Invalid playlist reference')
+    throw error(400, "无法识别歌单 URL... 只支持网易云的 URL 哦")
 }
 
 const getPlaylistRaw = cached('playlists_raw',
     async (id: number) => {
         const pl = ((await ne.playlist_detail({ id })).body as any).playlist
-
-        // Save each song
         for (const track of pl.tracks)
             await db.collection('songs_raw').replaceOne({ _id: track.id }, { _id: track.id, data: track }, { upsert: true })
-
         return pl
     })
 
@@ -100,23 +100,81 @@ export const getSongUrl = async (id: number | string) => {
     const publicUrl = `/audio/${id}/standard.mp3`
     if (await fs.exists(filePath)) return publicUrl
 
+    // Check netease api status
+    if (await checkNetease() === null) throw error(500, '服务器的网易云账号坏掉了 :(')
+
     console.log(`Downloading song ${id}...`)
     // @ts-ignore
     const res = await ne.song_url_v1({ id: id.toString(), level: 'standard' })
     const url = (res.body as any).data?.[0]?.url
 
-    if (!url) throw error(404, 'Song URL not found')
+    if (!url) throw error(404, '没获取到歌曲 URL（是不是被下架了）')
 
     const audioRes = await fetch(url)
-    if (!audioRes.ok) throw error(500, 'Failed to download song')
+    if (!audioRes.ok) throw error(500, '歌曲下载失败')
     
     const buffer = await audioRes.arrayBuffer()
+    await fs.mkdir(path.dirname(filePath), { recursive: true })
     await fs.writeFile(filePath, Buffer.from(buffer))
     console.log(`Song ${id} cached to ${filePath}`)
 
     return publicUrl
 }
 
+// /////////////////////////////////////////////////////////////////////////////
+// API for Song Preparation
+
+export interface ProgressItem { task: string, progress: number }
+export interface SongProcessState { items: ProgressItem[], status: 'running' | 'done' | 'error' }
+
+const songProcessingStatus = new Map<number, SongProcessState>()
+export const getSongStatus = (songId: number) => songProcessingStatus.get(songId) || { items: [], status: 'idle' }
+export const checkLyricsProcessed = async (songId: number) => !!await db.collection('lyrics_processed').findOne({ _id: songId as any })
+export const prepareSong = async (songId: number) => {
+    if (songProcessingStatus.has(songId)) return
+
+    const state: SongProcessState = { items: [], status: 'running' }
+    songProcessingStatus.set(songId, state)
+
+    const addTask = (task: string) => ({ task, progress: 0 }).also(it => state.items.push(it))
+    try {
+        // 1. Get Lyrics
+        const taskLyrics = addTask('从网易云获取歌词')
+        const raw = await getLyricsRaw(songId)
+        taskLyrics.progress = 1
+        
+        if (raw.lang !== 'jpn') {
+             addTask('错误: 不是日语歌曲').progress = -1
+             return state.status = 'error'
+        }
+
+        // 2. AI Process
+        const taskAI = addTask('AI 标注歌词读音')
+        
+        // Check cache
+        if (await checkLyricsProcessed(songId)) taskAI.progress = 1
+        else {
+            const lrc = await aiParseLyrics(raw.lrc.lyric, (i, n) => taskAI.progress = i / n)
+            await db.collection('lyrics_processed').replaceOne({ _id: songId as any }, { _id: songId, data: lrc }, { upsert: true })
+            taskAI.progress = 1
+        }
+
+        // 3. Audio
+        const taskAudio = addTask('从网易云获取音乐')
+        await getSongUrl(songId)
+        taskAudio.progress = 1
+        
+        state.status = 'done'
+
+    } catch (e) {
+        addTask(`错误: ${eToString(e)}`).progress = -1
+        state.status = 'error'
+    }
+}
+
+
+// /////////////////////////////////////////////////////////////////////////////
+// API for Netease Import
 
 export interface ImportSession {
     id: string
@@ -128,7 +186,6 @@ export interface ImportSession {
     }[]
     done: boolean
 }
-
 const sessions = new Map<string, ImportSession>()
 
 export const getSession = (id: string) => sessions.get(id)
@@ -156,7 +213,6 @@ export async function startImport(link: string, userId?: number): Promise<Import
         console.log(`Import session ${importId} already exists`)
         return sessions.get(importId)!
     }
-    
     sessions.set(importId, session)
     
     // Start background processing
@@ -203,7 +259,8 @@ async function processImport(session: ImportSession, data: any) {
 }
 
 
-
+// /////////////////////////////////////////////////////////////////////////////
+// Default playlists and recommendation
 
 // TODO: A better recommendation system
 const defaultPlaylists = [17463338036, 13555799996, 14348145982, 14392963638]

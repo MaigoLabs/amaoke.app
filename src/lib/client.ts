@@ -30,5 +30,10 @@ export const API = {
     user: {
         createSyncCode: async () => await post('/api/user/sync-code', {}),
         loginWithSyncCode: async (code: string) => await post('/api/auth/login', { code })
+    },
+
+    song: {
+        prepare: async (id: number) => await post(`/api/song/${id}/prepare`, {}),
+        status: async (id: number) => await fetch(`/api/song/${id}/prepare`).then(res => res.json())
     }
 }
