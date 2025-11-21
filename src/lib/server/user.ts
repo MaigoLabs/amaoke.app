@@ -1,8 +1,8 @@
-import { db } from "./db"
+import { dbs } from "./db"
 import { type UserDocument, type UserData } from "../../shared/types.ts";
 import { error } from "@sveltejs/kit";
 
-const users = db.collection<UserDocument>("users")
+const users = dbs.users
 
 // Build an index once so session lookups stay fast even as the collection grows.
 void users.createIndex({ sessions: 1 }, { name: "users_sessions_idx" })
