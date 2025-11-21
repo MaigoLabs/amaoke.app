@@ -1,17 +1,18 @@
 <script lang="ts">
-  import AppBar from "../../../components/appbar/AppBar.svelte";
-  import type { PageProps } from "./$types"
+  import AppBar from "../../../../components/appbar/AppBar.svelte";
+  import type { PageProps } from "../$types"
   import { LinearProgress } from "m3-svelte";
   import { onMount, tick } from "svelte";
-  import { typingSettingsDefault, type LyricSegment } from "../../../shared/types.ts";
+  import { typingSettingsDefault, type LyricSegment } from "../../../../shared/types.ts";
   import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana";
   import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts";
-  import MenuItem from "../../../components/material3/MenuItem.svelte";
-  import "../../../shared/ext.ts"
+  import MenuItem from "../../../../components/material3/MenuItem.svelte";
+  import "../../../../shared/ext.ts"
   import { API } from "$lib/client.ts";
   import { animateCaret } from "./animation.ts";
   import { goto } from '$app/navigation';
-  import { artistAndAlbum } from "../../../shared/tools.ts";
+  import { artistAndAlbum } from "../../../../shared/tools.ts";
+  import Button from "../../../../components/Button.svelte";
 
   let { data }: PageProps = $props()
 
@@ -99,7 +100,7 @@
     function incr(cLine: ProcLrcLine) {
       wi += 1
       if (wi >= cLine.totalLen) {
-        li += 1;
+        li += 1
         wi = 0
         if (li >= processedLrc.length) submitResult()
       }
@@ -242,7 +243,6 @@
     <div class="h-30vh"></div>
   </div>
 </div>
-
 <style lang="sass">
   .lrc-wrapper
     *
