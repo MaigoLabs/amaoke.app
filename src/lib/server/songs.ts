@@ -11,7 +11,10 @@ import path from 'path'
 
 const CACHE_DIR = path.resolve('static/audio')
 
-const checkNetease = async () => (await ne.login_status({}) as any).body.data.account
+const neCookie = async () => (await db.collection('server_props')
+    .findOne({ name: 'global_settings' }))?.netease_login_cookie
+    ?.let((cookie: string) => ({ cookie }))
+const checkNetease = async () => (await ne.login_status({ ...await neCookie() }) as any).body.data.account
 const eToString = (e: any) => e.message ?? e.body.message
 
 /**
@@ -96,8 +99,9 @@ export const getLyricsProcessed = cached('lyrics_processed',
 export const getSongUrl = async (id: number | string) => {
     await fs.mkdir(CACHE_DIR, { recursive: true })
 
-    const filePath = path.join(CACHE_DIR, `${id}/standard.mp3`)
-    const publicUrl = `/audio/${id}/standard.mp3`
+    const level = 'exhigh'
+    const filePath = path.join(CACHE_DIR, `${id}/${level}.mp3`)
+    const publicUrl = `/audio/${id}/${level}.mp3`
     if (await fs.exists(filePath)) return publicUrl
 
     // Check netease api status
@@ -105,8 +109,9 @@ export const getSongUrl = async (id: number | string) => {
 
     console.log(`Downloading song ${id}...`)
     // @ts-ignore
-    const res = await ne.song_url_v1({ id: id.toString(), level: 'standard' })
+    const res = await ne.song_url_v1({ id: id.toString(), level, ...await neCookie() })
     const url = (res.body as any).data?.[0]?.url
+    console.log(`Download URL: ${url}`)
 
     if (!url) throw error(404, '没获取到歌曲 URL（是不是被下架了）')
 
