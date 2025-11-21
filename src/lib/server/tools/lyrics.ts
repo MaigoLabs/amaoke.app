@@ -254,8 +254,13 @@ export async function aiParseLyricsRaw(raw: string, tries: number = 5): Promise<
   }
 }
 
-export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
-  // Split into maximum n lines per request
+/**
+ * Separate the raw lyrics into chunks and let AI parse each chunk, then combine the results.
+ * @param raw The raw lyrics text in LRC format.
+ * @param onProgress Optional progress callback that tracks completed/total chunks.
+ * @returns Processed lyrics as LyricLine[].
+ */
+export async function aiParseLyrics(raw: string, onProgress?: (completed: number, total: number) => void): Promise<LyricLine[]> {
   const maxLines = 30
   const lines = raw.split('\n').filter(line => line.trim() !== '')
   if (lines.length === 0) return []
@@ -267,6 +272,16 @@ export async function aiParseLyrics(raw: string): Promise<LyricLine[]> {
   for (let i = 0; i < lines.length; i += linesPerChunk) {
       chunks.push(lines.slice(i, i + linesPerChunk).join('\n'))
   }
-  const results = await Promise.all(chunks.map(it => aiParseLyricsRaw(it, 5)))
+
+  console.log(`Split lyrics into ${chunks.length} chunks for AI processing.`)
+  let completed = 0
+  if (onProgress) onProgress(0, chunks.length)
+
+  const results = await Promise.all(chunks.map(async it => {
+    const res = await aiParseLyricsRaw(it, 5)
+    completed++
+    if (onProgress) onProgress(completed, chunks.length)
+    return res
+  }))
   return results.flat()
 }
