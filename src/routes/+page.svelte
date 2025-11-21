@@ -20,7 +20,7 @@
   {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
 ]} />
 
-<div class="vbox gap-16px overflow-y-auto">
+<div class="vbox gap-16px overflow-y-auto flex-1">
   {#if data.last}
     <a {href}>
       <TitleHeader title="从暂停的位置继续"/>
