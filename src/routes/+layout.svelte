@@ -16,7 +16,6 @@
     if (!document.startViewTransition) return
 
     const direction = navigation.delta && navigation.delta < 0 ? 'back' : 'forward'
-    console.log(direction)
     document.documentElement.dataset.transitionDirection = direction
 
     return new Promise((resolve) => {
