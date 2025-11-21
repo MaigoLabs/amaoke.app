@@ -217,10 +217,16 @@ export const getPlaylist = async (playlistId: number | string) => {
     return plData.data
 }
 
-await startImport("13555799996")
-await startImport("https://music.163.com/playlist?id=14348145982")
-await startImport("https://music.163.com/playlist?id=14392963638")
-await startImport("https://music.163.com/playlist?id=580208139")
-await startImport("https://music.163.com/playlist?id=17404030548")
-
-// TODO: Filter out non-Japanese songs
+// Check if there are any playlists, if not, import default ones
+(async () => {
+    const count = await db.collection('playlists').countDocuments()
+    if (count === 0) {
+        console.log("No playlists found. Importing default playlists...")
+        await startImport("13555799996")
+        await startImport("17463338036")
+        await startImport("14348145982")
+        await startImport("14392963638")
+        await startImport("580208139")
+        await startImport("17404030548")
+    }
+})()
