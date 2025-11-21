@@ -206,10 +206,13 @@ async function processImport(session: ImportSession, data: any) {
 
 
 // TODO: A better recommendation system
-const defaultPlaylists = [13555799996, 14348145982, 14392963638, 17404030548]
-export const listRecPlaylists = async () => await db.collection('playlists').find({
-    _id: { $in: defaultPlaylists }
-} as any).map(it => it.data).toArray()
+const defaultPlaylists = [17463338036, 13555799996, 14348145982, 14392963638]
+export const listRecPlaylists = async () => {
+    const list = await db.collection('playlists').find({
+        _id: { $in: defaultPlaylists }
+    } as any).map(it => it.data).toArray()
+    return list.sort((a: any, b: any) => defaultPlaylists.indexOf(a.id) - defaultPlaylists.indexOf(b.id))
+}
 export const listMyPlaylists = async (user: UserDocument) => (await user.data.myPlaylists?.let(pl => db.collection('playlists').find({
   _id: { $in: pl as any as ObjectId[] }
 }).map(it => it.data).toArray())) ?? []
