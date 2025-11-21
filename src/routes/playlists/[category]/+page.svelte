@@ -12,7 +12,7 @@
   <MenuItem icon="i-material-symbols:download" onclick={() => goto("/import/netease")}>从网易云导入</MenuItem>
 </AppBar>
 
-<div class="vbox p-content gap-12px">
+<div class="vbox p-content gap-12px scroll-here">
   {#each data.playlists as pl}
     <a href="/playlist/{pl.id}">
       <ImageListItem photoUrl={pl.coverImgUrl} title={pl.name} text={`${pl.creator.nickname} 创建`} right={`${pl.trackCount} 首歌`} />

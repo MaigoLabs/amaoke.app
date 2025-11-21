@@ -154,7 +154,7 @@
 
 <AppBar title={data.song.name} sub={artistAndAlbum(data.song)} />
 
-<div class="vbox gap-16px p-content flex-1 overflow-y-auto">
+<div class="vbox gap-16px p-content scroll-here">
   <div class="hbox gap-12px items-end! h-48px">
     <div class="m3-font-headline-small">练习结果</div>
   </div>

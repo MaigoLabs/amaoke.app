@@ -38,17 +38,12 @@
     songs = []
 
     API.netease.startImport(link)
-      .catch(e => error = e.message)
       .then(data => {
         id = data.playlistId
         songs = data.songs
 
         const interval = setInterval(() => {
           API.netease.checkProgress(data.id)
-            .catch(e => {
-              error = e.message
-              clearInterval(interval)
-            })
             .then(data => {
               songs = data.songs
               if (data.done) {
@@ -56,8 +51,13 @@
                 status = 'success'
               }
             })
+            .catch(e => {
+              error = e.message
+              clearInterval(interval)
+            })
         }, 1000)
       })
+      .catch(e => error = e.message)
   }
 </script>
 
@@ -83,7 +83,7 @@
     <LinearProgress percent={progress.total ? progress.done / progress.total * 100 : 0}/>
   {/if}
 
-  <div class="vbox self-stretch flex-1 overflow-y-auto p-content min-h-0 gap-8px">
+  <div class="vbox p-content scroll-here gap-8px">
     {#if status !== 'idle'}
       {#each songs as song}
         <div class="hbox gap-12px items-center">

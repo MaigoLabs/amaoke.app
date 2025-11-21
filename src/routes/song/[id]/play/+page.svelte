@@ -1,18 +1,17 @@
 <script lang="ts">
-  import AppBar from "../../../../components/appbar/AppBar.svelte";
-  import type { PageProps } from "../$types"
-  import { LinearProgress } from "m3-svelte";
-  import { onMount, tick } from "svelte";
-  import { typingSettingsDefault, type LyricSegment } from "../../../../shared/types.ts";
-  import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana";
-  import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts";
-  import MenuItem from "../../../../components/material3/MenuItem.svelte";
+  import AppBar from "../../../../components/appbar/AppBar.svelte"
+  import type { PageProps } from "./$types"
+  import { LinearProgress } from "m3-svelte"
+  import { onMount, tick } from "svelte"
+  import { typingSettingsDefault, type LyricSegment } from "../../../../shared/types.ts"
+  import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana"
+  import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts"
+  import MenuItem from "../../../../components/material3/MenuItem.svelte"
   import "../../../../shared/ext.ts"
-  import { API } from "$lib/client.ts";
-  import { animateCaret } from "./animation.ts";
-  import { goto } from '$app/navigation';
-  import { artistAndAlbum } from "../../../../shared/tools.ts";
-  import Button from "../../../../components/Button.svelte";
+  import { API } from "$lib/client.ts"
+  import { animateCaret } from "./animation.ts"
+  import { goto } from '$app/navigation'
+  import { artistAndAlbum } from "../../../../shared/tools.ts"
 
   let { data }: PageProps = $props()
 
@@ -83,7 +82,7 @@
 
   // On input changed: Convert to hiragana, compare with current position, update states
   function inputChanged(input: string, isComposed: boolean) {
-    if (!processedLrc[li] || !states[li]) return;
+    if (!processedLrc[li] || !states[li]) return
     if (!startTime && input) startTime = Date.now()
     console.log(`input changed: ${input}`)
     // Convert to hiragana
@@ -129,7 +128,7 @@
     }
 
     // Check next expected character, if it's neither kana nor kanji, skip it
-    while (findLoc().let(({ exp, cLine }) => !isKana(exp) && !isKanji(exp) && incr(cLine)));
+    while (findLoc().let(({ exp, cLine }) => !isKana(exp) && !isKanji(exp) && incr(cLine)))
 
     // Prevent IME stuck
     if (imeUsed && inp && !isKana(inp[0]) && inp.split('').some(c => isKana(c)) ) {
@@ -169,9 +168,9 @@
     })
 
     if (loc?.currentPlaylistId) {
-      loc.isFinished = true;
-      loc.lastResultId = res.id;
-      await API.saveUserData({ loc });
+      loc.isFinished = true
+      loc.lastResultId = res.id
+      await API.saveUserData({ loc })
     }
 
     goto(`/results/${res.id}`, { replaceState: true })
@@ -213,13 +212,13 @@
 </div>
 
 <!-- Lines -->
-<div bind:this={lrcWrapper} class="lrc-wrapper flex-1 overflow-y-auto" lang="ja-JP">
+<div bind:this={lrcWrapper} class="lrc-wrapper scroll-here" lang="ja-JP">
   <div class="vbox gap-12px py-32px relative min-h-full lrc-content">
     <div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75 z-10"></div>
     {#each processedLrc as line, l}
       <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
         onclick={() => hiddenInput.focus()} 
-        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hiddenInput.focus(); } }}>
+        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hiddenInput.focus() } }}>
         {#each line.parts as seg}
           {#if !seg.kanji}
             {#each seg.kana as char, c}
