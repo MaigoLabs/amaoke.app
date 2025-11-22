@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
   import { goto } from "$app/navigation";
-  import AppBar from "../../../components/appbar/AppBar.svelte";
-  import Button from "../../../components/Button.svelte";
-  import SongInfo from "../../../components/listitem/SongInfo.svelte";
+  import AppBar from "$lib/ui/appbar/AppBar.svelte";
+  import Button from "$lib/ui/button/Button.svelte";
+  import SongInfo from "$lib/ui/listitem/SongInfo.svelte";
   import { API } from "$lib/client";
 
   let { data }: PageProps = $props()

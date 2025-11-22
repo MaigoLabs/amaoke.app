@@ -1,10 +1,10 @@
 <script lang="ts">
   import { API } from "$lib/client"
   import { onMount } from "svelte"
-  import Button from "../../../components/Button.svelte"
-  import AppBar from "../../../components/appbar/AppBar.svelte"
+  import Button from "$lib/ui/Button.svelte"
+  import AppBar from "$lib/ui/appbar/AppBar.svelte"
   import { goto } from "$app/navigation"
-  import { artistAndAlbum } from "../../../shared/tools.ts"
+  import { artistAndAlbum } from "$lib/utils"
   import ProgressList from "../../import/netease/ProgressList.svelte"
 
   let { data } = $props()

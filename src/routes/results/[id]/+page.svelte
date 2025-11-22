@@ -1,14 +1,14 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
   import { goto } from "$app/navigation"
-  import AppBar from "../../../components/appbar/AppBar.svelte"
-  import { artistAndAlbum } from "../../../shared/tools"
-  import Button from "../../../components/Button.svelte"
+  import AppBar from "$lib/ui/appbar/AppBar.svelte"
+  import { artistAndAlbum } from "$lib/utils"
+  import Button from "$lib/ui/Button.svelte"
 
   import Chart from "chart.js/auto"
   import { API } from "$lib/client"
 
-  import type { NeteaseSong, UserData } from "../../../shared/types"
+  import type { NeteaseSong, UserData } from "../../../lib/types"
 
   let { data }: PageProps = $props()
 

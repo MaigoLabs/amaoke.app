@@ -1,10 +1,10 @@
 <script lang="ts">
   import { TextFieldOutlined } from "m3-svelte"
-  import AppBar from "../../components/appbar/AppBar.svelte"
-  import Button from "../../components/Button.svelte"
-  import Dialog from "../../components/status/Dialog.svelte"
+  import AppBar from "$lib/ui/appbar/AppBar.svelte"
+  import Button from "$lib/ui/Button.svelte"
+  import Dialog from "$lib/ui/status/Dialog.svelte"
   import { API } from "$lib/client"
-  import ErrorDialog from "../../components/status/ErrorDialog.svelte"
+  import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte"
 
   let showCodeOpen = $state(false)
   let loginSuccessOpen = $state(false)

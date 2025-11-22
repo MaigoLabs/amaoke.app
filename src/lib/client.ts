@@ -1,4 +1,4 @@
-import type { ResultDocument, UserData } from "../shared/types";
+import type { ResultDocument, UserData } from "./types";
 
 
 export async function post(endpoint: string, data: any) {

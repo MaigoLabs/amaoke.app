@@ -1,5 +1,5 @@
 import { dbs } from "./db"
-import { type UserDocument, type UserData } from "../../shared/types.ts";
+import { type UserDocument, type UserData } from "$lib/types.ts";
 import { error } from "@sveltejs/kit";
 
 const users = dbs.users

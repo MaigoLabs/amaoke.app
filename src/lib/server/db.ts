@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb"
-import type { UserDocument, ResultDocument } from "../../shared/types"
+import type { UserDocument, ResultDocument } from "../types"
 
 export const mongo = new MongoClient(process.env.MONGO_URL || "mongodb://cat:meow@localhost:27017/")
 mongo.connect()

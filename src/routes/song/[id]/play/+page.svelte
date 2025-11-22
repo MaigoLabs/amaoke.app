@@ -1,17 +1,17 @@
 <script lang="ts">
-  import AppBar from "../../../../components/appbar/AppBar.svelte"
+  import AppBar from "$lib/ui/appbar/AppBar.svelte"
   import type { PageProps } from "./$types"
   import { LinearProgress } from "m3-svelte"
   import { onMount, tick } from "svelte"
-  import { typingSettingsDefault, type LyricSegment } from "../../../../shared/types.ts"
+  import { typingSettingsDefault, type LyricSegment } from "$lib/types.ts"
   import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana"
   import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts"
-  import MenuItem from "../../../../components/material3/MenuItem.svelte"
-  import "../../../../shared/ext.ts"
+  import MenuItem from "$lib/ui/material3/MenuItem.svelte"
+  import "$lib/ext.ts"
   import { API } from "$lib/client.ts"
   import { animateCaret } from "./animation.ts"
   import { goto } from '$app/navigation'
-  import { artistAndAlbum } from "../../../../shared/tools.ts"
+  import { artistAndAlbum } from "$lib/utils.ts"
   import { MusicControl } from "./MusicControl.ts"
 
   let { data }: PageProps = $props()

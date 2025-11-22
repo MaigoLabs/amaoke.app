@@ -1,4 +1,4 @@
-import type { ResultDocument } from "../../shared/types"
+import type { ResultDocument } from "../types"
 import { dbs } from "./db"
 import { ObjectId } from "mongodb"
 

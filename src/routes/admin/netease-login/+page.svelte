@@ -11,7 +11,7 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
     import { onDestroy, onMount } from 'svelte';
     import { API } from '$lib/client';
     import { fade, scale } from 'svelte/transition';
-    import AppBar from "../../../components/appbar/AppBar.svelte";
+    import AppBar from "$lib/ui/appbar/AppBar.svelte";
     import { Layer } from "m3-svelte";
 
     let status = $state<'loading' | 'waiting_scan' | 'waiting_confirm' | 'success' | 'error'>('loading');

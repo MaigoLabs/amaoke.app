@@ -1,11 +1,11 @@
 import * as ne from '@neteasecloudmusicapienhanced/api'
 import { aiParseLyrics } from './tools/lyrics'
-import type { NeteaseSong, UserDocument } from '../../shared/types'
+import type { NeteaseSong, UserDocument } from '../types'
 import { dbs } from './db'
 import { franc } from 'franc'
 import { error } from '@sveltejs/kit'
 import type { ObjectId } from 'mongodb'
-import '../../shared/ext'
+import '../ext'
 import { promises as fs } from 'fs'
 import path from 'path'
 
@@ -168,6 +168,30 @@ export const prepareSong = async (songId: number) => {
         const taskAudio = addTask('从网易云获取音乐')
         await getSongUrl(songId)
         taskAudio.progress = 1
+
+        // 4. Source Separation
+        const taskSeparation = addTask('AI 人声分离')
+        const vocalsPath = path.join(CACHE_DIR, `${songId}/vocals.mp3`)
+        
+        let retries = 0
+        // Wait up to 10 minutes (separation can be slow on CPU)
+        while (retries < 600) {
+            try {
+                await fs.access(vocalsPath)
+                taskSeparation.progress = 1
+                break
+            } catch {
+                // File doesn't exist yet
+                await new Promise(r => setTimeout(r, 1000))
+                retries++
+                // Update progress to show it's alive
+                if (retries % 5 === 0) taskSeparation.progress = Math.min(0.99, retries / 600)
+            }
+        }
+
+        if (taskSeparation.progress < 1) {
+            addTask('警告: AI 人声分离超时，请检查后台脚本').progress = -1
+        }
         
         state.status = 'done'
 

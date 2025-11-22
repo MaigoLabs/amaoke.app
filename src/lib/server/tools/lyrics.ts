@@ -1,5 +1,5 @@
 import { OpenRouter } from '@openrouter/sdk'
-import type { LyricLine, LyricSegment } from '../../../shared/types'
+import type { LyricLine, LyricSegment } from '../../types'
 import { isKana, isKanji } from 'wanakana'
 
 // Please put OPENROUTER_API_KEY in your environment variables.

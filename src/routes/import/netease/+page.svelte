@@ -1,10 +1,10 @@
 <script lang="ts">
   import { TextFieldOutlined } from "m3-svelte"
-  import AppBar from "../../../components/appbar/AppBar.svelte"
-  import Button from "../../../components/Button.svelte"
-  import type { NeteaseSong } from "../../../shared/types"
-  import { API } from "../../../lib/client"
-  import ErrorDialog from "../../../components/status/ErrorDialog.svelte";
+  import AppBar from "$lib/ui/appbar/AppBar.svelte"
+  import Button from "$lib/ui/button/Button.svelte"
+  import type { NeteaseSong } from "$lib/types"
+  import { API } from "$lib/client"
+  import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte";
   import ProgressList from "./ProgressList.svelte";
 
   let link = $state('')

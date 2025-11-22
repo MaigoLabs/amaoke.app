@@ -1,5 +1,5 @@
 import * as Tone from 'tone'
-import type { LyricLine } from '../../../../shared/types'
+import type { LyricLine } from '$lib/types'
 
 export class MusicControl {
   player: Tone.Player

@@ -1,5 +1,5 @@
 import { toHiragana } from "wanakana";
-import type { LyricLine, LyricSegment } from "../../../../shared/types";
+import type { LyricLine, LyricSegment } from "$lib/types";
 
 export type ProcLrcSeg = { swi: number, kanji?: string, kana: string }
 export type ProcLrcLine = { parts: ProcLrcSeg[], totalLen: number }
