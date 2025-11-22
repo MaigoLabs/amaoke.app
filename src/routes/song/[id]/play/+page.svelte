@@ -12,6 +12,7 @@
   import { animateCaret } from "./animation.ts"
   import { goto } from '$app/navigation'
   import { artistAndAlbum } from "../../../../shared/tools.ts"
+  import { MusicControl } from "./MusicControl.ts"
 
   let { data }: PageProps = $props()
 
@@ -34,12 +35,17 @@
   const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
   // Process each line into segments with swi (start word index) and kanji/kana
-  let processedLrc: ProcLrcLine[] = $derived(dedupLines(data.lrc, settings.hideRepeated).map(line => processLrcLine(line.lyric)))
+  const isHideRepeated = $derived(settings.hideRepeated && !data.audioUrl)
+  let deduplicatedLyrics = $derived(dedupLines(data.lrc, isHideRepeated))
+  let processedLrc: ProcLrcLine[] = $derived(deduplicatedLyrics.map(line => processLrcLine(line.lyric)))
   // State tracking for each kana character: UNSEEN, RIGHT, WRONG
-  let states = $state(dedupLines(data.lrc, settings.hideRepeated).map(line => processLrcLine(line.lyric)).map(line => new Array(line.totalLen).fill('unseen')))
+  let states = $state(processedLrc.map(line => new Array(line.totalLen).fill('unseen')))
   
+  let musicControl: MusicControl | undefined
+  $effect(() => { li; musicControl?.updateLine(li) })
+
+  // Reset when processedLrc changes (settings changed)
   $effect(() => {
-    // Reset when processedLrc changes (settings changed)
     states = processedLrc.map(line => new Array(line.totalLen).fill('unseen'))
     li = 0
     wi = 0
@@ -73,10 +79,17 @@
     const onBlur = () => setTimeout(() => hiddenInput?.focus(), 10)
     hiddenInput.addEventListener('blur', onBlur)
 
+    if (data.audioUrl) {
+      musicControl = new MusicControl(data.audioUrl)
+      musicControl.setLyrics(deduplicatedLyrics)
+      musicControl.start()
+    }
+
     const interval = setInterval(() => { if (startTime) now = Date.now() }, 1000)
     return () => {
       clearInterval(interval)
       hiddenInput?.removeEventListener('blur', onBlur)
+      musicControl?.dispose()
     }
   })
 
@@ -88,6 +101,11 @@
     // Convert to hiragana
     inp = toHiragana(inp.replaceAll(' ', ''), { IMEMode: true })
     const imeUsed = input !== inp
+
+    // Prevent IME stuck (If the user enters "yto" -> "yと", the "y" should be ignored)
+    if (imeUsed && inp && !isKana(inp[0]) && inp.split('').some(c => isKana(c)) ) {
+      while (inp && !isKana(inp[0])) inp = inp.slice(1)
+    }
 
     function findLoc() {
       let cLine = processedLrc[li]
@@ -128,13 +146,7 @@
     }
 
     // Check next expected character, if it's neither kana nor kanji, skip it
-    while (findLoc().let(({ exp, cLine }) => !isKana(exp) && !isKanji(exp) && incr(cLine)))
-
-    // Prevent IME stuck
-    if (imeUsed && inp && !isKana(inp[0]) && inp.split('').some(c => isKana(c)) ) {
-      console.log("Clearing input to prevent IME stuck")
-      inp = ""
-    }
+    while (findLoc().let(({ exp, cLine }) => !isKana(exp) && !isKanji(exp) && incr(cLine))) {}
   }
   $effect(() => inputChanged(inp, false))
 
@@ -177,7 +189,8 @@
   }
 </script>
 
-<svelte:window onresize={() => caret && animateCaret(caret)} />
+<!-- Window events -->
+<svelte:window onresize={() => caret && animateCaret(caret)} onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
 
 <AppBar title={data.song.name} sub={artistAndAlbum(data.song)}>
@@ -185,9 +198,12 @@
   <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
   <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
   <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? "不在错误时显示罗马音" : "错误时显示罗马音"}</MenuItem>
-  <MenuItem icon="i-material-symbols:compress-rounded" onclick={() => settings.hideRepeated = !settings.hideRepeated}>{settings.hideRepeated ? "显示重复行" : "隐藏重复行"}</MenuItem>
+  <MenuItem icon="i-material-symbols:compress-rounded" 
+    disabled={!!data.audioUrl}
+    sub={data.audioUrl ? "音乐模式下不可用" : ""}
+    onclick={() => settings.hideRepeated = !settings.hideRepeated}>{isHideRepeated ? "显示重复行" : "隐藏重复行"}</MenuItem>
   {#if loc}
-    <MenuItem icon={loc.playMode === 'random' ? "i-material-symbols:shuffle-rounded" : "i-material-symbols:repeat-rounded"} onclick={() =>
+  <MenuItem icon={loc.playMode === 'random' ? "i-material-symbols:shuffle-rounded" : "i-material-symbols:repeat-rounded"} onclick={() =>
     loc.playMode = loc.playMode === 'random' ? 'sequential' : 'random'}>{loc.playMode === 'random' ? "当前：随机播放" : "当前：顺序播放"}</MenuItem>
   {/if}
 </AppBar>

@@ -6,12 +6,14 @@
     icon,
     textIcon,
     disabled = false,
+    sub,
     onclick,
     children,
   }: {
     icon?: string;
     textIcon?: string;
     disabled?: boolean;
+    sub?: string;
     onclick: () => void;
     children: Snippet;
   } = $props();
@@ -26,7 +28,12 @@
       {textIcon}
     </span>
   {/if}
-  {@render children()}
+  <div class="vbox items-start">
+    {@render children()}
+    {#if sub}
+      <div class="m3-font-body-small opacity-60">{sub}</div>
+    {/if}
+  </div>
 </button>
 
 <style lang="scss">

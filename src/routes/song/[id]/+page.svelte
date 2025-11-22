@@ -51,7 +51,8 @@
 <ProgressList percentage={progressPercentage} items={progressItems} />
 
 {#if loadStatus === "done"}
-  <div class="vbox p-16px">
-    <Button big icon="i-material-symbols:play-arrow-rounded" onclick={() => goto(`/song/${data.song.id}/play`)}>开始</Button>
+  <div class="hbox gap-4 p-16px">
+    <Button big icon="i-material-symbols:keyboard-rounded" onclick={() => goto(`/song/${data.song.id}/play`)}>打字模式</Button>
+    <Button big icon="i-material-symbols:music-note-rounded" onclick={() => goto(`/song/${data.song.id}/play?music=true`)}>音乐模式</Button>
   </div>
 {/if}

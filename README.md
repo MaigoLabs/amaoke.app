@@ -14,3 +14,6 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KashiD
 
 TODO: 404 page
 TODO: Update an existing playlist
+
+TODO: Allow users to correct lyric pronunciations through correction feedback
+TODO: Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每句歌词的具体开始结束时间，也许可以自动修正)
