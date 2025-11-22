@@ -1,6 +1,8 @@
 import EN from "./en"
 import ZH from "./zh"
 
+import { browser } from '$app/environment'
+
 type Lang = 'en' | 'zh'
 
 const msgs: Record<Lang, typeof ZH> = {
@@ -11,7 +13,7 @@ const msgs: Record<Lang, typeof ZH> = {
 let lang: Lang = 'en'
 
 // Infer language from browser
-if (navigator.language.startsWith('zh')) {
+if (browser && navigator.language.startsWith('zh')) {
   lang = 'zh'
 }
 
@@ -56,7 +58,7 @@ declare global {
 }
 
 String.prototype.sed = function (variables: { [index: string]: any }) {
-  return this.replace(/\${(.*?)}/g, (_: string, v: string | number) => variables[v] + "")
+  return this.replace(/{(.*?)}/g, (_: string, v: string | number) => variables[v] + "")
 }
 
 Object.defineProperty(String.prototype, 'sed', { enumerable: false })
