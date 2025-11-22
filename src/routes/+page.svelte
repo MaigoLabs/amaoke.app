@@ -6,7 +6,7 @@
   import Button from "$lib/ui/Button.svelte"
   import { Layer } from "m3-svelte"
   import { goto } from "$app/navigation"
-  import { getI18n } from "$lib/i18n"
+  import { getI18n, setLanguage } from "$lib/i18n"
 
   let { data }: PageProps = $props()
 
@@ -20,7 +20,11 @@
 
 
 <AppBar account={() => goto('/user')} right={[
-  {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
+  // {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
+  // Language switching button
+  {icon: "i-material-symbols:translate-rounded", onclick: () => {
+    setLanguage(data.lang === 'en' ? 'zh' : 'en')
+  }}
 ]} />
 
 <div class="vbox gap-16px overflow-y-auto flex-1">

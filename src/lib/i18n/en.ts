@@ -1,7 +1,7 @@
 export default {
   home: {
     titles: {
-      continue: 'Continue from pause',
+      continue: 'Continue From Last Session',
       history: 'History',
       myPlaylists: 'My Playlists',
       recPlaylists: 'Recommended Playlists'
