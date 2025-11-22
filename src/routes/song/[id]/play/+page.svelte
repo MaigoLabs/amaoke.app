@@ -12,6 +12,9 @@
   import { MusicControl } from "$lib/ui/player/MusicControl.ts"
   import Lyrics from "$lib/ui/player/Lyrics.svelte"
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
+  import { getI18n } from "$lib/i18n"
+
+  const t = getI18n().song.play
 
   let { data }: PageProps = $props()
 
@@ -167,14 +170,14 @@
 <!-- Stats -->
 <div class="vbox p-content py-12px mfg-on-surface-variant m3-font-body-medium">
   <div class="hbox justify-between">
-    <div>速度: {startTime ? Math.round(totalTyped / (Math.max(1, (now - startTime)) / 60000)) : '-'} cpm</div>
-    <div>正確率: {totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 100)}%</div>
+    <div>{t.speed}{startTime ? Math.round(totalTyped / (Math.max(1, (now - startTime)) / 60000)) : '-'} cpm</div>
+    <div>{t.accuracy}{totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 100)}%</div>
   </div>
   <div class="hbox justify-between">
-    <div>正确：{flat.filter(s => s === 'right').length}</div>
-    <div>模糊：{flat.filter(s => s === 'fuzzy').length}</div>
-    <div>错误：{flat.filter(s => s === 'wrong').length}</div>
-    <div>剩余：{flat.filter(s => s === 'unseen').length}</div>
+    <div>{t.stats.right}{flat.filter(s => s === 'right').length}</div>
+    <div>{t.stats.fuzzy}{flat.filter(s => s === 'fuzzy').length}</div>
+    <div>{t.stats.wrong}{flat.filter(s => s === 'wrong').length}</div>
+    <div>{t.stats.remaining}{flat.filter(s => s === 'unseen').length}</div>
   </div>
 </div>
 
