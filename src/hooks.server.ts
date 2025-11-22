@@ -5,7 +5,7 @@ checkAudioSeparator().catch(e => console.error('Audio separator check failed:', 
 
 export const handle: Handle = async ({ event, resolve }) => {
   const langCookie = event.cookies.get('lang');
-  if (langCookie === 'zh' || langCookie === 'en') {
+  if (langCookie === 'zh' || langCookie === 'en' || langCookie === 'ja') {
     event.locals.lang = langCookie;
   } else {
     const acceptLanguage = event.request.headers.get('accept-language');
@@ -14,6 +14,8 @@ export const handle: Handle = async ({ event, resolve }) => {
     // For now, let's assume if 'zh' is in the header, the user likely understands Chinese.
     if (acceptLanguage && acceptLanguage.includes('zh')) {
       event.locals.lang = 'zh';
+    } else if (acceptLanguage && acceptLanguage.includes('ja')) {
+      event.locals.lang = 'ja';
     } else {
       event.locals.lang = 'en';
     }

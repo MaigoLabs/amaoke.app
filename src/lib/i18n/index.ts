@@ -1,17 +1,19 @@
 import { getContext, setContext } from 'svelte'
 import EN from "./en"
 import ZH from "./zh"
+import JA from "./ja"
 
 
 // i18n related files:
 // src\hooks.server.ts
 // src\routes\+layout.server.ts
 
-type Lang = 'en' | 'zh'
+type Lang = 'en' | 'zh' | 'ja'
 
 const msgs: Record<Lang, typeof ZH> = {
   en: EN,
-  zh: ZH
+  zh: ZH,
+  ja: JA
 }
 
 const I18N_KEY = Symbol('i18n')
