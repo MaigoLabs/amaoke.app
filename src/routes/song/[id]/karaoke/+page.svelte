@@ -61,16 +61,11 @@
       let nextLi = -1
       for (let i = 0; i < deduplicatedLyrics.length; i++) {
         const lineTime = musicControl.parseTime(deduplicatedLyrics[i].time)
-        if (time >= lineTime) {
-          nextLi = i
-        } else {
-          break
-        }
+        if (time >= lineTime) nextLi = i
+        else break
       }
       
-      if (nextLi !== -1 && nextLi !== li) {
-        li = nextLi
-      }
+      if (nextLi !== -1 && nextLi !== li) li = nextLi
     }, 100)
 
     return () => {
@@ -82,7 +77,7 @@
 
 <svelte:window onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
-<PlayerAppBar song={data.song} bind:settings showRomajiOnError={false} isKaraoke={true} />
+<PlayerAppBar song={data.song} bind:settings showRomajiOnError={false} isKaraoke={true} disableHideRepeated />
 
 <div class="vbox p-content py-4 gap-2 mfg-on-surface-variant">
   {#if data.audioData.vocalsUrl}
