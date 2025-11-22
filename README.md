@@ -15,6 +15,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
   * [ ] 历史成绩和进步曲线
 * [x] 唱歌模式
   * [x] 自动分离人声和伴奏
+    * [ ] 分段处理以加快初始加载速度
   * [x] 调节人声伴奏比例
   * [x] 跟随音乐滚动歌词
   * [ ] 升降调
