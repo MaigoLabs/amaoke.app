@@ -3,9 +3,9 @@
   import { onMount } from "svelte"
   import Button from "$lib/ui/Button.svelte"
   import AppBar from "$lib/ui/appbar/AppBar.svelte"
+  import ProgressList from "$lib/ui/ProgressList.svelte"
   import { goto } from "$app/navigation"
   import { artistAndAlbum } from "$lib/utils"
-  import ProgressList from "../../import/netease/ProgressList.svelte"
 
   let { data } = $props()
   let loadStatus = $state<"idle" | "loading" | "done">("idle")

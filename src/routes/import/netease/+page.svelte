@@ -5,7 +5,7 @@
   import type { NeteaseSong } from "$lib/types"
   import { API } from "$lib/client"
   import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte"
-  import ProgressList from "./ProgressList.svelte"
+  import ProgressList from "$lib/ui/ProgressList.svelte"
 
   let link = $state('')
 
