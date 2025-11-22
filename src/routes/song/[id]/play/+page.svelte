@@ -80,7 +80,7 @@
     hiddenInput.addEventListener('blur', onBlur)
 
     if (data.audioUrl) {
-      musicControl = new MusicControl(data.audioUrl)
+      musicControl = new MusicControl(data.audioUrl.url)
       musicControl.setLyrics(deduplicatedLyrics)
       musicControl.start()
     }

@@ -104,7 +104,16 @@ export const getSongUrl = async (id: number | string) => {
     const level = 'exhigh'
     const filePath = path.join(CACHE_DIR, `${id}/${level}.mp3`)
     const publicUrl = `/audio/${id}/${level}.mp3`
-    if (await fs.exists(filePath)) return publicUrl
+    const vocalsPath = path.join(CACHE_DIR, `${id}/vocals.opus`)
+    const instrumentalPath = path.join(CACHE_DIR, `${id}/instrumental.opus`)
+    
+    if (await fs.exists(filePath)) {
+        return {
+            url: publicUrl,
+            vocalsUrl: (await fs.exists(vocalsPath)) ? `/audio/${id}/vocals.opus` : null,
+            instrumentalUrl: (await fs.exists(instrumentalPath)) ? `/audio/${id}/instrumental.opus` : null
+        }
+    }
 
     // Check netease api status
     if (await checkNetease() === null) throw error(500, '服务器的网易云账号坏掉了 :(')
@@ -125,7 +134,7 @@ export const getSongUrl = async (id: number | string) => {
     await fs.writeFile(filePath, Buffer.from(buffer))
     console.log(`Song ${id} cached to ${filePath}`)
 
-    return publicUrl
+    return { url: publicUrl }
 }
 
 // /////////////////////////////////////////////////////////////////////////////
