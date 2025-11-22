@@ -26,3 +26,5 @@ data/
 public/assets/fonts/cache
 .idea
 static/audio
+temp_audio
+.stfolder
