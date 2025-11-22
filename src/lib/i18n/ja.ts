@@ -86,7 +86,8 @@ export default {
   song: {
     mode: {
       typing: 'タイピングモード',
-      music: '音楽モード'
+      music: '音楽モード',
+      karaoke: '歌うモード'
     },
     karaoke: {
       noVocals: 'ボーカル分離トラックが検出されないため、ボーカル音量を調整できません。まず曲の詳細ページで処理してください。'

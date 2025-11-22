@@ -54,8 +54,9 @@
 <ProgressList percentage={progressPercentage} items={progressItems} />
 
 {#if loadStatus === "done"}
-  <div class="hbox gap-4 p-16px">
-    <Button big icon="i-material-symbols:keyboard-rounded" onclick={() => goto(`/song/${data.song.id}/play`)}>{t.typing}</Button>
-    <Button big icon="i-material-symbols:music-note-rounded" onclick={() => goto(`/song/${data.song.id}/play?music=true`)}>{t.music}</Button>
+  <div class="hbox gap-4 p-16px flex-wrap">
+    <Button big icon="i-material-symbols:keyboard-rounded" onclick={() => goto(`/song/${data.song.id}/play`)} class="!w-auto !min-w-[calc(50%-8px)] grow">{t.typing}</Button>
+    <Button big icon="i-material-symbols:music-note-rounded" onclick={() => goto(`/song/${data.song.id}/play?music=true`)} class="!w-auto !min-w-[calc(50%-8px)] grow">{t.music}</Button>
+    <Button big icon="i-material-symbols:mic-rounded" onclick={() => goto(`/song/${data.song.id}/karaoke`)} class="!w-auto !min-w-[calc(50%-8px)] grow">{t.karaoke}</Button>
   </div>
 {/if}

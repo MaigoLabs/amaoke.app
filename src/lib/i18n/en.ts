@@ -86,7 +86,8 @@ export default {
   song: {
     mode: {
       typing: 'Typing Mode',
-      music: 'Music Mode'
+      music: 'Music Mode',
+      karaoke: 'Singing Mode'
     },
     karaoke: {
       noVocals: 'No vocal separation track detected, cannot adjust vocal volume. Please process in song details page first.'

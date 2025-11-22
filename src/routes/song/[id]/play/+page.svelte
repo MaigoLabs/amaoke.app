@@ -8,7 +8,6 @@
   import "$lib/ext.ts"
   import { API } from "$lib/client.ts"
   import { goto } from '$app/navigation'
-  import { artistAndAlbum } from "$lib/utils.ts"
   import { MusicControl } from "$lib/ui/player/MusicControl.ts"
   import Lyrics from "$lib/ui/player/Lyrics.svelte"
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
