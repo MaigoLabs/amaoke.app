@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
-  import { goto } from "$app/navigation";
-  import AppBar from "$lib/ui/appbar/AppBar.svelte";
-  import Button from "$lib/ui/button/Button.svelte";
-  import SongInfo from "$lib/ui/listitem/SongInfo.svelte";
-  import { API } from "$lib/client";
+  import { goto } from "$app/navigation"
+  import AppBar from "$lib/ui/appbar/AppBar.svelte"
+  import Button from "$lib/ui/Button.svelte"
+  import SongInfo from "$lib/ui/listitem/SongInfo.svelte"
+  import { API } from "$lib/client"
 
   let { data }: PageProps = $props()
 
@@ -23,10 +23,10 @@
   }
 
   async function startPractice() {
-    if (songs.length === 0) return;
+    if (songs.length === 0) return
     
-    const firstIndex = 0;
-    const firstSong = songs[firstIndex];
+    const firstIndex = 0
+    const firstSong = songs[firstIndex]
     
     data.user.data.loc = {
       currentPlaylistId: meta.id,
@@ -35,10 +35,10 @@
       playMode: 'sequential',
       isFinished: false,
       lastResultId: null
-    };
+    }
     
-    await API.saveUserData({ loc: data.user.data.loc });
-    goto(`/song/${firstSong.id}`);
+    await API.saveUserData({ loc: data.user.data.loc })
+    goto(`/song/${firstSong.id}`)
   }
 </script>
 

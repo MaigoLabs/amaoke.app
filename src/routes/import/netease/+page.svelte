@@ -1,11 +1,11 @@
 <script lang="ts">
   import { TextFieldOutlined } from "m3-svelte"
   import AppBar from "$lib/ui/appbar/AppBar.svelte"
-  import Button from "$lib/ui/button/Button.svelte"
+  import Button from "$lib/ui/Button.svelte"
   import type { NeteaseSong } from "$lib/types"
   import { API } from "$lib/client"
-  import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte";
-  import ProgressList from "./ProgressList.svelte";
+  import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte"
+  import ProgressList from "./ProgressList.svelte"
 
   let link = $state('')
 
@@ -34,14 +34,14 @@
     return ''
   }
 
-  let listTitle = $derived(status === 'idle' ? '' : (status === 'importing' ? '正在导入' : (status === 'success' ? '导入完成' : '导入出错')));
-  let listSubtitle = $derived(`${progress.done} / ${progress.total} 首歌曲`);
-  let listPercent = $derived(progress.total ? progress.done / progress.total * 100 : 0);
+  let listTitle = $derived(status === 'idle' ? '' : (status === 'importing' ? '正在导入' : (status === 'success' ? '导入完成' : '导入出错')))
+  let listSubtitle = $derived(`${progress.done} / ${progress.total} 首歌曲`)
+  let listPercent = $derived(progress.total ? progress.done / progress.total * 100 : 0)
   let listItems = $derived(songs.map(song => ({
     title: song.song.name,
     subtitle: song.song.ar.map(a => a.name).join(', '),
     icon: statusToIcon(song.status)
-  })));
+  })))
 
   async function startImport() {
     if (!link) return

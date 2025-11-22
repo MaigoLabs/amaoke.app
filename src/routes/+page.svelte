@@ -1,9 +1,9 @@
 <script lang="ts">
-  import AppBar from "../components/appbar/AppBar.svelte";
-  import TitleHeader from "../components/TitleHeader.svelte";
-  import SongInfo from "../components/listitem/SongInfo.svelte";
+  import AppBar from "$lib/ui/appbar/AppBar.svelte";
+  import TitleHeader from "$lib/ui/TitleHeader.svelte";
+  import SongInfo from "$lib/ui/listitem/SongInfo.svelte";
   import type { PageProps } from "./$types";
-  import Button from "../components/Button.svelte";
+  import Button from "$lib/ui/Button.svelte";
     import { Layer } from "m3-svelte";
     import { goto } from "$app/navigation";
 
