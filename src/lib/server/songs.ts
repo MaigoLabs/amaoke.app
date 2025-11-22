@@ -140,7 +140,7 @@ export const getSongUrl = async (id: number | string) => {
 // /////////////////////////////////////////////////////////////////////////////
 // API for Song Preparation
 
-export interface ProgressItem { id: string, task: string, progress: number }
+export interface ProgressItem { task: string, progress: number }
 export interface SongProcessState { items: ProgressItem[], status: 'running' | 'done' | 'error' }
 
 const songProcessingStatus = new Map<number, SongProcessState>()
@@ -152,20 +152,20 @@ export const prepareSong = async (songId: number) => {
     const state: SongProcessState = { items: [], status: 'running' }
     songProcessingStatus.set(songId, state)
 
-    const addTask = (id: string, task: string) => ({ id, task, progress: 0 }).also(it => state.items.push(it))
+    const addTask = (task: string) => ({ task, progress: 0 }).also(it => state.items.push(it))
     try {
         // 1. Get Lyrics
-        const taskLyrics = addTask('lyrics', '从网易云获取歌词')
+        const taskLyrics = addTask('从网易云获取歌词')
         const raw = await getLyricsRaw(songId)
         taskLyrics.progress = 1
         
         if (raw.lang !== 'jpn') {
-             addTask('error', '错误: 不是日语歌曲').progress = -1
+             addTask('错误: 不是日语歌曲').progress = -1
              return state.status = 'error'
         }
 
         // 2. AI Process
-        const taskAI = addTask('ai', 'AI 标注歌词读音')
+        const taskAI = addTask('AI 标注歌词读音')
         
         // Check cache
         if (await checkLyricsProcessed(songId)) taskAI.progress = 1
@@ -176,12 +176,12 @@ export const prepareSong = async (songId: number) => {
         }
 
         // 3. Audio
-        const taskAudio = addTask('music', '从网易云获取音乐')
+        const taskAudio = addTask('从网易云获取音乐')
         await getSongUrl(songId)
         taskAudio.progress = 1
 
         // 4. Source Separation
-        const taskSeparation = addTask('separation', 'AI 人声分离')
+        const taskSeparation = addTask('AI 人声分离')
         const inputPath = path.join(CACHE_DIR, `${songId}/exhigh.mp3`)
         const outputDir = path.join(CACHE_DIR, `${songId}`)
 
@@ -189,14 +189,14 @@ export const prepareSong = async (songId: number) => {
             await separateSong(inputPath, outputDir)
             taskSeparation.progress = 1
         } catch (e: any) {
-            addTask('error', `错误: ${e.message}`).progress = -1
+            addTask(`错误: ${e.message}`).progress = -1
             // Don't fail the whole process, just this step
         }
         
         state.status = 'done'
 
     } catch (e) {
-        addTask('error', `错误: ${eToString(e)}`).progress = -1
+        addTask(`错误: ${eToString(e)}`).progress = -1
         state.status = 'error'
     }
 }

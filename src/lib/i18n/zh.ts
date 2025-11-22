@@ -127,5 +127,10 @@ export default {
       loginWithCode: '用引继码登录',
       login: '登录'
     }
+  },
+  errorPage: {
+    title: 'Oops!',
+    message: 'The page you’re looking for doesn’t exist. It might have been removed, renamed, or never existed.\n\n </br></br> Go back to the <a class="error-page__link" href="/">homepage</a> to continue browsing',
+    return: 'Return home',
   }
 }
