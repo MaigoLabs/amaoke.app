@@ -11,6 +11,12 @@
   const t = getI18n().song.mode
 
   let { data } = $props()
+  let modes = $derived([
+    { icon: "i-material-symbols:keyboard-rounded", label: t.typing, url: `/song/${data.song.id}/play` },
+    { icon: "i-material-symbols:music-note-rounded", label: t.music, url: `/song/${data.song.id}/play?music=true` },
+    { icon: "i-material-symbols:mic-rounded", label: t.karaoke, url: `/song/${data.song.id}/karaoke` },
+  ])
+
   let loadStatus = $state<"idle" | "loading" | "done">("idle")
   let progressItems = $state<any[]>([])
   let progressPercentage = $state(0)
@@ -55,8 +61,8 @@
 
 {#if loadStatus === "done"}
   <div class="hbox gap-4 p-16px flex-wrap">
-    <Button big icon="i-material-symbols:keyboard-rounded" onclick={() => goto(`/song/${data.song.id}/play`)} class="!w-auto !min-w-[calc(50%-8px)] grow">{t.typing}</Button>
-    <Button big icon="i-material-symbols:music-note-rounded" onclick={() => goto(`/song/${data.song.id}/play?music=true`)} class="!w-auto !min-w-[calc(50%-8px)] grow">{t.music}</Button>
-    <Button big icon="i-material-symbols:mic-rounded" onclick={() => goto(`/song/${data.song.id}/karaoke`)} class="!w-auto !min-w-[calc(50%-8px)] grow">{t.karaoke}</Button>
+    {#each modes as mode}
+      <Button big icon={mode.icon} onclick={() => goto(mode.url)} class="!w-auto !min-w-[calc(50%-8px)] grow">{mode.label}</Button>
+    {/each}
   </div>
 {/if}
