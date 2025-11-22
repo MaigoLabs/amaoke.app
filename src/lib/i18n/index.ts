@@ -1,7 +1,11 @@
+import { getContext, setContext } from 'svelte'
 import EN from "./en"
 import ZH from "./zh"
 
-import { browser } from '$app/environment'
+
+// i18n related files:
+// src\hooks.server.ts
+// src\routes\+layout.server.ts
 
 type Lang = 'en' | 'zh'
 
@@ -10,44 +14,20 @@ const msgs: Record<Lang, typeof ZH> = {
   zh: ZH
 }
 
-let lang: Lang = 'en'
+const I18N_KEY = Symbol('i18n')
 
-// Infer language from browser
-if (browser && navigator.language.startsWith('zh')) {
-  lang = 'zh'
+export const initI18n = (lang: Lang) => {
+  setContext(I18N_KEY, msgs[lang])
 }
 
-export const getI18n = () => msgs[lang]
+export const getI18n = () => {
+  return getContext<typeof ZH>(I18N_KEY) || msgs['en']
+}
 
-// export function ts(key: string, variables?: { [index: string]: any }) {
-//   return t(key as keyof LocalizedMessages, variables)
-// }
-
-// /**
-//  * Load the translation for the given key
-//  *
-//  * @param key
-//  * @param variables
-//  */
-// export function t(key: keyof LocalizedMessages, variables?: { [index: string]: any }) {
-//   // Check if the key exists
-//   let msg = getI18n()[key]
-//   if (!msg) {
-//     // Check if the key exists in English
-//     if (!(msg = getI18n()[key])) {
-//       msg = key
-//       console.error(`ERROR!! Missing translation reference entry (English) for ${key}`)
-//     }
-//     else console.warn(`Missing translation for ${key} in ${lang}`)
-//   }
-//   // Replace variables
-//   if (variables) {
-//     return msg.replace(/\${(.*?)}/g, (_: string, v: string | number) => variables[v] + "")
-//   }
-//   return msg
-// }
-// Object.assign(window, { t })
-
+export const setLanguage = (lang: Lang) => {
+  document.cookie = `lang=${lang}; path=/; max-age=31536000`
+  location.reload()
+}
 
 export {}
 

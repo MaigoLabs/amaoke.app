@@ -6,10 +6,12 @@
   import "../style/material.scss"
   import '@unocss/reset/normalize.css'
   import '@unocss/reset/tailwind-v4.css'
+  import { initI18n } from "$lib/i18n"
   import type { LayoutProps } from "./$types"
   import { onNavigate } from '$app/navigation'
 
   let { data, children }: LayoutProps = $props()
+  initI18n(data.lang || 'en')
 
   // This function is called when the user navigates to a new page, it will start the view transition
   onNavigate((navigation) => {
