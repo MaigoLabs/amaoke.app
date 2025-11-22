@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
-  import { LinearProgress } from "m3-svelte"
   import { onMount } from "svelte"
   import { typingSettingsDefault } from "$lib/types"
   import { processLrcLine, dedupLines, type ProcLrcLine } from "$lib/ui/player/IMEHelper"

@@ -23,10 +23,11 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
   * [ ] 音域分析（自动推荐升降调幅度）
 * [ ] 电视模式
   * [ ] 和手机配对、用手机点歌
+  * [ ] 从网易云搜索歌曲
 
 ## Technical Tasks
 
-* [ ] i18n
+* [x] i18n
 * [ ] 404 page
 * [ ] Update an existing playlist
 * [ ] Allow users to correct lyric pronunciations through correction feedback

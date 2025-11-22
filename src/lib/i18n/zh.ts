@@ -86,7 +86,8 @@ export default {
   song: {
     mode: {
       typing: '打字模式',
-      music: '音乐模式'
+      music: '音乐模式',
+      karaoke: '唱歌模式'
     },
     karaoke: {
       noVocals: '未检测到人声分离音轨，无法调节人声音量。请先在歌曲详情页进行处理。'
