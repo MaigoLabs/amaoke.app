@@ -9,6 +9,9 @@
   import { MusicControl } from "$lib/ui/player/MusicControl"
   import Lyrics from "$lib/ui/player/Lyrics.svelte"
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
+  import { getI18n } from "$lib/i18n"
+
+  const t = getI18n().song.karaoke
 
   let { data }: PageProps = $props()
 
@@ -88,7 +91,7 @@
     </div>
   {:else}
     <div class="text-center text-sm opacity-70">
-      未检测到人声分离音轨，无法调节人声音量。请先在歌曲详情页进行处理。
+      {t.noVocals}
     </div>
   {/if}
 </div>

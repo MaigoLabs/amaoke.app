@@ -5,6 +5,9 @@
   import Button from "$lib/ui/Button.svelte"
   import SongInfo from "$lib/ui/listitem/SongInfo.svelte"
   import { API } from "$lib/client"
+  import { getI18n } from "$lib/i18n"
+
+  const t = getI18n().playlist.detail
 
   let { data }: PageProps = $props()
 
@@ -42,7 +45,7 @@
   }
 </script>
 
-<AppBar title="歌单详情" right={[
+<AppBar title={t.title} right={[
   {
     icon: isFavorite ? "i-material-symbols:bookmark-rounded" : "i-material-symbols:bookmark-add-outline-rounded", 
     onclick: toggleFavorite
@@ -55,18 +58,18 @@
   <div class="vbox flex-1 py-8px self-stretch min-h-full">
     <div class="m3-font-headline-small font-bold">{meta.name}</div>
     <div class="flex-1">
-      <div class="m3-font-body-small text-surface-variant">创建者: {meta.creator.nickname}</div>
-      <div class="m3-font-body-small text-surface-variant">歌曲数: {meta.trackCount}</div>
+      <div class="m3-font-body-small text-surface-variant">{t.creator}{meta.creator.nickname}</div>
+      <div class="m3-font-body-small text-surface-variant">{t.count}{meta.trackCount}</div>
     </div>
     <div>
-      <Button onclick={startPractice}>开始练习</Button>
+      <Button onclick={startPractice}>{t.startPractice}</Button>
     </div>
   </div>
 </div>
 
 <div class="hbox gap-12px items-end! h-48px p-content">
-  <div class="m3-font-headline-small">歌曲列表</div>
-  <div class="m3-font-label-small pb-3px">{songs.length} 首歌曲</div>
+  <div class="m3-font-headline-small">{t.songList}</div>
+  <div class="m3-font-label-small pb-3px">{songs.length} {t.songs}</div>
 </div>
 <div class="vbox gap-12px mt-12px pb-12px scroll-here">
   {#each songs as song, index}

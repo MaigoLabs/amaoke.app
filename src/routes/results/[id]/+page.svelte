@@ -7,6 +7,9 @@
 
   import Chart from "chart.js/auto"
   import { API } from "$lib/client"
+  import { getI18n } from "$lib/i18n"
+
+  const t = getI18n().results
 
   import type { NeteaseSong, UserData } from "../../../lib/types"
 
@@ -19,12 +22,12 @@
   let duration = endTime - startTime
 
   let fields = [
-    { label: "速度", value: Math.round(totalTyped / (Math.max(1, duration) / 60000)), unit: "CPM" },
-    { label: "准确率", value: totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 10000) / 100, unit: "%" },
-    { label: "实时率", value: data.result.realTimeFactor.toFixed(2), unit: "x" },
-    { label: "字数", value: totalTyped, unit: "字" },
-    { label: "用时", value: new Date(duration).toISOString().slice(14, 19), unit: "" },
-    { label: "歌曲时长", value: new Date(data.song.dt).toISOString().slice(14, 19), unit: "" }
+    { label: t.fields.speed, value: Math.round(totalTyped / (Math.max(1, duration) / 60000)), unit: t.units.cpm },
+    { label: t.fields.accuracy, value: totalTyped === 0 ? 100 : Math.round((totalRight / totalTyped) * 10000) / 100, unit: t.units.percent },
+    { label: t.fields.realtime, value: data.result.realTimeFactor.toFixed(2), unit: t.units.x },
+    { label: t.fields.count, value: totalTyped, unit: t.units.char },
+    { label: t.fields.time, value: new Date(duration).toISOString().slice(14, 19), unit: "" },
+    { label: t.fields.duration, value: new Date(data.song.dt).toISOString().slice(14, 19), unit: "" }
   ]
 
   let chartCanvas: HTMLCanvasElement
@@ -38,7 +41,7 @@
           labels: statsHistory.map((_: any, i: number) => i),
           datasets: [
             {
-              label: "速度 (CPM)",
+              label: t.chart.speed,
               data: statsHistory.map((h: { cpm: number }) => h.cpm),
               tension: 0.4,
               pointRadius: 0,
@@ -47,7 +50,7 @@
               backgroundColor: "rgba(123, 120, 194, 0.1)",
             },
             {
-              label: "准确率 (%)",
+              label: t.chart.accuracy,
               data: statsHistory.map((h: { acc: number }) => h.acc),
               tension: 0.4,
               yAxisID: "y1",
@@ -146,9 +149,9 @@
   }
 
   let buttonText = $derived(
-    nextSongId !== null ? "下一首" :
-    isPlaylistFinished ? "返回歌单" :
-    "再来一次"
+    nextSongId !== null ? t.btn.next :
+    isPlaylistFinished ? t.btn.back :
+    t.btn.retry
   )
 </script>
 
@@ -156,7 +159,7 @@
 
 <div class="vbox gap-16px p-content scroll-here">
   <div class="hbox gap-12px items-end! h-48px">
-    <div class="m3-font-headline-small">练习结果</div>
+    <div class="m3-font-headline-small">{t.title}</div>
   </div>
 
   <div class="grid grid-cols-2 gap-16px">

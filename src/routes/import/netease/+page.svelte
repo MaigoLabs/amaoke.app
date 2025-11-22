@@ -6,6 +6,9 @@
   import { API } from "$lib/client"
   import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte"
   import ProgressList from "$lib/ui/ProgressList.svelte"
+  import { getI18n } from "$lib/i18n"
+
+  const t = getI18n().import.netease
 
   let link = $state('')
 
@@ -34,8 +37,8 @@
     return ''
   }
 
-  let listTitle = $derived(status === 'idle' ? '' : (status === 'importing' ? '正在导入' : (status === 'success' ? '导入完成' : '导入出错')))
-  let listSubtitle = $derived(`${progress.done} / ${progress.total} 首歌曲`)
+  let listTitle = $derived(status === 'idle' ? '' : (status === 'importing' ? t.status.importing : (status === 'success' ? t.status.success : t.status.error)))
+  let listSubtitle = $derived(`${progress.done} / ${progress.total} ${t.songs}`)
   let listPercent = $derived(progress.total ? progress.done / progress.total * 100 : 0)
   let listItems = $derived(songs.map(song => ({
     title: song.song.name,
@@ -72,26 +75,26 @@
   }
 </script>
 
-<AppBar title="从网易云导入"/>
+<AppBar title={t.title}/>
 
 <ErrorDialog error={error} />
 
 <div class="vbox gap-16px flex-1 min-h-0">
   <div class="m3-font-body-medium mfg-on-surface-variant py-12px p-content">
-    去网易云 APP 找一个你喜欢的日本语歌单，点击分享，再点击复制链接，然后把链接粘贴到这里就可以开始导入了！
+    {t.tip}
   </div>
   <div class="vbox p-content">
-    <TextFieldOutlined label="网易云歌单链接 / ID" bind:value={link} />
+    <TextFieldOutlined label={t.inputLabel} bind:value={link} />
   </div>
 
   <ProgressList title={listTitle} subtitle={listSubtitle} percentage={listPercent} items={listItems} />
 
   <div class="py-16px p-content">
     {#if status === 'idle'}
-      <Button big icon="i-material-symbols:download" onclick={startImport}>开始导入</Button>
+      <Button big icon="i-material-symbols:download" onclick={startImport}>{t.btnStart}</Button>
     {:else if status === 'success'}
       <a href="/playlist/{id}">
-        <Button big icon="i-material-symbols:right-arrow">查看歌单</Button>
+        <Button big icon="i-material-symbols:right-arrow">{t.btnView}</Button>
       </a>
     {/if}
   </div>

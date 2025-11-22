@@ -8,12 +8,13 @@
     onclick: () => void
   }
 
-  let { title, sub, account, right, children }: {
+  let { title, sub, account, right, children, moreIcon }: {
     title?: string
     sub?: string
     account?: () => void
     right?: Icon[]
     children?: any
+    moreIcon?: string
   } = $props()
 
   let showMenu = $state(false)
@@ -37,7 +38,7 @@
   {/each}
 
   {#if children}
-    <IconButton icon="i-material-symbols:more-vert" onclick={() => showMenu = !showMenu} />
+    <IconButton icon={moreIcon ?? 'i-material-symbols:more-vert'} onclick={() => showMenu = !showMenu} />
   {/if}
 </div>
 

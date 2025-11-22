@@ -1,7 +1,7 @@
 import { createUser, login } from '$lib/server/user'
 import type { LayoutServerLoad } from './$types'
 
-export const load: LayoutServerLoad = async ({ cookies, request }) => {
+export const load: LayoutServerLoad = async ({ cookies, request, locals }) => {
   let session = cookies.get('session')
 
   const registUA = request.headers.get('user-agent') || ''
@@ -20,7 +20,7 @@ export const load: LayoutServerLoad = async ({ cookies, request }) => {
 
   try {
     const user = structuredClone(await login(session))
-    return { user }
+    return { user, lang: locals.lang }
   } catch (e) {
     // Invalid session, create new
     session = await createUser(registUA)
@@ -32,6 +32,6 @@ export const load: LayoutServerLoad = async ({ cookies, request }) => {
       maxAge: 60 * 60 * 24 * 365
     })
     const user = structuredClone(await login(session))
-    return { user }
+    return { user, lang: locals.lang }
   }
 }

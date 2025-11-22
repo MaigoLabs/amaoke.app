@@ -12,7 +12,9 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
     import { API } from '$lib/client';
     import { fade, scale } from 'svelte/transition';
     import AppBar from "$lib/ui/appbar/AppBar.svelte";
-    import { Layer } from "m3-svelte";
+    import { getI18n } from "$lib/i18n";
+
+    const t = getI18n().admin.neteaseLogin;
 
     let status = $state<'loading' | 'waiting_scan' | 'waiting_confirm' | 'success' | 'error'>('loading');
     let qrImg = $state('');
@@ -53,20 +55,20 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
     });
 </script>
 
-<AppBar title="网易云登录" />
+<AppBar title={t.title} />
 
 <div class="vbox flex-1 cbox p-content">
     <div class="vbox items-center gap-24px p-32px rounded-24px relative overflow-hidden w-full max-w-400px" in:scale={{ duration: 400, start: 0.95 }}>
         <div class="vbox items-center gap-8px z-1">
-            <h1 class="m3-font-headline-medium mfg-on-surface m-0">扫码登录</h1>
-            <p class="m3-font-body-medium mfg-on-surface-variant m-0">请使用网易云音乐 APP 扫码</p>
+            <h1 class="m3-font-headline-medium mfg-on-surface m-0">{t.scanTitle}</h1>
+            <p class="m3-font-body-medium mfg-on-surface-variant m-0">{t.scanTip}</p>
         </div>
 
         <div class="cbox min-h-200px w-full z-1">
             {#if status === 'loading'}
                 <div class="vbox items-center gap-16px" in:fade>
                     <div class="i-material-symbols:sync animate-spin text-40px mfg-primary"></div>
-                    <p class="m3-font-body-medium mfg-on-surface-variant">正在生成二维码...</p>
+                    <p class="m3-font-body-medium mfg-on-surface-variant">{t.generating}</p>
                 </div>
             {:else if status === 'waiting_scan'}
                 <div class="p-16px bg-white rounded-16px shadow-sm" in:fade>
@@ -78,8 +80,8 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
                         <div class="i-material-symbols:check-circle-outline text-48px"></div>
                     </div>
                     <div class="vbox items-center">
-                        <p class="m3-font-title-large mfg-on-surface font-bold">已扫描</p>
-                        <p class="m3-font-body-medium mfg-on-surface-variant">请在手机上确认登录</p>
+                        <p class="m3-font-title-large mfg-on-surface font-bold">{t.scanned}</p>
+                        <p class="m3-font-body-medium mfg-on-surface-variant">{t.confirm}</p>
                     </div>
                 </div>
             {:else if status === 'success'}
@@ -88,7 +90,7 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
                         <div class="i-material-symbols:check text-48px"></div>
                     </div>
                     <div class="vbox items-center">
-                        <p class="m3-font-title-large mfg-on-surface font-bold">登录成功</p>
+                        <p class="m3-font-title-large mfg-on-surface font-bold">{t.success}</p>
                     </div>
                 </div>
             {:else if status === 'error'}
@@ -96,7 +98,7 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
                     <div class="size-80px rounded-full cbox mbg-error-container mfg-error">
                         <div class="i-material-symbols:error-outline text-48px"></div>
                     </div>
-                    <p class="m3-font-body-medium mfg-error text-center">错误: {errorMessage}</p>
+                    <p class="m3-font-body-medium mfg-error text-center">{t.errorPrefix}{errorMessage}</p>
                 </div>
             {/if}
         </div>
