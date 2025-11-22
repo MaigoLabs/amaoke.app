@@ -90,6 +90,8 @@ export const typingSettingsDefault = {
   hideRepeated: false,
 };
 
+export type TypingSettings = typeof typingSettingsDefault;
+
 export interface UserData {
   myPlaylists?: number[];
   playHistory?: GameStats[];

@@ -3,16 +3,22 @@ import type { LyricLine } from '$lib/types'
 
 export class MusicControl {
   player: Tone.Player
+  vocalsPlayer?: Tone.Player
   lyrics: LyricLine[] = []
   currentLineIndex: number = 0
   checkInterval: any
   isLoaded = false
 
   audioUrl: string
+  vocalsUrl?: string
 
-  constructor(audioUrl: string) {
+  constructor(audioUrl: string, vocalsUrl?: string) {
     this.audioUrl = audioUrl
+    this.vocalsUrl = vocalsUrl
     this.player = new Tone.Player(audioUrl).toDestination()
+    if (vocalsUrl) {
+      this.vocalsPlayer = new Tone.Player(vocalsUrl).toDestination()
+    }
   }
 
   log(msg: string) {
@@ -42,21 +48,36 @@ export class MusicControl {
     this.log('start() called')
     await this.ready().catch(e => this.log(`Tone.start() failed: ${e}`))
 
+    const promises = []
     if (!this.player.loaded) {
       this.log('Loading audio...')
-      await this.player.load(this.audioUrl)
-      this.log('Audio loaded')
+      promises.push(this.player.load(this.audioUrl))
     }
+    if (this.vocalsPlayer && !this.vocalsPlayer.loaded) {
+      this.log('Loading vocals...')
+      promises.push(this.vocalsPlayer.load(this.vocalsUrl!))
+    }
+    await Promise.all(promises)
+    this.log('Audio loaded')
 
     // Sync player to transport and schedule start at 0
     // We do this regardless of transport state to ensure it's scheduled
     this.player.sync().start(0)
+    this.vocalsPlayer?.sync().start(0)
 
     if (Tone.getTransport().state !== 'started') {
       this.log('Starting Transport')
       Tone.getTransport().start()
     }
     this.startCheckLoop()
+  }
+
+  setVocalsVolume(db: number) {
+    if (this.vocalsPlayer) this.vocalsPlayer.volume.value = db
+  }
+
+  getTime() {
+    return Tone.getTransport().seconds
   }
 
   startCheckLoop() {
@@ -66,6 +87,10 @@ export class MusicControl {
 
   check() {
     if (Tone.getTransport().state !== 'started') return
+    
+    // In karaoke mode (dual tracks), we don't pause for typing
+    if (this.vocalsPlayer) return
+
     const ct = Tone.getTransport().seconds
     const ni = this.currentLineIndex + 1
     if (ni >= this.lyrics.length) return
@@ -92,6 +117,7 @@ export class MusicControl {
   dispose() {
     if (this.checkInterval) clearInterval(this.checkInterval)
     this.player.dispose()
+    this.vocalsPlayer?.dispose()
     Tone.getTransport().stop()
     Tone.getTransport().cancel()
   }

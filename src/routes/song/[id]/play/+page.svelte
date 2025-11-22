@@ -1,18 +1,17 @@
 <script lang="ts">
-  import AppBar from "$lib/ui/appbar/AppBar.svelte"
   import type { PageProps } from "./$types"
   import { LinearProgress } from "m3-svelte"
-  import { onMount, tick } from "svelte"
-  import { typingSettingsDefault, type LyricSegment } from "$lib/types.ts"
-  import { isKana, isKanji, toHiragana, toKatakana, toRomaji } from "wanakana"
-  import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper.ts"
-  import MenuItem from "$lib/ui/material3/MenuItem.svelte"
+  import { onMount } from "svelte"
+  import { typingSettingsDefault } from "$lib/types.ts"
+  import { isKana, isKanji, toHiragana } from "wanakana"
+  import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine } from "$lib/ui/player/IMEHelper.ts"
   import "$lib/ext.ts"
   import { API } from "$lib/client.ts"
-  import { animateCaret } from "./animation.ts"
   import { goto } from '$app/navigation'
   import { artistAndAlbum } from "$lib/utils.ts"
-  import { MusicControl } from "./MusicControl.ts"
+  import { MusicControl } from "$lib/ui/player/MusicControl.ts"
+  import Lyrics from "$lib/ui/player/Lyrics.svelte"
+  import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
 
   let { data }: PageProps = $props()
 
@@ -31,9 +30,6 @@
   let loc = $state(data.user.data.loc)
   $effect(() => { API.saveUserData({ loc }) })
 
-  const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
-  const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
-
   // Process each line into segments with swi (start word index) and kanji/kana
   const isHideRepeated = $derived(settings.hideRepeated && !data.audioUrl)
   let deduplicatedLyrics = $derived(dedupLines(data.lrc, isHideRepeated))
@@ -47,20 +43,8 @@
   // Reset when processedLrc changes (settings changed)
   $effect(() => {
     states = processedLrc.map(line => new Array(line.totalLen).fill('unseen'))
-    li = 0
-    wi = 0
-    inp = ""
-    startTime = 0
-    statsHistory = []
+    li = 0; wi = 0; inp = ""; startTime = 0; statsHistory = []
   })
-
-  const allStates = (l: number, seg: ProcLrcSeg) => states[l]?.slice(seg.swi, seg.swi + seg.kana.length) ?? []
-  const getKanjiState = (l: number, seg: ProcLrcSeg) => {
-    let sts = allStates(l, seg)
-    if (sts.every(s => s === 'right')) return 'right'
-    if (sts.some(s => s === 'wrong')) return 'wrong'
-    return 'typing'
-  }
 
   // For computing stats
   let startTime = $state(0)
@@ -150,26 +134,6 @@
   }
   $effect(() => inputChanged(inp, false))
 
-  // Caret: Typing indicator
-  let caret: HTMLDivElement
-  $effect(() => { li; wi; animateCaret(caret) })
-
-  // Auto scroll to active line
-  let lrcWrapper: HTMLDivElement
-  $effect(() => {
-    li
-    if (!lrcWrapper) return
-    tick().then(() => {
-      const activeEl = lrcWrapper.querySelector('.active') as HTMLElement
-      if (activeEl) {
-        lrcWrapper.scrollTo({
-          top: activeEl.offsetTop - lrcWrapper.clientHeight / 2 + activeEl.clientHeight / 2,
-          behavior: 'smooth'
-        })
-      }
-    })
-  })
-
   // Result is stored on the server and is fetched from a separate results page
   async function submitResult() {
     const res = await API.saveResult({
@@ -189,24 +153,11 @@
   }
 </script>
 
-<!-- Window events -->
-<svelte:window onresize={() => caret && animateCaret(caret)} onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
+<svelte:window onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
+<PlayerAppBar song={data.song} bind:settings bind:loc disableHideRepeated={!!data.audioUrl} />
 
-<AppBar title={data.song.name} sub={artistAndAlbum(data.song)}>
-  <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
-  <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
-  <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
-  <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? "不在错误时显示罗马音" : "错误时显示罗马音"}</MenuItem>
-  <MenuItem icon="i-material-symbols:compress-rounded" 
-    disabled={!!data.audioUrl}
-    sub={data.audioUrl ? "音乐模式下不可用" : ""}
-    onclick={() => settings.hideRepeated = !settings.hideRepeated}>{isHideRepeated ? "显示重复行" : "隐藏重复行"}</MenuItem>
-  {#if loc}
-  <MenuItem icon={loc.playMode === 'random' ? "i-material-symbols:shuffle-rounded" : "i-material-symbols:repeat-rounded"} onclick={() =>
-    loc.playMode = loc.playMode === 'random' ? 'sequential' : 'random'}>{loc.playMode === 'random' ? "当前：随机播放" : "当前：顺序播放"}</MenuItem>
-  {/if}
-</AppBar>
+<LinearProgress percent={progress} />
 
 <LinearProgress percent={progress} />
 
@@ -228,62 +179,4 @@
 </div>
 
 <!-- Lines -->
-<div bind:this={lrcWrapper} class="lrc-wrapper scroll-here" lang="ja-JP">
-  <div class="vbox gap-12px py-32px relative min-h-full lrc-content">
-    <div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75 z-10"></div>
-    {#each processedLrc as line, l}
-      <div class="lrc p-content text-center m3-font-body-large" class:active={l === li} role="button" tabindex="0"
-        onclick={() => hiddenInput.focus()} 
-        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); hiddenInput.focus() } }}>
-        {#each line.parts as seg}
-          {#if !seg.kanji}
-            {#each seg.kana as char, c}
-              <span class="{states[l]?.[seg.swi + c] ?? ''}" class:here={l === li && wi === seg.swi + c}
-                class:punctuation={!isKana(char) && !isKanji(char)}>
-                {@html preprocessKana(char, states[l]?.[seg.swi + c])}
-              </span>
-            {/each}
-          {:else}
-            <ruby>
-              <span class="{getKanjiState(l, seg)}">{seg.kanji}</span>{#if settings.isFuri}<rt>
-                {#each seg.kana as char, c}
-                  <span class="{states[l]?.[seg.swi + c] ?? ''}" class:here={l === li && wi === seg.swi + c}>{@html preprocessKana(char, states[l]?.[seg.swi + c])}</span>
-                {/each}
-              </rt>{/if}
-            </ruby>
-          {/if}
-        {/each}
-      </div>
-    {/each}
-    <div class="h-30vh"></div>
-  </div>
-</div>
-<style lang="sass">
-  .lrc-wrapper
-    *
-      transition: font-size 0.2s ease-in-out
-
-  .lrc
-    color: #8b8b8b
-    font-weight: 500
-    font-size: 20px
-    opacity: 0.6
-    transition: all 0.2s ease-in-out
-
-    &.active
-      opacity: 1
-      font-size: 24px
-      color: rgb(var(--m3-scheme-on-surface))
-      //background-color: rgba(var(--m3-scheme-secondary-container) / 0.5)
-
-  .wrong
-    color: #e55757
-    background-color: rgba(229, 87, 87, 0.1)
-  .fuzzy
-    color: #e5a657
-    background-color: rgba(229, 166, 87, 0.1)
-  .right
-    color: #7b78c2
-  .punctuation
-    opacity: 0.5
-</style>
+<Lyrics lines={processedLrc} currentLineIndex={li} currentWordIndex={wi} {states} {settings} showCaret={true} onLineClick={() => hiddenInput.focus()} />

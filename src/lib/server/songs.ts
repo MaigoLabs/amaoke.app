@@ -110,8 +110,8 @@ export const getSongUrl = async (id: number | string) => {
     if (await fs.exists(filePath)) {
         return {
             url: publicUrl,
-            vocalsUrl: (await fs.exists(vocalsPath)) ? `/audio/${id}/vocals.opus` : null,
-            instrumentalUrl: (await fs.exists(instrumentalPath)) ? `/audio/${id}/instrumental.opus` : null
+            vocalsUrl: (await fs.exists(vocalsPath)) ? `/audio/${id}/vocals.opus` : undefined,
+            instrumentalUrl: (await fs.exists(instrumentalPath)) ? `/audio/${id}/instrumental.opus` : undefined
         }
     }
 
