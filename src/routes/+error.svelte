@@ -2,7 +2,6 @@
   import AppBar from "$lib/ui/appbar/AppBar.svelte";
   import Button from "$lib/ui/Button.svelte";
   import { getI18n } from "$lib/i18n";
-  import { goto } from '$app/navigation';
 
   const t = getI18n().errorPage;
 </script>
