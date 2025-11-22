@@ -11,10 +11,17 @@
   const t = getI18n().song.mode
 
   let { data } = $props()
+  let taskStatus = $state({
+    lyrics: false,
+    ai: false,
+    music: false,
+    separation: false
+  })
+
   let modes = $derived([
-    { icon: "i-material-symbols:keyboard-rounded", label: t.typing, url: `/song/${data.song.id}/play` },
-    { icon: "i-material-symbols:music-note-rounded", label: t.music, url: `/song/${data.song.id}/play?music=true` },
-    { icon: "i-material-symbols:mic-rounded", label: t.karaoke, url: `/song/${data.song.id}/karaoke` },
+    { icon: "i-material-symbols:keyboard-rounded", label: t.typing, url: `/song/${data.song.id}/play`, disabled: !taskStatus.lyrics || !taskStatus.ai },
+    { icon: "i-material-symbols:music-note-rounded", label: t.music, url: `/song/${data.song.id}/play?music=true`, disabled: !taskStatus.music },
+    { icon: "i-material-symbols:mic-rounded", label: t.karaoke, url: `/song/${data.song.id}/karaoke`, disabled: !taskStatus.separation },
   ])
 
   let loadStatus = $state<"idle" | "loading" | "done">("idle")
@@ -33,6 +40,15 @@
       const state = res.status
       
       if (state && state.items) {
+          // Update task status
+          for (const item of state.items) {
+            if (item.progress !== 1) continue
+            if (item.id === 'lyrics') taskStatus.lyrics = true
+            if (item.id === 'ai') taskStatus.ai = true
+            if (item.id === 'music') taskStatus.music = true
+            if (item.id === 'separation') taskStatus.separation = true
+          }
+
           progressItems = state.items.map((item: any) => ({
               title: item.task + (item.progress > 0 && item.progress < 1 ? ` (${Math.round(item.progress * 100)}%)` : ''),
               icon: item.progress === 1 ? 'i-material-symbols:check text-green-500' : 
@@ -59,10 +75,8 @@
 
 <ProgressList percentage={progressPercentage} items={progressItems} />
 
-{#if loadStatus === "done"}
-  <div class="hbox gap-4 p-16px flex-wrap">
-    {#each modes as mode}
-      <Button big icon={mode.icon} onclick={() => goto(mode.url)} class="!w-auto !min-w-[calc(50%-8px)] grow">{mode.label}</Button>
-    {/each}
-  </div>
-{/if}
+<div class="hbox gap-4 p-16px flex-wrap">
+  {#each modes as mode}
+    <Button big icon={mode.icon} onclick={() => goto(mode.url)} disabled={mode.disabled} class="!w-auto !min-w-[calc(50%-8px)] grow disabled:opacity-50 disabled:cursor-not-allowed">{mode.label}</Button>
+  {/each}
+</div>
