@@ -1,6 +1,6 @@
-# KashiDash (IPR)
+# KaraDash (IPR)
 
-Practice Japanese Karaoke lyrics reading and typing at the same time with KashiDash!
+Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDash!
 
 在这里可以同时练习日语卡拉 OK 歌词阅读速度和打字速度！
 
@@ -31,3 +31,5 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KashiD
 * [ ] Update an existing playlist
 * [ ] Allow users to correct lyric pronunciations through correction feedback
 * [ ] Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每句歌词的具体开始结束时间，也许可以自动修正)
+
+

@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "kashi-dash",
+      "name": "karadash",
       "dependencies": {
         "@fontsource/roboto": "^5.2.8",
         "@iconify-json/material-symbols": "^1.2.46",
