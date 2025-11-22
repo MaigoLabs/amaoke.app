@@ -7,6 +7,7 @@
   import { Layer } from "m3-svelte"
   import { goto } from "$app/navigation"
   import { getI18n, setLanguage } from "$lib/i18n"
+    import MenuItem from "$lib/ui/material3/MenuItem.svelte";
 
   let { data }: PageProps = $props()
 
@@ -19,13 +20,11 @@
 </script>
 
 
-<AppBar account={() => goto('/user')} right={[
-  // {icon: "i-material-symbols:settings-rounded", onclick: () => alert('Settings clicked')}
-  // Language switching button
-  {icon: "i-material-symbols:translate-rounded", onclick: () => {
-    setLanguage(data.lang === 'en' ? 'zh' : 'en')
-  }}
-]} />
+<AppBar account={() => goto('/user')} moreIcon="i-material-symbols:translate-rounded">
+  <MenuItem onclick={() => setLanguage('en')}>English</MenuItem>
+  <MenuItem onclick={() => setLanguage('zh')}>中文</MenuItem>
+  <MenuItem onclick={() => setLanguage('ja')}>日本語</MenuItem>
+</AppBar>
 
 <div class="vbox gap-16px overflow-y-auto flex-1">
   {#if data.last}
