@@ -8,6 +8,8 @@ import type { ObjectId } from 'mongodb'
 import '../ext'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { waitFor } from '../utils'
+import { separateSong } from './separator'
 
 const CACHE_DIR = path.resolve('static/audio')
 
@@ -171,26 +173,15 @@ export const prepareSong = async (songId: number) => {
 
         // 4. Source Separation
         const taskSeparation = addTask('AI 人声分离')
-        const vocalsPath = path.join(CACHE_DIR, `${songId}/vocals.mp3`)
-        
-        let retries = 0
-        // Wait up to 10 minutes (separation can be slow on CPU)
-        while (retries < 600) {
-            try {
-                await fs.access(vocalsPath)
-                taskSeparation.progress = 1
-                break
-            } catch {
-                // File doesn't exist yet
-                await new Promise(r => setTimeout(r, 1000))
-                retries++
-                // Update progress to show it's alive
-                if (retries % 5 === 0) taskSeparation.progress = Math.min(0.99, retries / 600)
-            }
-        }
+        const inputPath = path.join(CACHE_DIR, `${songId}/exhigh.mp3`)
+        const outputDir = path.join(CACHE_DIR, `${songId}`)
 
-        if (taskSeparation.progress < 1) {
-            addTask('警告: AI 人声分离超时，请检查后台脚本').progress = -1
+        try {
+            await separateSong(inputPath, outputDir)
+            taskSeparation.progress = 1
+        } catch (e: any) {
+            addTask(`错误: ${e.message}`).progress = -1
+            // Don't fail the whole process, just this step
         }
         
         state.status = 'done'

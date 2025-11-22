@@ -32,7 +32,7 @@
           }))
           
           const totalProgress = state.items.reduce((acc: number, cur: any) => acc + Math.max(0, cur.progress), 0)
-          progressPercentage = Math.min(100, Math.round((totalProgress / 3) * 100))
+          progressPercentage = Math.min(100, Math.round((totalProgress / 4) * 100))
       }
 
       if (state.status === "done") {
