@@ -13,3 +13,7 @@ pip install "audio-separator[cpu]" fastapi uvicorn python-multipart
 ```bash
 python server.py
 ```
+
+## Compute requirements
+
+My hardware is V100 16GB, and the model took ~1.5GB. So probably any potato would work.
