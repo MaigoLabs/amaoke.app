@@ -161,8 +161,6 @@
 
 <LinearProgress percent={progress} />
 
-<LinearProgress percent={progress} />
-
 
 <input bind:this={hiddenInput} oncompositionend={() => inputChanged(inp, true)} bind:value={inp} class="absolute opacity-0 top-[-9999px] left-[-9999px]" />
 
