@@ -134,5 +134,33 @@ export default {
     title: '页面不存在',
     message: '很抱歉，您访问的页面不存在。可能已被删除、更名，或链接输入错误。\n\n </br></br> 返回 <a class="error-page__link" href="/">首页</a> 继续浏览',
     return: '返回首页',
+  },
+  player: {
+    menu: {
+      showFuri: '显示假名标注',
+      hideFuri: '隐藏假名标注',
+      revertHiragana: '恢复平假名',
+      convertToKatakana: '全部转换为片假名',
+      showRomaji: '显示罗马音',
+      hideRomaji: '隐藏罗马音',
+      showRomajiOnError: '错误时显示罗马音',
+      hideRomajiOnError: '不在错误时显示罗马音',
+      musicModeUnavailable: '音乐模式下不可用',
+      showRepeated: '显示重复行',
+      hideRepeated: '隐藏重复行',
+      shuffle: '当前：随机播放',
+      sequential: '当前：顺序播放',
+      nextSong: '下首'
+    }
+  },
+  dialog: {
+    close: '关闭',
+    error: {
+      title: '错误',
+      refresh: '刷新重试'
+    }
+  },
+  components: {
+    
   }
 }

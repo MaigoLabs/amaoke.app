@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Layer } from "m3-svelte"
   import { fade } from "svelte/transition"
+  import { getI18n } from "$lib/i18n"
 
   let { open = $bindable(), ...p }: {
     title: string,
@@ -13,8 +14,10 @@
     noClose?: boolean
   } = $props()
 
+  const t = getI18n().dialog
+
   let buttons = $derived([...(p.buttons ?? []), ...(p.noClose ? [] : [{
-    text: '关闭', onclick: () => open = false
+    text: t.close, onclick: () => open = false
   }])])
 </script>
 

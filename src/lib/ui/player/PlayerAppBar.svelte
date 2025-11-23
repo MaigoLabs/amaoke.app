@@ -7,6 +7,8 @@
   import { API } from "$lib/client"
   import { getNextSong, getNextLoc } from "./SongSwitching"
 
+  import { getI18n } from "$lib/i18n"
+
   interface Props {
     song: NeteaseSong
     settings: TypingSettings
@@ -26,6 +28,8 @@
     disableHideRepeated = false,
     isKaraoke = false
   }: Props = $props()
+
+  const t = getI18n().player.menu
 
   let isHideRepeated = $derived(settings.hideRepeated && !disableHideRepeated)
 
@@ -48,27 +52,27 @@
 </script>
 
 <AppBar title={song.name} sub={artistAndAlbum(song)}>
-  <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? "隐藏" : "显示"}假名标注</MenuItem>
-  <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? "恢复平假名" : "全部转换为片假名"}</MenuItem>
-  <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? "隐藏罗马音" : "显示罗马音"}</MenuItem>
+  <MenuItem textIcon="あ" onclick={() => settings.isFuri = !settings.isFuri}>{settings.isFuri ? t.hideFuri : t.showFuri}</MenuItem>
+  <MenuItem textIcon="カ" onclick={() => settings.allKata = !settings.allKata}>{settings.allKata ? t.revertHiragana : t.convertToKatakana}</MenuItem>
+  <MenuItem icon="i-material-symbols:language-japanese-kana-rounded" onclick={() => settings.showRomaji = !settings.showRomaji}>{settings.showRomaji ? t.hideRomaji : t.showRomaji}</MenuItem>
   
   {#if showRomajiOnError}
-    <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? "不在错误时显示罗马音" : "错误时显示罗马音"}</MenuItem>
+    <MenuItem icon="i-material-symbols:error-circle-rounded" onclick={() => settings.showRomajiOnError = !settings.showRomajiOnError}>{settings.showRomajiOnError ? t.hideRomajiOnError : t.showRomajiOnError}</MenuItem>
   {/if}
 
   <MenuItem icon="i-material-symbols:compress-rounded" 
     disabled={disableHideRepeated} 
-    sub={disableHideRepeated ? "音乐模式下不可用" : ""}
-    onclick={() => settings.hideRepeated = !settings.hideRepeated}>{isHideRepeated ? "显示重复行" : "隐藏重复行"}</MenuItem>
+    sub={disableHideRepeated ? t.musicModeUnavailable : ""}
+    onclick={() => settings.hideRepeated = !settings.hideRepeated}>{isHideRepeated ? t.showRepeated : t.hideRepeated}</MenuItem>
   
   {#if loc}
     <MenuItem icon={loc.playMode === 'random' ? "i-material-symbols:shuffle-rounded" : "i-material-symbols:repeat-rounded"}
       onclick={() => loc!.playMode = loc!.playMode === 'random' ? 'sequential' : 'random'}>
-      {loc.playMode === 'random' ? "当前：随机播放" : "当前：顺序播放"}
+      {loc.playMode === 'random' ? t.shuffle : t.sequential}
     </MenuItem>
 
     {#if nextSongId}
-      <MenuItem icon="i-material-symbols:skip-next-rounded" onclick={handleNext}>下首</MenuItem>
+      <MenuItem icon="i-material-symbols:skip-next-rounded" onclick={handleNext}>{t.nextSong}</MenuItem>
     {/if}
   {/if}
 </AppBar>

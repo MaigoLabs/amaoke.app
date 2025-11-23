@@ -134,5 +134,31 @@ export default {
     title: 'Oops!',
     message: 'The page you’re looking for doesn’t exist. It might have been removed, renamed, or never existed.\n\n </br></br>  Go back to the <a class="error-page__link" href="/">homepage</a> to continue browsing',
     return: 'Return home',
-  }
+  },
+  player: {
+    menu: {
+      showFuri: 'Show Furigana',
+      hideFuri: 'Hide Furigana',
+      revertHiragana: 'Revert to Hiragana',
+      convertToKatakana: 'Convert all to Katakana',
+      showRomaji: 'Show Romaji',
+      hideRomaji: 'Hide Romaji',
+      showRomajiOnError: 'Show Romaji on Error',
+      hideRomajiOnError: 'Don\'t Show Romaji on Error',
+      musicModeUnavailable: 'Not available in music mode',
+      showRepeated: 'Show Repeated Lines',
+      hideRepeated: 'Hide Repeated Lines',
+      shuffle: 'Current: Shuffle',
+      sequential: 'Current: Sequential',
+      nextSong: 'Next Song'
+    }
+  },
+  dialog: {
+    close: 'Close',
+    error: {
+      title: 'Error',
+      refresh: 'Refresh to Retry'
+    }
+  },
+  components: {}
 }

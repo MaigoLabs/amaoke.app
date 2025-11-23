@@ -134,5 +134,31 @@ export default {
     title: 'おっと！',
     message: 'お探しのページは見つかりませんでした。削除されたか、名前が変更されたか、あるいは最初から存在しなかった可能性があります。\n\n </br></br> <a class="error-page__link" href="/">トップページ</a> に戻って閲覧を続けてください',
     return: 'トップページに戻る',
-  }
+  },
+  player: {
+    menu: {
+      showFuri: 'ふりがなを表示',
+      hideFuri: 'ふりがなを隠す',
+      revertHiragana: 'ひらがなに戻す',
+      convertToKatakana: 'すべてカタカナに変換',
+      showRomaji: 'ローマ字を表示',
+      hideRomaji: 'ローマ字を隠す',
+      showRomajiOnError: 'エラー時にローマ字を表示',
+      hideRomajiOnError: 'エラー時にローマ字を表示しない',
+      musicModeUnavailable: '音楽モードでは利用できません',
+      showRepeated: '重複行を表示',
+      hideRepeated: '重複行を隠す',
+      shuffle: '現在：シャッフル再生',
+      sequential: '現在：順次再生',
+      nextSong: '次の曲'
+    }
+  },
+  dialog: {
+    close: '閉じる',
+    error: {
+      title: 'エラー',
+      refresh: '更新して再試行'
+    }
+  },
+  components: {}
 }
