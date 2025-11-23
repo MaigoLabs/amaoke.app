@@ -179,7 +179,7 @@ function parseFuriganaText(text: string): LyricLine[] {
       else if (kanji && furigana) {
         let splitIndex = -1
         for (let i = kanji.length - 1; i >= 0; i--) {
-          if (!isKanji(kanji[i]) && !isKana(kanji[i]) && !('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.includes(kanji[i]))) {
+          if (!isKanji(kanji[i]) && !('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'.includes(kanji[i]))) {
             splitIndex = i
             break
           }
