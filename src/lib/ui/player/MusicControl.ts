@@ -13,6 +13,9 @@ export class MusicControl {
   audioUrl: string
   vocalsUrl?: string
 
+  private _lastSpeedChangeTransportTime: number = 0
+  private _accumulatedAudioTime: number = 0
+
   constructor(audioUrl: string, vocalsUrl?: string) {
     this.audioUrl = audioUrl
     this.vocalsUrl = vocalsUrl
@@ -63,6 +66,10 @@ export class MusicControl {
     await Promise.all(promises)
     this.log('Audio loaded')
 
+    // Reset time tracking
+    this._lastSpeedChangeTransportTime = 0
+    this._accumulatedAudioTime = 0
+
     // Sync player to transport and schedule start at 0
     // We do this regardless of transport state to ensure it's scheduled
     this.player.sync().start(0)
@@ -76,6 +83,13 @@ export class MusicControl {
   }
 
   setSpeed(speed: number) {
+    // Calculate how much audio time has passed since the last speed change
+    const currentTransportTime = Tone.getTransport().seconds
+    const transportDelta = currentTransportTime - this._lastSpeedChangeTransportTime
+    this._accumulatedAudioTime += transportDelta * this.speed
+    
+    this._lastSpeedChangeTransportTime = currentTransportTime
+
     this.speed = speed
     this.player.playbackRate = this.speed
     if (this.vocalsPlayer) {
@@ -88,7 +102,9 @@ export class MusicControl {
   }
 
   getTime() {
-    return Tone.getTransport().seconds
+    const currentTransportTime = Tone.getTransport().seconds
+    const transportDelta = currentTransportTime - this._lastSpeedChangeTransportTime
+    return this._accumulatedAudioTime + transportDelta * this.speed
   }
 
   startCheckLoop() {
@@ -102,7 +118,7 @@ export class MusicControl {
     // In karaoke mode (dual tracks), we don't pause for typing
     if (this.vocalsPlayer) return
 
-    const ct = Tone.getTransport().seconds
+    const ct = this.getTime()
     const ni = this.currentLineIndex + 1
     if (ni >= this.lyrics.length) return
     const nt = this.parseTime(this.lyrics[ni].time)
