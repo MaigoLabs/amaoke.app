@@ -21,8 +21,11 @@
   let loc = $state(data.user.data.loc)
   $effect(() => { API.saveUserData({ loc }) })
 
-  let vocalsVolume = $state(data.user.data.vocalsVolume ?? 100) // 0-100
-  $effect(() => { API.saveUserData({ vocalsVolume }) })
+  let vocalsVolume = $state(data.user.data.vocalsVolume ?? 100)
+  $effect(() => { 
+    API.saveUserData({ vocalsVolume })
+    data.user.data.vocalsVolume = vocalsVolume
+  })
   let speed = $state(1)
 
   // Process lyrics
