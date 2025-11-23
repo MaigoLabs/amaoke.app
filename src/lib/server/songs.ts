@@ -153,16 +153,13 @@ export const prepareSong = async (songId: number) => {
     songProcessingStatus.set(songId, state)
 
     const addTask = (id: string, task: string) => ({ id, task, progress: 0 }).also(it => state.items.push(it))
-    try {
+    const processLyrics = async () => {
         // 1. Get Lyrics
         const taskLyrics = addTask('lyrics', '从网易云获取歌词')
         const raw = await getLyricsRaw(songId)
         taskLyrics.progress = 1
         
-        if (raw.lang !== 'jpn') {
-             addTask('error', '错误: 不是日语歌曲').progress = -1
-             return state.status = 'error'
-        }
+        if (raw.lang !== 'jpn') throw new Error('不是日语歌曲')
 
         // 2. AI Process
         const taskAI = addTask('ai', 'AI 标注歌词读音')
@@ -174,7 +171,9 @@ export const prepareSong = async (songId: number) => {
             await dbs.lyricsProcessed.replaceOne({ _id: songId as any }, { _id: songId, data: lrc }, { upsert: true })
             taskAI.progress = 1
         }
+    }
 
+    const processMusic = async () => {
         // 3. Audio
         const taskAudio = addTask('music', '从网易云获取音乐')
         await getSongUrl(songId)
@@ -192,9 +191,11 @@ export const prepareSong = async (songId: number) => {
             addTask('error', `错误: ${e.message}`).progress = -1
             // Don't fail the whole process, just this step
         }
-        
-        state.status = 'done'
+    }
 
+    try {
+        await Promise.all([processLyrics(), processMusic()])
+        state.status = 'done'
     } catch (e) {
         addTask('error', `错误: ${eToString(e)}`).progress = -1
         state.status = 'error'
