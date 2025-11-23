@@ -106,4 +106,6 @@ export interface UserData {
     isFinished: boolean;
     lastResultId: string | null;
   };
+
+  vocalsVolume?: number;
 }
