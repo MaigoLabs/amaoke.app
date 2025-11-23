@@ -30,7 +30,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
 ## Technical Tasks
 
 * [x] i18n
-* [ ] 404 page
+* [x] 404 page
 * [ ] Previous song / next song buttons
 * [ ] Update an existing playlist
 * [ ] Allow users to correct lyric pronunciations through correction feedback
