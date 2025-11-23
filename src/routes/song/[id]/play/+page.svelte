@@ -157,7 +157,7 @@
 
 <svelte:window onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
-<PlayerAppBar song={data.song} bind:settings bind:loc disableHideRepeated={!!data.audioUrl} />
+<PlayerAppBar song={data.song} bind:settings bind:loc disableHideRepeated={!!data.audioUrl} playlist={data.playlist} />
 
 <LinearProgress percent={progress} />
 
