@@ -33,7 +33,7 @@
   <link rel="icon" href={favicon} />
 </svelte:head>
 
-<div class="app-container vbox h-screen min-h-screen box-border overflow-hidden relative">
+<div class="vbox h-screen min-h-screen box-border overflow-hidden relative max-w-1200px mx-auto">
   {@render children()}
 </div>
 

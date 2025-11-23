@@ -5,15 +5,13 @@
 
   const t = getI18n().errorPage;
 </script>
-
-<main> 
-  <AppBar title={t.title} />
-  <div class="p-content error-page__content">
-    <p class="error-page__text" >{@html t.message}</p>
-    <div class="error-page__button-container">
-      <a href="/">
-        <Button class="error-page__button">{t.return}</Button>
-      </a>
-    </div>
+ 
+<AppBar title={t.title} />
+<div class="p-content">
+  <p class="mt-12px">{@html t.message}</p>
+  <div class="absolute bottom-16px inset-x-16px">
+    <a href="/">
+      <Button big>{t.return}</Button>
+    </a>
   </div>
-</main>
+</div>
