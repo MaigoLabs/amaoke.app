@@ -127,5 +127,10 @@ export default {
       loginWithCode: '用引继码登录',
       login: '登录'
     }
+  },
+  errorPage: {
+    title: '哎呀！',
+    message: '您寻找的页面不存在。它可能已被删除、重命名或从未存在过。\n\n </br></br> 返回 <a class="error-page__link" href="/">首页</a> 继续浏览',
+    return: '返回首页',
   }
 }

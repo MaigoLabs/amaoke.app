@@ -127,5 +127,10 @@ export default {
       loginWithCode: 'Login with Sync Code',
       login: 'Login'
     }
+  },
+  errorPage: {
+    title: 'Oops!',
+    message: 'The page you’re looking for doesn’t exist. It might have been removed, renamed, or never existed.\n\n </br></br>  Go back to the <a class="error-page__link" href="/">homepage</a> to continue browsing',
+    return: 'Return home',
   }
 }
