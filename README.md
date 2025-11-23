@@ -20,8 +20,9 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
   * [x] 调节人声伴奏比例
   * [x] 跟随音乐滚动歌词
   * [ ] 升降调
-  * [ ] 播放/暂停音乐控制
+  * [x] 播放/暂停音乐控制
   * [x] 变速
+    * [ ] 變速歌詞一起變速
   * [ ] 音域分析（自动推荐升降调幅度）
 * [ ] 电视模式
   * [ ] 和手机配对、用手机点歌
@@ -35,6 +36,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
 * [x] Update an existing playlist
 * [ ] Allow users to correct lyric pronunciations through correction feedback
 * [ ] Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每句歌词的具体开始结束时间，也许可以自动修正)
+* [ ] Processing lyrics and audio should be parallel
 
 
 ## Development server
