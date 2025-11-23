@@ -36,6 +36,7 @@
     let sts = allStates(l, seg)
     if (sts.every(s => s === 'right')) return 'right'
     if (sts.some(s => s === 'wrong')) return 'wrong'
+    if (sts.some(s => s === 'fuzzy')) return 'fuzzy'
     return 'typing'
   }
 

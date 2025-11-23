@@ -17,7 +17,9 @@ export function processLrcLine(line: LyricSegment[]): ProcLrcLine {
 // Fuzzy matching rules
 const fuzzyMatch = [['わ', 'は'], ['を', 'お'], ['ず', 'づ'], ['が', 'は'],
   ['ぁ', 'あ'], ['ぃ', 'い'], ['ぅ', 'う'], ['ぇ', 'え'], ['ぉ', 'お'],
-  ['ゃ', 'や'], ['ゅ', 'ゆ'], ['ょ', 'よ'], ['っ', 'つ']]
+  ['ゃ', 'や'], ['ゅ', 'ゆ'], ['ょ', 'よ'], ['っ', 'つ'],
+  ['た', 'だ'], ['て', 'で'],
+]
 export function fuzzyEquals(kana1: string, kana2: string): string {
   [kana1, kana2] = [toHiragana(kana1), toHiragana(kana2)]
   if (kana1 === kana2) return 'right'
