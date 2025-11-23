@@ -131,8 +131,8 @@ export default {
     }
   },
   errorPage: {
-    title: '哎呀！',
-    message: '您寻找的页面不存在。它可能已被删除、重命名或从未存在过。\n\n </br></br> 返回 <a class="error-page__link" href="/">首页</a> 继续浏览',
+    title: '页面不存在',
+    message: '很抱歉，您访问的页面不存在。可能已被删除、更名，或链接输入错误。\n\n </br></br> 返回 <a class="error-page__link" href="/">首页</a> 继续浏览',
     return: '返回首页',
   }
 }
