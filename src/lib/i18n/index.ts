@@ -31,6 +31,11 @@ export const setLanguage = (lang: Lang) => {
   location.reload()
 }
 
+export const useMsg = () => {
+  const i18n = getI18n()
+  return (key: string) => key.split('.').reduce((o, i) => (o as any)?.[i], i18n) as unknown as string
+}
+
 export {}
 
 declare global {

@@ -103,6 +103,13 @@ export default {
         wrong: '不正解：',
         remaining: '残り：'
       }
+    },
+    prepare: {
+      lyrics: 'NetEaseから歌詞を取得中',
+      ai: 'AIが歌詞を分析中',
+      music: 'NetEaseから音楽を取得中',
+      separation: 'AIボーカル分離',
+      error: 'エラー: '
     }
   },
   user: {
@@ -159,6 +166,5 @@ export default {
       title: 'エラー',
       refresh: '更新して再試行'
     }
-  },
-  components: {}
+  }
 }

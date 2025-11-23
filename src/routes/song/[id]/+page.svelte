@@ -5,12 +5,12 @@
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
   import ProgressList from "$lib/ui/ProgressList.svelte"
   import { goto } from "$app/navigation"
-  import { artistAndAlbum } from "$lib/utils"
-  import { getI18n } from "$lib/i18n"
+  import { getI18n, useMsg } from "$lib/i18n"
   import { typingSettingsDefault } from "$lib/types"
-    import { getNextSong } from "$lib/ui/player/SongSwitching.js";
+  import { getNextSong } from "$lib/ui/player/SongSwitching.js"
 
   const t = getI18n().song.mode
+  const getMsg = useMsg()
 
   let { data } = $props()
   
@@ -52,24 +52,31 @@
       const state = res.status
       
       if (state && state.items) {
-          // Update task status
-          for (const item of state.items) {
-            if (item.progress !== 1) continue
-            if (item.id === 'lyrics') taskStatus.lyrics = true
-            if (item.id === 'ai') taskStatus.ai = true
-            if (item.id === 'music') taskStatus.music = true
-            if (item.id === 'separation') taskStatus.separation = true
+        // Update task status
+        for (const item of state.items) {
+          if (item.progress !== 1) continue
+          if (item.id === 'lyrics') taskStatus.lyrics = true
+          if (item.id === 'ai') taskStatus.ai = true
+          if (item.id === 'music') taskStatus.music = true
+          if (item.id === 'separation') taskStatus.separation = true
+        }
+
+        progressItems = state.items.map((item: any) => {
+          let taskName = getMsg(`song.prepare.${item.id}`) || item.task
+          if (item.id === 'error') {
+            taskName = getMsg('song.prepare.error') + item.task
           }
 
-          progressItems = state.items.map((item: any) => ({
-              title: item.task + (item.progress > 0 && item.progress < 1 ? ` (${Math.round(item.progress * 100)}%)` : ''),
-              icon: item.progress === 1 ? 'i-material-symbols:check text-green-500' : 
-                    item.progress === -1 ? 'i-material-symbols:error text-red-500' : 
-                    'i-material-symbols:sync animate-spin'
-          }))
-          
-          const totalProgress = state.items.reduce((acc: number, cur: any) => acc + Math.max(0, cur.progress), 0)
-          progressPercentage = Math.min(100, Math.round((totalProgress / 4) * 100))
+          return {
+            title: taskName + (item.progress > 0 && item.progress < 1 ? ` (${Math.round(item.progress * 100)}%)` : ''),
+            icon: item.progress === 1 ? 'i-material-symbols:check text-green-500' : 
+                  item.progress === -1 ? 'i-material-symbols:error text-red-500' : 
+                  'i-material-symbols:sync animate-spin'
+          }
+        })
+        
+        const totalProgress = state.items.reduce((acc: number, cur: any) => acc + Math.max(0, cur.progress), 0)
+        progressPercentage = Math.min(100, Math.round((totalProgress / 4) * 100))
       }
 
       if (state.status === "done") {

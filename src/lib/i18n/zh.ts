@@ -103,6 +103,13 @@ export default {
         wrong: '错误：',
         remaining: '剩余：'
       }
+    },
+    prepare: {
+      lyrics: '从网易云获取歌词',
+      ai: 'AI 标注歌词读音',
+      music: '从网易云获取音乐',
+      separation: 'AI 人声分离',
+      error: '错误: '
     }
   },
   user: {
@@ -159,8 +166,5 @@ export default {
       title: '错误',
       refresh: '刷新重试'
     }
-  },
-  components: {
-    
   }
 }

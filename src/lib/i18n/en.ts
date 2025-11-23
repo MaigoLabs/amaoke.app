@@ -103,6 +103,13 @@ export default {
         wrong: 'Wrong: ',
         remaining: 'Remaining: '
       }
+    },
+    prepare: {
+      lyrics: 'Fetching lyrics from NetEase',
+      ai: 'AI analyzing lyrics',
+      music: 'Fetching music from NetEase',
+      separation: 'AI vocal separation',
+      error: 'Error: '
     }
   },
   user: {
@@ -159,6 +166,5 @@ export default {
       title: 'Error',
       refresh: 'Refresh to Retry'
     }
-  },
-  components: {}
+  }
 }
