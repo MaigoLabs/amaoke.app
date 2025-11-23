@@ -8,6 +8,7 @@
   import { artistAndAlbum } from "$lib/utils"
   import { getI18n } from "$lib/i18n"
   import { typingSettingsDefault } from "$lib/types"
+    import { getNextSong } from "$lib/ui/player/SongSwitching.js";
 
   const t = getI18n().song.mode
 
@@ -41,6 +42,9 @@
 
   async function startLoading() {
     await API.song.prepare(data.song.id)
+
+    // Auto prepare next song
+    await getNextSong(data.playlist, data.user.data.loc)?.let(async next => await API.song.prepare(next))
     const interval = setInterval(async () => {
       const res = await API.song.status(data.song.id)
       const state = res.status
@@ -70,7 +74,7 @@
         clearInterval(interval)
         progressPercentage = 100
       } else if (state.status === "error") {
-          clearInterval(interval)
+        clearInterval(interval)
       }
     }, 1000)
   }
