@@ -129,8 +129,8 @@ export default {
     }
   },
   errorPage: {
-    title: 'Oops!',
-    message: 'The page you’re looking for doesn’t exist. It might have been removed, renamed, or never existed.\n\n </br></br>  Go back to the <a class="error-page__link" href="/">homepage</a> to continue browsing',
-    return: 'Return home',
+    title: 'おっと！',
+    message: 'お探しのページは見つかりませんでした。削除されたか、名前が変更されたか、あるいは最初から存在しなかった可能性があります。\n\n </br></br> <a class="error-page__link" href="/">トップページ</a> に戻って閲覧を続けてください',
+    return: 'トップページに戻る',
   }
 }
