@@ -44,7 +44,9 @@
     await API.song.prepare(data.song.id)
 
     // Auto prepare next song
-    await getNextSong(data.playlist, data.user.data.loc)?.let(async next => await API.song.prepare(next))
+    const nextSongId = getNextSong(data.playlist, data.user.data.loc)
+    if (nextSongId) await API.song.prepare(nextSongId)
+
     const interval = setInterval(async () => {
       const res = await API.song.status(data.song.id)
       const state = res.status
