@@ -9,6 +9,7 @@
   import Lyrics from "$lib/ui/player/Lyrics.svelte"
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
   import { getI18n } from "$lib/i18n"
+    import { Layer } from "m3-svelte";
 
   const t = getI18n().song.karaoke
 
@@ -27,6 +28,7 @@
     data.user.data.vocalsVolume = vocalsVolume
   })
   let speed = $state(1)
+  let isPlaying = $state(false)
 
   // Process lyrics
   const isHideRepeated = $derived(settings.hideRepeated)
@@ -77,6 +79,7 @@
       }
       
       if (nextLi !== -1 && nextLi !== li) li = nextLi
+      isPlaying = musicControl.isPlaying
     }, 100)
 
     return () => {
@@ -111,3 +114,12 @@
 </div>
 
 <Lyrics lines={processedLrc} currentLineIndex={li} {settings} {states} />
+
+<button
+  class="fixed bottom-6 right-6 z-5 size-64px cbox rounded-full surface-variant mbg-surface-container mfg-on-surface-variant shadow-lg hover:shadow-xl transition-all active:scale-90"
+  onclick={() => { musicControl?.togglePlay(); isPlaying = musicControl?.isPlaying ?? false }}
+  aria-label="Play/Pause"
+>
+  <Layer />
+  <div class={isPlaying ? "i-material-symbols:pause-rounded text-3xl" : "i-material-symbols:play-arrow-rounded text-3xl"}></div>
+</button>

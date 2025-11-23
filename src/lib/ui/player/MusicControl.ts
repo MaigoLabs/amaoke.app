@@ -132,4 +132,16 @@ export class MusicControl {
     Tone.getTransport().stop()
     Tone.getTransport().cancel()
   }
+
+  togglePlay() {
+    if (Tone.getTransport().state === 'started') {
+      Tone.getTransport().pause()
+    } else {
+      Tone.getTransport().start()
+    }
+  }
+
+  get isPlaying() {
+    return Tone.getTransport().state === 'started'
+  }
 }
