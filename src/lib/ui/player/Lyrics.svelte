@@ -69,7 +69,7 @@
 <div bind:this={lrcWrapper} class="lrc-wrapper scroll-here" lang="ja-JP">
   <div class="vbox gap-12px py-32px relative min-h-full lrc-content">
     {#if showCaret}
-      <div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75 z-10"></div>
+      <div bind:this={caret} class="absolute bg-amber w-2px h-24px transition-all duration-75 z-5"></div>
     {/if}
     {#each lines as line, l}
       <div class="lrc p-content text-center m3-font-body-large" class:active={l === currentLineIndex} role="button" tabindex="0"
