@@ -7,9 +7,9 @@
 </script>
  
 <AppBar title={t.title} />
-<div class="p-content">
-  <p class="mt-12px">{@html t.message}</p>
-  <div class="absolute bottom-16px inset-x-16px">
+<div class="vbox p-content flex-1">
+  <p class="mt-12px scroll-here">{@html t.message}</p>
+  <div class="py-16px">
     <a href="/">
       <Button big>{t.return}</Button>
     </a>
