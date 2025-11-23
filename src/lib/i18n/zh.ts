@@ -37,6 +37,7 @@ export default {
       tip: '去网易云 APP 找一个你喜欢的日本语歌单，点击分享，再点击复制链接，然后把链接粘贴到这里就可以开始导入了！',
       inputLabel: '网易云歌单链接 / ID',
       btnStart: '开始导入',
+      btnUpdate: '更新歌单',
       btnView: '查看歌单'
     }
   },
@@ -47,7 +48,8 @@ export default {
       count: '歌曲数: ',
       startPractice: '开始练习',
       songList: '歌曲列表',
-      songs: '首歌曲'
+      songs: '首歌曲',
+      updateFromNetease: '从网易云更新歌单'
     },
     list: {
       mine: '我的歌单',

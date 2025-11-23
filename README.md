@@ -30,9 +30,9 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
 ## Technical Tasks
 
 * [x] i18n
-* [ ] 404 page
-* [ ] Previous song / next song buttons
-* [ ] Update an existing playlist
+* [x] 404 page
+* [x] Previous song / next song buttons
+* [x] Update an existing playlist
 * [ ] Allow users to correct lyric pronunciations through correction feedback
 * [ ] Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每句歌词的具体开始结束时间，也许可以自动修正)
 

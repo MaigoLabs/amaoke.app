@@ -7,10 +7,12 @@
   import ErrorDialog from "$lib/ui/status/ErrorDialog.svelte"
   import ProgressList from "$lib/ui/ProgressList.svelte"
   import { getI18n } from "$lib/i18n"
+  import { page } from '$app/state'
 
   const t = getI18n().import.netease
 
-  let link = $state('')
+  let link = $state(page.url.searchParams.get('id') ?? '')
+  let isUpdate = $derived(!!page.url.searchParams.get('id'))
 
   interface SongImportStatus {
     song: NeteaseSong
@@ -91,7 +93,7 @@
 
   <div class="py-16px p-content">
     {#if status === 'idle'}
-      <Button big icon="i-material-symbols:download" onclick={startImport}>{t.btnStart}</Button>
+      <Button big icon={isUpdate ? "i-material-symbols:sync" : "i-material-symbols:download"} onclick={startImport}>{isUpdate ? t.btnUpdate : t.btnStart}</Button>
     {:else if status === 'success'}
       <a href="/playlist/{id}">
         <Button big icon="i-material-symbols:right-arrow">{t.btnView}</Button>

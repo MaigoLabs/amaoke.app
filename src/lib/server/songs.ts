@@ -226,7 +226,7 @@ export const getSession = (id: string) => sessions.get(id)
  * @returns Import session
  */
 export async function startImport(link: string, userId?: number): Promise<ImportSession> {
-    const meta = await getPlaylistRaw(parsePlaylistRef(link))
+    const meta = await getPlaylistRaw(parsePlaylistRef(link), true)
     const importId = crypto.randomUUID()
     
     const session: ImportSession = {

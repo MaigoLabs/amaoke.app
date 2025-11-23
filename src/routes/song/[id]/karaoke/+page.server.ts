@@ -1,10 +1,9 @@
 import type { PageServerLoad } from './$types'
-import { getLyricsProcessed, getSongRaw, getSongUrl, checkLyricsProcessed } from "$lib/server/songs.ts"
+import { getLyricsProcessed, getSongUrl, checkLyricsProcessed } from "$lib/server/songs.ts"
 import { redirect } from '@sveltejs/kit'
 
 export const load: PageServerLoad = async ({ params }) => {
   const songId = +params.id
-  const song = await getSongRaw(songId)
   const hasLrc = await checkLyricsProcessed(songId)
   
   if (!hasLrc) throw redirect(302, `/song/${songId}`)
@@ -12,5 +11,5 @@ export const load: PageServerLoad = async ({ params }) => {
   const lrc = await getLyricsProcessed(songId)!
   const audioData = await getSongUrl(songId)
   
-  return { song, lrc, audioData }
+  return { lrc, audioData }
 }

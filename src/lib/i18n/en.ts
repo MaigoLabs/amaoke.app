@@ -37,6 +37,7 @@ export default {
       tip: 'Go to NetEase Music App, find a Japanese playlist you like, click share, copy link, and paste it here to start importing!',
       inputLabel: 'NetEase Playlist Link / ID',
       btnStart: 'Start Import',
+      btnUpdate: 'Update Playlist',
       btnView: 'View Playlist'
     }
   },
@@ -47,7 +48,8 @@ export default {
       count: 'Songs: ',
       startPractice: 'Start Practice',
       songList: 'Song List',
-      songs: 'songs'
+      songs: 'songs',
+      updateFromNetease: 'Update from NetEase'
     },
     list: {
       mine: 'My Playlists',

@@ -6,6 +6,7 @@
   import SongInfo from "$lib/ui/listitem/SongInfo.svelte"
   import { API } from "$lib/client"
   import { getI18n } from "$lib/i18n"
+  import MenuItem from "$lib/ui/material3/MenuItem.svelte";
 
   const t = getI18n().playlist.detail
 
@@ -49,9 +50,10 @@
   {
     icon: isFavorite ? "i-material-symbols:bookmark-rounded" : "i-material-symbols:bookmark-add-outline-rounded", 
     onclick: toggleFavorite
-  },
-  {icon: "i-material-symbols:more-vert", onclick: () => alert('More clicked')}
-]} />
+  }
+]}>
+  <MenuItem icon="i-material-symbols:update" onclick={() => goto(`/import/netease?id=${meta.id}`)}>{t.updateFromNetease}</MenuItem>
+</AppBar>
 
 <div class="hbox px-16px py-8px gap-24px">
   <img src="{meta.coverImgUrl}" alt="" class="size-128px rounded-16px">

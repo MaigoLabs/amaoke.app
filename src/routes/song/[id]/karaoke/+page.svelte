@@ -18,6 +18,9 @@
   let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
   $effect(() => { API.saveUserData({ typingSettings: settings }) })
 
+  let loc = $state(data.user.data.loc)
+  $effect(() => { API.saveUserData({ loc }) })
+
   let vocalsVolume = $state(100) // 0-100
 
   // Process lyrics
@@ -79,7 +82,7 @@
 
 <svelte:window onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
-<PlayerAppBar song={data.song} bind:settings showRomajiOnError={false} isKaraoke={true} disableHideRepeated />
+<PlayerAppBar song={data.song} bind:settings bind:loc showRomajiOnError={false} isKaraoke={true} disableHideRepeated playlist={data.playlist} />
 
 <div class="vbox p-content py-4 gap-2 mfg-on-surface-variant">
   {#if data.audioData.vocalsUrl}

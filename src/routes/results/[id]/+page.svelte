@@ -8,6 +8,7 @@
   import Chart from "chart.js/auto"
   import { API } from "$lib/client"
   import { getI18n } from "$lib/i18n"
+  import { getNextSong, getNextLoc } from "$lib/ui/player/SongSwitching"
 
   const t = getI18n().results
 
@@ -105,35 +106,15 @@
 
   // Compute next state immediately
   if (playlist && loc && isCurrentResult) {
-    if (loc.playMode === 'random') {
-      const unplayed = playlist.tracks.filter((t: NeteaseSong) => !loc.playedSongIds.includes(t.id))
-      if (unplayed.length > 0) {
-        const nextSong = unplayed[Math.floor(Math.random() * unplayed.length)]
-        nextSongId = nextSong.id
-      } else isPlaylistFinished = true
-    } else {
-      const nextIndex = loc.currentSongIndex + 1
-      if (nextIndex < playlist.tracks.length) {
-        nextSongId = playlist.tracks[nextIndex].id
-      } else isPlaylistFinished = true
-    }
+    nextSongId = getNextSong(playlist, loc)
+    if (nextSongId === null) isPlaylistFinished = true
   }
 
   async function handleNext() {
     if (nextSongId !== null) {
       if (!data.user.data.loc || !data.playlist) return
 
-      const nextIndex = data.playlist.tracks.findIndex((t: NeteaseSong) => t.id === nextSongId)
-      
-      const newLoc = {
-        ...data.user.data.loc,
-        currentSongIndex: nextIndex,
-        isFinished: false
-      }
-      
-      if (!newLoc.playedSongIds.includes(nextSongId)) {
-        newLoc.playedSongIds = [...newLoc.playedSongIds, nextSongId]
-      }
+      const newLoc = getNextLoc(data.playlist, data.user.data.loc, nextSongId)
 
       data.user.data.loc = newLoc
       await API.saveUserData({ loc: newLoc })

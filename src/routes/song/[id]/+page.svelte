@@ -2,15 +2,23 @@
   import { API } from "$lib/client"
   import { onMount } from "svelte"
   import Button from "$lib/ui/Button.svelte"
-  import AppBar from "$lib/ui/appbar/AppBar.svelte"
+  import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
   import ProgressList from "$lib/ui/ProgressList.svelte"
   import { goto } from "$app/navigation"
   import { artistAndAlbum } from "$lib/utils"
   import { getI18n } from "$lib/i18n"
+  import { typingSettingsDefault } from "$lib/types"
 
   const t = getI18n().song.mode
 
   let { data } = $props()
+  
+  let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
+  $effect(() => { API.saveUserData({ typingSettings: settings }) })
+
+  let loc = $state(data.user.data.loc)
+  $effect(() => { API.saveUserData({ loc }) })
+
   let taskStatus = $state({
     lyrics: false,
     ai: false,
@@ -24,7 +32,6 @@
     { icon: "i-material-symbols:mic-rounded", label: t.karaoke, url: `/song/${data.song.id}/karaoke`, disabled: !taskStatus.separation },
   ])
 
-  let loadStatus = $state<"idle" | "loading" | "done">("idle")
   let progressItems = $state<any[]>([])
   let progressPercentage = $state(0)
 
@@ -33,7 +40,6 @@
   })
 
   async function startLoading() {
-    loadStatus = "loading"
     await API.song.prepare(data.song.id)
     const interval = setInterval(async () => {
       const res = await API.song.status(data.song.id)
@@ -62,7 +68,6 @@
 
       if (state.status === "done") {
         clearInterval(interval)
-        loadStatus = "done"
         progressPercentage = 100
       } else if (state.status === "error") {
           clearInterval(interval)
@@ -71,7 +76,7 @@
   }
 </script>
 
-<AppBar title={data.song.name} sub={artistAndAlbum(data.song)} />
+<PlayerAppBar song={data.song} bind:settings bind:loc playlist={data.playlist} />
 
 <ProgressList percentage={progressPercentage} items={progressItems} />
 
