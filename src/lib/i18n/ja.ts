@@ -37,6 +37,7 @@ export default {
       tip: 'NetEase Musicアプリでお気に入りの日本語プレイリストを見つけ、共有をクリックし、リンクをコピーしてここに貼り付けると、インポートを開始できます！',
       inputLabel: 'NetEaseプレイリストリンク / ID',
       btnStart: 'インポート開始',
+      btnUpdate: 'プレイリストを更新',
       btnView: 'プレイリストを表示'
     }
   },
@@ -47,7 +48,8 @@ export default {
       count: '曲数: ',
       startPractice: '練習開始',
       songList: '曲リスト',
-      songs: '曲'
+      songs: '曲',
+      updateFromNetease: 'NetEaseから更新'
     },
     list: {
       mine: 'マイプレイリスト',

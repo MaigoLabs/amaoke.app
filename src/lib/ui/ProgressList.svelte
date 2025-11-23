@@ -27,14 +27,14 @@
 
   <LinearProgress percent={percentage ?? 0}/>
 
-  <div class="vbox p-content scroll-here gap-8px">
+  <div class="vbox p-content scroll-here gap-8px overflow-x-hidden">
     {#each items as item}
       <div class="hbox gap-12px items-center h-40px">
         <span class="{item.icon} text-xl"></span>
-        <div class="vbox">
-          <span class="m3-font-title-medium">{item.title}</span>
+        <div class="vbox min-w-0 flex-1">
+          <span class="m3-font-title-medium truncate">{item.title}</span>
           {#if item.subtitle}
-            <span class="m3-font-body-small mfg-on-surface-variant">{item.subtitle}</span>
+            <span class="m3-font-body-small mfg-on-surface-variant truncate">{item.subtitle}</span>
           {/if}
         </div>
       </div>
