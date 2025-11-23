@@ -14,6 +14,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
     result: structuredClone(result),
     lrc: await getLyricsProcessed(result.songId),
     song,
-    playlist: await user.data?.loc?.currentPlaylistId?.let(getPlaylist)
+    playlist: await user.data?.loc?.currentPlaylistId?.let(getPlaylist),
+    resultId: params.id
   }
 }

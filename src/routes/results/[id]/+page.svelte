@@ -102,7 +102,7 @@
   const loc = data.user.data.loc
   const playlist = data.playlist
   // Check if this is the latest result for the current playlist session
-  const isCurrentResult = loc?.lastResultId === data.result._id
+  const isCurrentResult = loc?.lastResultId === data.resultId
 
   // Compute next state immediately
   if (playlist && loc && isCurrentResult) {
