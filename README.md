@@ -21,7 +21,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with KaraDa
   * [x] 跟随音乐滚动歌词
   * [ ] 升降调
   * [ ] 播放/暂停音乐控制
-  * [ ] 变速
+  * [x] 变速
   * [ ] 音域分析（自动推荐升降调幅度）
 * [ ] 电视模式
   * [ ] 和手机配对、用手机点歌

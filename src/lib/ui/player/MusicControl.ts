@@ -4,6 +4,7 @@ import type { LyricLine } from '$lib/types'
 export class MusicControl {
   player: Tone.Player
   vocalsPlayer?: Tone.Player
+  speed: number = 1
   lyrics: LyricLine[] = []
   currentLineIndex: number = 0
   checkInterval: any
@@ -13,6 +14,8 @@ export class MusicControl {
   vocalsUrl?: string
 
   constructor(audioUrl: string, vocalsUrl?: string) {
+    this.audioUrl = audioUrl
+    this.vocalsUrl = vocalsUrl
     this.audioUrl = audioUrl
     this.vocalsUrl = vocalsUrl
     this.player = new Tone.Player(audioUrl).toDestination()
@@ -70,6 +73,14 @@ export class MusicControl {
       Tone.getTransport().start()
     }
     this.startCheckLoop()
+  }
+
+  setSpeed(speed: number) {
+    this.speed = speed
+    this.player.playbackRate = this.speed
+    if (this.vocalsPlayer) {
+      this.vocalsPlayer.playbackRate = this.speed
+    }
   }
 
   setVocalsVolume(db: number) {

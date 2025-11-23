@@ -22,6 +22,7 @@
   $effect(() => { API.saveUserData({ loc }) })
 
   let vocalsVolume = $state(100) // 0-100
+  let speed = $state(1)
 
   // Process lyrics
   const isHideRepeated = $derived(settings.hideRepeated)
@@ -31,13 +32,14 @@
   let musicControl = $state<MusicControl>()
   $effect(() => { li; musicControl?.updateLine(li) })
 
-  // Volume control
+  // Volume, Speed control
   $effect(() => {
     if (musicControl) {
       // Tone.js volume is in decibels. 0 is full, -Infinity is silent.
       // Simple mapping: 100 -> 0, 0 -> -60 (or mute)
       const db = vocalsVolume === 0 ? -Infinity : 20 * Math.log10(vocalsVolume / 100)
       musicControl.setVocalsVolume(db)
+      musicControl.setSpeed(speed)
     }
   })
 
@@ -96,6 +98,12 @@
       {t.noVocals}
     </div>
   {/if}
+
+  <div class="hbox gap-4 items-center">
+    <div class="i-material-symbols:speed-rounded text-2xl" title="Speed"></div>
+    <input type="range" min="0.5" max="1.5" step="0.05" bind:value={speed} class="flex-1" />
+    <div class="w-12 text-right">{speed.toFixed(2)}x</div>
+  </div>
 </div>
 
 <Lyrics lines={processedLrc} currentLineIndex={li} {settings} {states} />
