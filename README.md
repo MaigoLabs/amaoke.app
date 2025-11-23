@@ -20,8 +20,8 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
   * [x] 调节人声伴奏比例
   * [x] 跟随音乐滚动歌词
   * [x] 播放/暂停音乐控制
-  * [x] 实时变速（变调变速）
-    * [ ] 单独控制速度和音高（非实时）
+  * [x] 实时变调变速（速度越快音调就越高）
+    * [ ] 单独控制变调和变速（非实时）
   * [ ] 音域分析（自动推荐升降调幅度）
 * [ ] 电视模式
   * [ ] 和手机配对、用手机点歌
