@@ -1,9 +1,10 @@
 import { OpenRouter } from '@openrouter/sdk'
 import type { LyricLine, LyricSegment } from '../../types'
 import { isKana, isKanji } from 'wanakana'
+import { building } from '$app/environment'
 
 // Please put OPENROUTER_API_KEY in your environment variables.
-if (!process.env.OPENROUTER_API_KEY) console.warn('Please set OPENROUTER_API_KEY in your environment variables.')
+if (!building && !process.env.OPENROUTER_API_KEY) throw new Error('Please set OPENROUTER_API_KEY in your environment variables.')
 const client = new OpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY ?? ""
 })
