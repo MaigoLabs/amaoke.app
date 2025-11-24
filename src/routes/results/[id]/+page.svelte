@@ -96,17 +96,16 @@
   })
 
   // Playlist Navigation Logic
-  let nextSongId = $state<number | null>(null)
-  let isPlaylistFinished = $state(false)
-
   const loc = data.user.data.loc
   const playlist = data.playlist
+  let nextSongId = $state<number | null>(getNextSong(playlist, loc))
+  let isPlaylistFinished = $state(false)
+
   // Check if this is the latest result for the current playlist session
   const isCurrentResult = loc?.lastResultId === data.resultId
 
   // Compute next state immediately
   if (playlist && loc && isCurrentResult) {
-    nextSongId = getNextSong(playlist, loc)
     if (nextSongId === null) isPlaylistFinished = true
   }
 

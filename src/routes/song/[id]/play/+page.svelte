@@ -37,6 +37,7 @@
   let deduplicatedLyrics = $derived(dedupLines(data.lrc, isHideRepeated))
   let processedLrc: ProcLrcLine[] = $derived(deduplicatedLyrics.map(line => processLrcLine(line.lyric)))
   // State tracking for each kana character: UNSEEN, RIGHT, WRONG
+  // svelte-ignore state_referenced_locally
   let states = $state(processedLrc.map(line => new Array(line.totalLen).fill('unseen')))
   
   let musicControl: MusicControl | undefined
