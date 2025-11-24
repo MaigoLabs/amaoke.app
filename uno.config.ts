@@ -1,6 +1,5 @@
 // https://github.com/Menci/Marina/blob/main/apps/web/uno.config.ts
-import { createLocalFontProcessor } from '@unocss/preset-web-fonts/local';
-import { defineConfig, presetWind3, presetAttributify, presetIcons, presetTypography, presetWebFonts, transformerDirectives } from 'unocss';
+import { defineConfig, presetWind3, presetAttributify, presetIcons, presetTypography, transformerDirectives } from 'unocss';
 import presetAnimations from 'unocss-preset-animations';
 
 function createColorSchemeConfig(hueBaseVariable: string, hueOffset = 0) {
@@ -37,24 +36,7 @@ export default defineConfig({
     presetTypography(),
     presetIcons({
       scale: 1.2,
-      warn: true,
-    }),
-    presetWebFonts({
-      fonts: {
-        sans: {
-          name: 'Normalized Quicksand',
-          provider: 'none',
-        },
-        mono: {
-          name: 'Maple Mono',
-          provider: 'fontsource',
-        },
-      },
-      processors: createLocalFontProcessor({
-        cacheDir: 'node_modules/.cache/unocss/fonts',
-        fontAssetsDir: 'public/assets/fonts/cache',
-        fontServeBaseUrl: '/assets/fonts/cache',
-      }),
+      warn: false,
     }),
   ],
   // By default, `.ts` and `.js` files are NOT extracted.
@@ -70,6 +52,10 @@ export default defineConfig({
         '**/shadcn-ui/**/*.{vue,js,ts}',
         '**/ui/**/*.{vue,js,ts}',
       ],
+      exclude: [
+        'src/lib/server/**/*',
+        '**/*.server.ts',
+      ]
     },
   },
   theme: {
