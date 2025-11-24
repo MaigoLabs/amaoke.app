@@ -20,8 +20,8 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
   * [x] 调节人声伴奏比例
   * [x] 跟随音乐滚动歌词
   * [x] 播放/暂停音乐控制
-  * [x] 实时变速（变调变速）
-    * [ ] 单独控制速度和音高（非实时）
+  * [x] 实时变调变速（速度越快音调就越高）
+    * [ ] 单独控制变调和变速（非实时）
   * [ ] 音域分析（自动推荐升降调幅度）
 * [ ] 电视模式
   * [ ] 和手机配对、用手机点歌
@@ -34,7 +34,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 * [x] Previous song / next song buttons
 * [x] Update an existing playlist
 * [ ] Allow users to correct lyric pronunciations through correction feedback
-* [ ] Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每句歌词的具体开始结束时间，也许可以自动修正)
+* [ ] Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每段人声的具体开始结束时间，也许可以自动修正)
 * [x] Processing lyrics and audio should be parallel
 * [ ] Add admin password to admin pages
 * [ ] About page
