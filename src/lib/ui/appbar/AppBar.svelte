@@ -8,19 +8,20 @@
     onclick: () => void
   }
 
-  let { title, sub, account, right, children, moreIcon }: {
+  let { title, sub, account, right, children, moreIcon, gradient }: {
     title?: string
     sub?: string
     account?: () => void
     right?: Icon[]
     children?: any
     moreIcon?: string
+    gradient?: boolean
   } = $props()
 
   let showMenu = $state(false)
 </script>
 
-<div class="hbox h-64px">
+<div class="hbox h-64px" class:appbar-gradient={gradient}>
   {#if account}
     <IconButton icon="i-material-symbols:account-circle" onclick={account} aria-label="Account" />
   {:else}
@@ -51,3 +52,14 @@
     </div>
   </div>
 {/if}
+
+<style lang="sass">
+  .appbar-gradient
+    background: linear-gradient(180deg, rgba(var(--m3-scheme-surface) / 1), transparent)
+    z-index: 100
+  @media (prefers-color-scheme: dark)
+    .appbar-gradient
+      background: linear-gradient(180deg, rgba(var(--m3-scheme-surface) / 0.2), transparent)
+      // background: none
+      // mix-blend-mode: overlay
+</style>
