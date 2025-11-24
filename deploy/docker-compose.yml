@@ -1,0 +1,52 @@
+services:
+  web:
+    container_name: amaoke-web
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    ports:
+      - "3000:3000"
+    environment:
+      - ORIGIN=http://localhost:3000
+      - MONGODB_URI=mongodb://cat:meow@db:27017/amaoke?authSource=admin
+      - AUDIO_SEPARATOR_API=http://ai:24801
+    depends_on:
+      - db
+      - ai
+    restart: unless-stopped
+
+  ai:
+    container_name: amaoke-ai
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.python
+    # ports:
+    #   - "24801:24801"
+    volumes:
+      - python_temp:/app/temp_audio
+      - python_cache:/root/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  db:
+    image: mongo:latest
+    restart: unless-stopped
+    container_name: amaoke-db
+    ports:
+      - "127.0.0.1:27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: cat
+      MONGO_INITDB_ROOT_PASSWORD: meow
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
+  python_temp:
+  python_cache:

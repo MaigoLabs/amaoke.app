@@ -1,0 +1,27 @@
+FROM oven/bun:1 AS builder
+
+WORKDIR /app
+
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+COPY . .
+
+# Build the application
+RUN bun run build
+
+################################################################################
+# Production image
+FROM oven/bun:1
+
+WORKDIR /app
+
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+
+EXPOSE 3000
+
+# Note: If using adapter-auto, ensure it resolves to a Node-compatible build.
+# If you encounter issues, consider installing @sveltejs/adapter-node and updating svelte.config.js.
+CMD ["bun", "./build/index.js"]
