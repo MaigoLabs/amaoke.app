@@ -1,0 +1,10 @@
+:80 {
+    handle_path /audio/* {
+        root * /srv/audio
+        file_server
+    }
+
+    handle {
+        reverse_proxy web:3000
+    }
+}

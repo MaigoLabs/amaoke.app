@@ -4,8 +4,10 @@ services:
     build:
       context: ..
       dockerfile: deploy/Dockerfile.web
-    ports:
-      - "127.0.0.1:3000:3000"
+    # ports:
+    #   - "127.0.0.1:3000:3000"
+    volumes:
+      - ./data/storage:/app/static
     environment:
       - ORIGIN=http://localhost:3000
       - MONGO_URL=mongodb://cat:meow@db:27017/amaoke?authSource=admin
@@ -15,6 +17,18 @@ services:
       - db
       - ai
     restart: unless-stopped
+
+  caddy:
+    image: caddy:alpine
+    container_name: amaoke-caddy
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data/storage/audio:/srv/audio
+    depends_on:
+      - web
 
   ai:
     container_name: amaoke-ai
