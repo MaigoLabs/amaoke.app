@@ -6,19 +6,15 @@
   import ProgressList from "$lib/ui/ProgressList.svelte"
   import { goto } from "$app/navigation"
   import { getI18n, useMsg } from "$lib/i18n"
-  import { typingSettingsDefault } from "$lib/types"
   import { getNextSong } from "$lib/ui/player/SongSwitching.js"
+  import { UserDataSync } from "$lib/ui/player/state.svelte"
 
   const t = getI18n().song.mode
   const getMsg = useMsg()
 
   let { data } = $props()
   
-  let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
-  $effect(() => { API.saveUserData({ typingSettings: settings }) })
-
-  let loc = $state(data.user.data.loc)
-  $effect(() => { API.saveUserData({ loc }) })
+  const ud = new UserDataSync(data)
 
   let taskStatus = $state({
     lyrics: false,
@@ -89,7 +85,7 @@
   }
 </script>
 
-<PlayerAppBar song={data.song} bind:settings bind:loc playlist={data.playlist} />
+<PlayerAppBar song={data.song} bind:settings={ud.settings} bind:loc={ud.loc} playlist={data.playlist} />
 
 <ProgressList percentage={progressPercentage} items={progressItems} />
 

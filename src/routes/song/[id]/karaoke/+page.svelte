@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { PageProps } from "./$types"
   import { onMount } from "svelte"
-  import { typingSettingsDefault } from "$lib/types"
   import { processLrcLine, dedupLines, type ProcLrcLine } from "$lib/ui/player/IMEHelper"
   import "$lib/ext.ts"
   import { API } from "$lib/client"
   import { MusicControl } from "$lib/ui/player/MusicControl"
   import Lyrics from "$lib/ui/player/Lyrics.svelte"
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
+  import { UserDataSync } from "$lib/ui/player/state.svelte"
   import { getI18n } from "$lib/i18n"
     import { Layer } from "m3-svelte";
 
@@ -16,11 +16,7 @@
   let { data }: PageProps = $props()
 
   let li = $state(0)
-  let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
-  $effect(() => { API.saveUserData({ typingSettings: settings }) })
-
-  let loc = $state(data.user.data.loc)
-  $effect(() => { API.saveUserData({ loc }) })
+  const ud = new UserDataSync(data)
 
   let vocalsVolume = $state(data.user.data.vocalsVolume ?? 100)
   $effect(() => { 
@@ -31,7 +27,7 @@
   let isPlaying = $state(false)
 
   // Process lyrics
-  const isHideRepeated = $derived(settings.hideRepeated)
+  const isHideRepeated = $derived(ud.settings.hideRepeated)
   let deduplicatedLyrics = $derived(dedupLines(data.lrc, isHideRepeated))
   let processedLrc: ProcLrcLine[] = $derived(deduplicatedLyrics.map(line => processLrcLine(line.lyric)))
   
@@ -91,7 +87,7 @@
 
 <svelte:window onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
-<PlayerAppBar song={data.song} bind:settings bind:loc showRomajiOnError={false} isKaraoke={true} disableHideRepeated playlist={data.playlist} />
+<PlayerAppBar song={data.song} bind:settings={ud.settings} bind:loc={ud.loc} showRomajiOnError={false} isKaraoke={true} disableHideRepeated playlist={data.playlist} />
 
 <div class="vbox p-content py-4 gap-2 mfg-on-surface-variant">
   {#if data.audioData.vocalsUrl}
@@ -113,7 +109,7 @@
   </div>
 </div>
 
-<Lyrics lines={processedLrc} currentLineIndex={li} {settings} {states} />
+<Lyrics lines={processedLrc} currentLineIndex={li} settings={ud.settings} {states} />
 
 <button
   class="fixed bottom-6 right-6 z-5 size-64px cbox rounded-full surface-variant mbg-surface-container mfg-on-surface-variant shadow-lg hover:shadow-xl transition-all active:scale-90"

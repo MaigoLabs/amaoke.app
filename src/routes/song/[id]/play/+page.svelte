@@ -12,6 +12,7 @@
   import Lyrics from "$lib/ui/player/Lyrics.svelte"
   import PlayerAppBar from "$lib/ui/player/PlayerAppBar.svelte"
   import { getI18n } from "$lib/i18n"
+  import { UserDataSync } from "$lib/ui/player/state.svelte"
 
   const t = getI18n().song.play
 
@@ -25,15 +26,10 @@
   let inp = $state("")
 
   // Settings stored in user data
-  let settings = $state(data.user.data?.typingSettings ?? typingSettingsDefault)
-  $effect(() => { API.saveUserData({ typingSettings: settings }) })
-
-  // Playlist location state
-  let loc = $state(data.user.data.loc)
-  $effect(() => { API.saveUserData({ loc }) })
+  const ud = new UserDataSync(data)
 
   // Process each line into segments with swi (start word index) and kanji/kana
-  const isHideRepeated = $derived(settings.hideRepeated && !data.audioUrl)
+  const isHideRepeated = $derived(ud.settings.hideRepeated && !data.audioUrl)
   let deduplicatedLyrics = $derived(dedupLines(data.lrc, isHideRepeated))
   let processedLrc: ProcLrcLine[] = $derived(deduplicatedLyrics.map(line => processLrcLine(line.lyric)))
   // State tracking for each kana character: UNSEEN, RIGHT, WRONG
@@ -146,10 +142,10 @@
       totalTyped, totalRight, startTime, statsHistory
     })
 
-    if (loc?.currentPlaylistId) {
-      loc.isFinished = true
-      loc.lastResultId = res.id
-      await API.saveUserData({ loc })
+    if (ud.loc) {
+      ud.loc.isFinished = true
+      ud.loc.lastResultId = res.id
+      await API.saveUserData({ loc: ud.loc })
     }
 
     goto(`/results/${res.id}`, { replaceState: true })
@@ -158,7 +154,7 @@
 
 <svelte:window onclick={() => musicControl?.ready()} onkeydown={() => musicControl?.ready()}/>
 
-<PlayerAppBar song={data.song} bind:settings bind:loc disableHideRepeated={!!data.audioUrl} playlist={data.playlist} />
+<PlayerAppBar song={data.song} bind:settings={ud.settings} bind:loc={ud.loc} disableHideRepeated={!!data.audioUrl} playlist={data.playlist} />
 
 <LinearProgress percent={progress} />
 
@@ -180,4 +176,4 @@
 </div>
 
 <!-- Lines -->
-<Lyrics lines={processedLrc} currentLineIndex={li} currentWordIndex={wi} {states} {settings} showCaret={true} onLineClick={() => hiddenInput.focus()} />
+<Lyrics lines={processedLrc} currentLineIndex={li} currentWordIndex={wi} {states} settings={ud.settings} showCaret={true} onLineClick={() => hiddenInput.focus()} />
