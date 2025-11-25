@@ -1,8 +1,11 @@
-# 甘オケ / amaoke.app
+# アマオケ / amaoke.app
 
 Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke.app!
 
 是一个日语卡拉 OK 阅读打字唱歌练习软件！
+
+<img width="30%" alt="image" src="https://github.com/user-attachments/assets/4f47bc67-56c9-4c4f-98e6-aff4d1886672" />
+
 
 ## 使用教程
 
