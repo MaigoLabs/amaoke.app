@@ -85,7 +85,7 @@ export interface ResultDocument {
 export const typingSettingsDefault = {
   isFuri: true,
   allKata: false,
-  showRomaji: true,
+  showRomaji: false,
   showRomajiOnError: true,
   hideRepeated: false,
 };
