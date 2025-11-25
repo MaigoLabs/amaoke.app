@@ -10,6 +10,7 @@ services:
       - ORIGIN=http://localhost:3000
       - MONGODB_URI=mongodb://cat:meow@db:27017/amaoke?authSource=admin
       - AUDIO_SEPARATOR_API=http://ai:24801
+    env_file: .env
     depends_on:
       - db
       - ai
@@ -22,6 +23,7 @@ services:
       dockerfile: deploy/Dockerfile.python
     # ports:
     #   - "24801:24801"
+    env_file: .env
     volumes:
       - python_temp:/app/temp_audio
       - python_cache:/root/.cache
@@ -43,6 +45,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: cat
       MONGO_INITDB_ROOT_PASSWORD: meow
+    env_file: .env
     volumes:
       - mongodb_data:/data/db
 
