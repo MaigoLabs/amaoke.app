@@ -49,17 +49,7 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-  # Cloudflared
-  cfd:
-    image: cloudflare/cloudflared:latest
-    container_name: amaoke-cfd
-    volumes:
-      - cloudflared:/root/.cloudflared
-    env_file: .env
-    restart: unless-stopped
-
 volumes:
   mongodb_data:
   python_temp:
   python_cache:
-  cloudflared:
