@@ -2,7 +2,7 @@
 
 Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke.app!
 
-在这里可以同时练习日语卡拉 OK 歌词阅读速度和打字速度！
+是一个日语卡拉 OK 阅读打字唱歌练习软件！
 
 ## 使用教程
 

@@ -31,6 +31,25 @@
 
 <svelte:head>
   <link rel="icon" href={favicon} />
+
+  <!-- Primary Meta Tags -->
+  <title>🍬アマオケ🎤</title>
+  <meta name="title" content="🍬アマオケ🎤" />
+  <meta name="description" content="是一个日语卡拉 OK 阅读打字唱歌练习软件！" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://amaoke.app/" />
+  <meta property="og:title" content="🍬アマオケ🎤" />
+  <meta property="og:description" content="是一个日语卡拉 OK 阅读打字唱歌练习软件！" />
+  <meta property="og:image" content="https://amaoke.app/images/meta.png" />
+
+  <!-- X (Twitter) -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://amaoke.app/" />
+  <meta property="twitter:title" content="🍬アマオケ🎤" />
+  <meta property="twitter:description" content="是一个日语卡拉 OK 阅读打字唱歌练习软件！" />
+  <meta property="twitter:image" content="https://amaoke.app/images/meta.png" />
 </svelte:head>
 
 <div class="vbox h-screen min-h-screen box-border overflow-hidden relative max-w-1200px mx-auto">
