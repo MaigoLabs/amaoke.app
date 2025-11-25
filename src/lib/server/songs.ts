@@ -8,10 +8,10 @@ import type { ObjectId } from 'mongodb'
 import '../ext'
 import { promises as fs } from 'fs'
 import path from 'path'
+import { waitFor } from '../utils'
 import { separateSong } from './separator'
 
-const CACHE_DIR = path.resolve('storage/audio')
-export const getAudioFile = (songId: string, filename: string) => path.join(CACHE_DIR, songId, filename)
+const CACHE_DIR = path.resolve('static/audio')
 
 const neCookie = async () => (await dbs.serverProps
     .findOne({ name: 'global_settings' }))?.netease_login_cookie
