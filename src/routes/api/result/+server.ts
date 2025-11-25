@@ -10,6 +10,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     data.userId = user._id
 
     // Validate data here if needed
+    console.log(`API: Saving result for user ${user._id}`)
     const id = await saveResult(data)
     return json({ id })
   } catch (e) {

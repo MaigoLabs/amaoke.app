@@ -50,6 +50,7 @@ function parsePlaylistRef(ref: string): number {
 
 const getPlaylistRaw = cached(dbs.playlistsRaw,
     async (id: number) => {
+        console.log(`Fetching playlist raw ${id}`)
         const pl = ((await ne.playlist_detail({ id })).body as any).playlist
         for (const track of pl.tracks)
             await dbs.songsRaw.replaceOne({ _id: track.id }, { _id: track.id, data: track }, { upsert: true })
@@ -147,7 +148,11 @@ const songProcessingStatus = new Map<number, SongProcessState>()
 export const getSongStatus = (songId: number) => songProcessingStatus.get(songId) || { items: [], status: 'idle' }
 export const checkLyricsProcessed = async (songId: number) => !!await dbs.lyricsProcessed.findOne({ _id: songId as any })
 export const prepareSong = async (songId: number) => {
-    if (songProcessingStatus.has(songId)) return
+    console.log(`Preparing song ${songId}`)
+    if (songProcessingStatus.has(songId)) {
+        console.log(`Song ${songId} is already being processed`)
+        return
+    }
 
     const state: SongProcessState = { items: [], status: 'running' }
     songProcessingStatus.set(songId, state)
@@ -196,7 +201,9 @@ export const prepareSong = async (songId: number) => {
     try {
         await Promise.all([processLyrics(), processMusic()])
         state.status = 'done'
+        console.log(`Song ${songId} preparation done`)
     } catch (e) {
+        console.error(`Song ${songId} preparation failed`, e)
         addTask('error', eToString(e)).progress = -1
         state.status = 'error'
     }
@@ -261,7 +268,6 @@ async function processImport(session: ImportSession, data: any) {
     data.tracks = (await Promise.all(session.songs.map(async item => {
         try {
             const lyrics = await getLyricsRaw(item.song.id)
-            console.log(`Song ${item.song.id} lang ${lyrics.lang}`)
             if (lyrics.lang === 'jpn') {
                 item.status = 'success'
                 return item.song
@@ -298,6 +304,7 @@ export const listRecPlaylists = async () => {
     const list = await dbs.playlists.find({
         _id: { $in: defaultPlaylists }
     } as any).map(it => it.data).toArray()
+    console.log(`Listing recommended playlists: ${list.length} found`)
     return list.sort((a: any, b: any) => defaultPlaylists.indexOf(a.id) - defaultPlaylists.indexOf(b.id))
 }
 export const listMyPlaylists = async (user: UserDocument) => (await user.data.myPlaylists?.let(pl => dbs.playlists.find({
@@ -305,6 +312,7 @@ export const listMyPlaylists = async (user: UserDocument) => (await user.data.my
 }).map(it => it.data).toArray())) ?? []
 
 export const getPlaylist = async (playlistId: number | string) => {
+    console.log(`Getting playlist ${playlistId}`)
     const plData = await dbs.playlists.findOne({ _id: +playlistId as any })
     if (!plData) throw error(404, 'Playlist not found')
     return plData.data

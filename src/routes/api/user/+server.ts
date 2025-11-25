@@ -9,6 +9,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 
   try {
     const data = await request.json()
+    console.log(`API: Updating user data for ${user._id}`)
     await updateUserData(user, data)
     return json({ success: true })
   } catch (e) {

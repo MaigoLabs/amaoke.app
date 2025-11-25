@@ -11,6 +11,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     if (!user) throw error(401, 'Unauthorized');
 
     try {
+        console.log(`API: Starting import for link ${link} by user ${user._id}`)
         return json(await startImport(link, user._id))
     } catch (e) {
         console.error(e)

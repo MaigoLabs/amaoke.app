@@ -16,6 +16,7 @@ void users.createIndex({ syncCode: 1 }, { name: "users_sync_code_idx" })
 export async function createUser(registUA: string): Promise<string> {
   const ses = `${crypto.randomUUID()}-${Date.now().toString(36)}`
   await users.insertOne({ registUA, createdAt: new Date(), sessions: [ses], data: {} })
+  console.log(`Created new user with session ${ses}`)
   return ses
 }
 
@@ -41,6 +42,7 @@ export async function createSyncCode(session: string): Promise<string> {
   // Sync code is 4 * 5 numbers
   const code = Array.from({ length: 4 }, () => Math.floor(Math.random() * 100000).toString().padStart(5, '0')).join('-')
   await users.updateOne({ _id: user._id }, { $set: { syncCode: code, syncCodeCreated: new Date() } })
+  console.log(`Created sync code for user ${user._id}`)
   return code
 }
 
@@ -52,6 +54,7 @@ export async function createSyncCode(session: string): Promise<string> {
 export async function updateUserData(user: UserDocument, data: Partial<UserData>): Promise<void> {
   const newData = { ...(user.data || {}), ...data }
   await users.updateOne({ _id: user._id }, { $set: { data: newData } })
+  console.log(`Updated user data for ${user._id}`)
 }
 
 /**
@@ -80,6 +83,7 @@ export async function loginWithSyncCode(code: string, newUA: string): Promise<st
       $unset: { syncCode: "", syncCodeCreated: "" }
     }
   )
-
+  console.log(`User ${user._id} logged in with sync code`)
+  
   return ses
 }

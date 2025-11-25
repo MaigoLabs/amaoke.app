@@ -7,7 +7,10 @@ export const POST: RequestHandler = async ({ request }) => {
     if (!id) throw error(400, 'Import ID is required')
 
     const session = getSession(id)
-    if (!session) throw error(404, 'Session not found')
+    if (!session) {
+        console.log(`API: Import session ${id} not found`)
+        throw error(404, 'Session not found')
+    }
 
     return json(session);
 };

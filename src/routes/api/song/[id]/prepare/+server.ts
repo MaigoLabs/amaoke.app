@@ -3,6 +3,7 @@ import { prepareSong, getSongStatus } from '$lib/server/songs'
 
 export async function POST({ params }) {
     const songId = +params.id
+    console.log(`API: Requesting preparation for song ${songId}`)
     prepareSong(songId) // Start in background
     return json({ status: 'started' })
 }

@@ -7,5 +7,6 @@ export const POST: RequestHandler = async ({ cookies }) => {
   if (!session) throw error(401, 'Unauthorized')
 
   const code = await createSyncCode(session)
+  console.log(`API: Created sync code for session ${session}`)
   return json({ code })
 }

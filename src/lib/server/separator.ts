@@ -12,7 +12,12 @@ const API_URL = process.env.AUDIO_SEPARATOR_API
 export async function separateSong(inputPath: string, outputDir: string) {
     const vocalsPath = path.join(outputDir, 'vocals.opus')
     const instrumentalPath = path.join(outputDir, 'instrumental.opus')
-    if (await fs.exists(vocalsPath) && await fs.exists(instrumentalPath)) return
+    if (await fs.exists(vocalsPath) && await fs.exists(instrumentalPath)) {
+        console.log(`Separation already done for ${inputPath}`)
+        return
+    }
+
+    console.log(`Starting separation for ${inputPath}`)
 
     // Read file and create FormData
     const fileBuffer = await fs.readFile(inputPath)
@@ -40,6 +45,7 @@ export async function separateSong(inputPath: string, outputDir: string) {
 
             await downloadStem('vocals', vocalsPath)
             await downloadStem('instrumental', instrumentalPath)
+            console.log(`Separation completed for ${inputPath}`)
             
             // Clean up task on server
             try {
@@ -49,8 +55,14 @@ export async function separateSong(inputPath: string, outputDir: string) {
             }
             break
         }
-        if (status.status === 'error') throw error(500, status.error || '分离失败')
-        if (status.status === 'not_found') throw error(500, '任务丢失')
+        if (status.status === 'error') {
+            console.error(`Separation failed for ${inputPath}: ${status.error}`)
+            throw error(500, status.error || '分离失败')
+        }
+        if (status.status === 'not_found') {
+            console.error(`Separation task lost for ${inputPath}`)
+            throw error(500, '任务丢失')
+        }
     }
 }
 

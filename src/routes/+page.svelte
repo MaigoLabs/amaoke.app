@@ -13,8 +13,6 @@
 
   const t = getI18n().home
 
-  console.log(data.recPlaylists)
-
   const loc = data.user.data.loc
   const href = loc?.isFinished && loc?.lastResultId ? `/results/${loc.lastResultId}` : `/song/${data.last?.id}`
 </script>

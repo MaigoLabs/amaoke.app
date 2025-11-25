@@ -7,6 +7,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
   if (!code) throw error(400, 'Missing sync code')
 
   const ua = request.headers.get('user-agent') || 'unknown'
+  console.log(`Login attempt with sync code from UA: ${ua}`)
   const session = await loginWithSyncCode(code, ua)
   
   // Set session cookie
