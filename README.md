@@ -46,6 +46,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 * [x] About page
 * [ ] Intro popup
 * [ ] Re-encode songs using opus
+* [ ] Meta tags
 
 ## 自搭服务器文档 / Self-hosting Guide
 
