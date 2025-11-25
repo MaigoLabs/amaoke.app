@@ -5,6 +5,7 @@
 
   interface Icon {
     icon: string
+    size?: number
     onclick: () => void
   }
 
@@ -35,7 +36,7 @@
   </div>
 
   {#each right as item}
-    <IconButton icon={item.icon} onclick={item.onclick} />
+    <IconButton icon={item.icon} onclick={item.onclick} size={item.size} />
   {/each}
 
   {#if children}

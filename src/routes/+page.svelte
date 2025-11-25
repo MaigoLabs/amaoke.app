@@ -7,7 +7,7 @@
   import { Layer } from "m3-svelte"
   import { goto } from "$app/navigation"
   import { getI18n, setLanguage } from "$lib/i18n"
-    import MenuItem from "$lib/ui/material3/MenuItem.svelte";
+  import MenuItem from "$lib/ui/material3/MenuItem.svelte"
 
   let { data }: PageProps = $props()
 
@@ -18,7 +18,9 @@
 </script>
 
 
-<AppBar account={() => goto('/user')} moreIcon="i-material-symbols:translate-rounded">
+<AppBar account={() => goto('/user')} moreIcon="i-material-symbols:translate-rounded" right={[
+  { icon: 'i-solar:cat-broken', size: 26, onclick: () => goto('/about') },
+]}>
   <MenuItem onclick={() => setLanguage('en')}>English</MenuItem>
   <MenuItem onclick={() => setLanguage('zh')}>中文</MenuItem>
   <MenuItem onclick={() => setLanguage('ja')}>日本語</MenuItem>
