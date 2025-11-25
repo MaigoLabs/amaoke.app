@@ -51,7 +51,7 @@ services:
 
   # Cloudflared
   cfd:
-    image: cloudflared/cloudflared:latest
+    image: cloudflare/cloudflared:latest
     container_name: amaoke-cfd
     volumes:
       - cloudflared:/root/.cloudflared
