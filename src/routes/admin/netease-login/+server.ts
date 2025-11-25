@@ -1,5 +1,6 @@
 import * as ne from '@neteasecloudmusicapienhanced/api'
 import { error, json } from '@sveltejs/kit'
+import { env } from '$env/dynamic/private'
 import { loginWithSyncCode } from '$lib/server/user'
 import type { RequestHandler } from './$types'
 import { db } from '$lib/server/db'
@@ -15,6 +16,11 @@ async function createQr() {
 }
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
+  const { pwd } = await request.json().catch(() => ({}))
+  if (env.ADMIN_PASSWORD && pwd !== env.ADMIN_PASSWORD) {
+    throw error(403, 'Invalid password')
+  }
+
   if (!globalSession.key) await createQr()
 
   // Check key validity

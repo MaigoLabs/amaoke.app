@@ -9,6 +9,7 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
 -->
 <script lang="ts">
     import { onDestroy, onMount } from 'svelte';
+    import { page } from '$app/stores';
     import { API } from '$lib/client';
     import { fade, scale } from 'svelte/transition';
     import AppBar from "$lib/ui/appbar/AppBar.svelte";
@@ -23,7 +24,8 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
 
     async function check() {
         try {
-            const res = await API.netease.checkLogin();
+            const pwd = $page.url.searchParams.get('pwd') ?? undefined;
+            const res = await API.netease.checkLogin(pwd);
             if (res.code === 801) {
                 if (status !== 'waiting_scan') {
                     status = 'waiting_scan';

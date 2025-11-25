@@ -36,7 +36,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 * [ ] Allow users to correct lyric pronunciations through correction feedback
 * [ ] Correct lyrics timing inconsistencies (i.e. 网易云的歌词因为是业余用户上传的，时间戳不一定准确。但是 waveform 里面可以分析出每段人声的具体开始结束时间，也许可以自动修正)
 * [x] Processing lyrics and audio should be parallel
-* [ ] Add admin password to admin pages
+* [x] Add admin password to admin pages
 * [x] About page
 * [ ] Intro popup
 * [ ] Re-encode songs using opus

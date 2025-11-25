@@ -25,7 +25,7 @@ export const API = {
     netease: {
         startImport: async (link: string) => await post('/api/import/netease/start', { link }),
         checkProgress: async (id: string) => await post('/api/import/netease/progress', { id }),
-        checkLogin: async () => await post('/admin/netease-login', {})
+        checkLogin: async (pwd?: string) => await post('/admin/netease-login', { pwd })
     },
 
     user: {
