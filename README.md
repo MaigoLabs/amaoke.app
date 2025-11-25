@@ -47,7 +47,6 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 * [ ] Intro popup
 * [ ] Re-encode songs using opus
 * [ ] Meta tags
-* [ ] Bug: 音乐模式 should require lyrics to be ready
 
 ## 自搭服务器文档 / Self-hosting Guide
 

@@ -28,9 +28,9 @@
   })
 
   let modes = $derived([
-    { icon: "i-material-symbols:keyboard-rounded", label: t.typing, url: `/song/${data.song.id}/play`, disabled: !taskStatus.lyrics || !taskStatus.ai },
-    { icon: "i-material-symbols:music-note-rounded", label: t.music, url: `/song/${data.song.id}/play?music=true`, disabled: !taskStatus.music },
-    { icon: "i-material-symbols:mic-rounded", label: t.karaoke, url: `/song/${data.song.id}/karaoke`, disabled: !taskStatus.separation },
+    { icon: "i-material-symbols:keyboard-rounded", label: t.typing, url: `/song/${data.song.id}/play`, disabled: !taskStatus.ai },
+    { icon: "i-material-symbols:music-note-rounded", label: t.music, url: `/song/${data.song.id}/play?music=true`, disabled: !taskStatus.ai || !taskStatus.music },
+    { icon: "i-material-symbols:mic-rounded", label: t.karaoke, url: `/song/${data.song.id}/karaoke`, disabled: !taskStatus.ai || !taskStatus.separation },
   ])
 
   let progressItems = $state<any[]>([])
