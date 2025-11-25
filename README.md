@@ -4,6 +4,12 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 
 在这里可以同时练习日语卡拉 OK 歌词阅读速度和打字速度！
 
+## 使用教程
+
+用手机打开 [amaoke.app](https://amaoke.app) 就可以了！
+
+（电脑上也可以用，虽然没有做视图适配所以可能有点怪）
+
 ## 主要功能
 
 * [x] 导入网易云歌单自动获取歌词
@@ -41,29 +47,49 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 * [ ] Intro popup
 * [ ] Re-encode songs using opus
 
+## 自搭服务器文档 / Self-hosting Guide
 
-## Development server
+**运行服务器需要的东西：**
 
-### Requirements
-- Bun
-- Docker
+1. 一个 openrouter.ai 的 API key
+2. 一个网易云账号
+3. docker
+4. 一张 >2GB 显存的显卡（推荐 Nvidia，其他显卡需要改 Dockerfile）
+5. 小猫
 
-### 1. Environment setup
-1. Create your `.env` file by renaming `.env.example` to `.env`
-2. Add the following variable:
-   OPENROUTER_API_KEY=your_key_here
-   (Request the key from the repository owner)
+**自搭教程**
 
-### 2. Start the database
-Run in the project root:
-docker compose up
+1. 克隆仓库
 
-### 3. Install dependencies
-Install Bun:
-https://bun.com/get
+```sh
+git clone https://github.com/MaigoLabs/amaoke.app
+cd amaoke.app/deploy
+```
 
-Then install project dependencies:
-bun install
+2. 创建一个叫 `.env` 的文件，把下面这些写进去
 
-### 4. Start development server
-bun run dev
+```.env
+OPENROUTER_API_KEY="你的 openrouter.ai API key"
+ADMIN_PASSWORD=一个随机管理密码
+```
+
+3. 运行
+
+```sh
+docker compose up -d
+```
+
+4. 去登录网易云账号
+
+```
+http://127.0.0.1:3000/admin/netease-login?pwd=你的管理密码
+```
+
+5. 让小猫喵喵
+6. 完成了！
+
+## 开发者文档 / Developer Guide
+
+欢迎给这个项目贡献代码！想要贡献代码的话请参考 [README_DEVELOPER.md](README_DEVELOPER.md)
+
+
