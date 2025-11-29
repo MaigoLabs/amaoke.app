@@ -88,6 +88,7 @@ export const typingSettingsDefault = {
   showRomaji: false,
   showRomajiOnError: true,
   hideRepeated: false,
+  ignoreEnglish: false,
 };
 
 export type TypingSettings = typeof typingSettingsDefault;

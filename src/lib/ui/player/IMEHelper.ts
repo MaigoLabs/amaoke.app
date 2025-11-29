@@ -50,3 +50,5 @@ export function dedupLines(lrc: LyricLine[], hide: boolean) {
     return true;
   });
 }
+
+export const isEnglish = (str: string | undefined) => str && /^[a-zA-Z\s.,'!?]+$/.test(str)

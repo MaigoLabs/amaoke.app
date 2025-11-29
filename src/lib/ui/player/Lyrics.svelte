@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tick } from "svelte"
   import { isKana, isKanji, toKatakana, toRomaji } from "wanakana"
-  import type { ProcLrcLine, ProcLrcSeg } from "./IMEHelper"
+  import { isEnglish, type ProcLrcLine, type ProcLrcSeg } from "./IMEHelper"
   import type { TypingSettings } from "$lib/types"
   import { animateCaret } from "./animation"
 
@@ -31,8 +31,11 @@
   const _preprocessKana = (kana: string) => settings.allKata ? toKatakana(kana) : kana
   const preprocessKana = (kana: string, state?: string) => (settings.showRomaji || (settings.showRomajiOnError && state === 'wrong')) ? `<ruby>${_preprocessKana(kana)}<rt>${toRomaji(kana)}</rt></ruby>` : _preprocessKana(kana)
 
+
+
   const allStates = (l: number, seg: ProcLrcSeg) => states[l]?.slice(seg.swi, seg.swi + seg.kana.length) ?? []
   const getKanjiState = (l: number, seg: ProcLrcSeg) => {
+    if (settings.ignoreEnglish && isEnglish(seg.kanji)) return 'ignored'
     let sts = allStates(l, seg)
     if (sts.every(s => s === 'right')) return 'right'
     if (sts.some(s => s === 'wrong')) return 'wrong'
@@ -73,7 +76,7 @@
       <div class="lrc p-content text-center m3-font-body-large" class:active={l === currentLineIndex} role="button" tabindex="0"
         onclick={() => onLineClick?.()} 
         onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onLineClick?.() } }}>
-        {#each line.parts as seg}
+        {#each line.parts as seg, i}
           {#if !seg.kanji}
             {#each seg.kana as char, c}
               <span class="{states[l]?.[seg.swi + c] ?? ''}" class:here={l === currentLineIndex && currentWordIndex === seg.swi + c}
@@ -89,6 +92,9 @@
                 {/each}
               </rt>{/if}
             </ruby>
+          {/if}
+          {#if line.parts[i+1] && (isEnglish(seg.kanji ?? seg.kana) || isEnglish(line.parts[i+1].kanji ?? line.parts[i+1].kana))}
+            &nbsp;
           {/if}
         {/each}
       </div>
@@ -124,5 +130,7 @@
   .right
     color: #7b78c2
   .punctuation
+    opacity: 0.5
+  .ignored
     opacity: 0.5
 </style>

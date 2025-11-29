@@ -4,7 +4,7 @@
   import { onMount } from "svelte"
   import { typingSettingsDefault } from "$lib/types.ts"
   import { isKana, isKanji, toHiragana } from "wanakana"
-  import { composeList, fuzzyEquals, processLrcLine, dedupLines, type ProcLrcLine } from "$lib/ui/player/IMEHelper.ts"
+  import { composeList, fuzzyEquals, processLrcLine, dedupLines, isEnglish, type ProcLrcLine } from "$lib/ui/player/IMEHelper.ts"
   import "$lib/ext.ts"
   import { API } from "$lib/client.ts"
   import { goto } from '$app/navigation'
@@ -129,7 +129,11 @@
     }
 
     // Check next expected character, if it's neither kana nor kanji, skip it
-    while (findLoc().let(({ exp, cLine }) => !isKana(exp) && !isKanji(exp) && incr(cLine))) {}
+    while (findLoc().let(({ exp, cLine, cSeg }) => {
+      const isPunctuation = !isKana(exp) && !isKanji(exp)
+      const isIgnoredEnglish = ud.settings.ignoreEnglish && isEnglish(cSeg.kanji)
+      return (isPunctuation || isIgnoredEnglish) && incr(cLine)
+    })) {}
   }
   $effect(() => inputChanged(inp, false))
 
