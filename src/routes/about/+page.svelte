@@ -1,6 +1,7 @@
 <script lang="ts">
   import AppBar from "$lib/ui/appbar/AppBar.svelte"
   import Button from "$lib/ui/Button.svelte"
+  import { version } from '$app/environment';
   import "@fontsource/darumadrop-one"
 
   // Generate 20 random lines of hiragana
@@ -35,7 +36,7 @@
     </div>
     <div class="z-10">
       <div class="app-name text-32px">アマオケ</div>
-      <div class="m3-font-body-medium mfg-on-surface-variant">FOSS 1.0.0</div>
+      <div class="m3-font-body-medium mfg-on-surface-variant">FOSS {version}</div>
       <div class="m3-font-body-medium mfg-on-surface">
         Made with ♥ and 🔮 by <br>
         <a href="https://maigo.dev" target="_blank" class="mfg-primary">MaigoLabs</a> 2025
