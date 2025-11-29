@@ -97,3 +97,8 @@ http://127.0.0.1:3000/admin/netease-login?pwd=你的管理密码
 欢迎给这个项目贡献代码！想要贡献代码的话请参考 [README_DEVELOPER.md](README_DEVELOPER.md)
 
 
+## 更新日志 / Changelog
+
+### v1.0.1
+
+* 修复了英文单词之间显示没有空格的问题
