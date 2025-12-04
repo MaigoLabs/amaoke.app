@@ -4,7 +4,7 @@
   import { onMount } from "svelte"
   import { typingSettingsDefault } from "$lib/types.ts"
   import { isKana, isKanji, toHiragana } from "wanakana"
-  import { composeList, fuzzyEquals, processLrcLine, dedupLines, isEnglish, type ProcLrcLine } from "$lib/ui/player/IMEHelper.ts"
+  import { composeList, fuzzyEquals, processLrcLine, dedupLines, isEnglish, type ProcLrcLine, composeMap } from "$lib/ui/player/IMEHelper.ts"
   import "$lib/ext.ts"
   import { API } from "$lib/client.ts"
   import { goto } from '$app/navigation'
@@ -114,7 +114,8 @@
       // Check if it matches current character
       let { cLine, cSeg, exp } = findLoc()
       let res = fuzzyEquals(char, exp)
-      if (res === 'wrong' && !imeUsed && !isComposed && composeList.includes(exp)) return // Need to compose, stop here
+      // Need to compose, stop here
+      if (res !== 'right' && !imeUsed && !isComposed && composeList.includes(exp) && composeMap.get(exp) === char) return
       states[li][wi] = res
 
       // Record stats

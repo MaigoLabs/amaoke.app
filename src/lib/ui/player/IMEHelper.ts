@@ -28,14 +28,17 @@ export function fuzzyEquals(kana1: string, kana2: string): string {
 }
 
 // List of characters need to be composed instead of directly typed
-export const composeList = [
-  'っ', 'ゃ', 'ゅ', 'ょ', 'ぁ', 'ぃ', 'ぅ', 'ぇ', 'ぉ',
-  'が', 'ぎ', 'ぐ', 'げ', 'ご',
-  'ざ', 'じ', 'ず', 'ぜ', 'ぞ',
-  'だ', 'ぢ', 'づ', 'で', 'ど',
-  'ば', 'び', 'ぶ', 'べ', 'ぼ',
-  'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ'
-]
+export const composeMap = new Map(Object.entries({
+  'っ': 'つ', 'ゃ': 'や', 'ゅ': 'ゆ', 'ょ': 'よ', 'ぁ': 'あ',
+  'ぃ': 'い', 'ぅ': 'う', 'ぇ': 'え', 'ぉ': 'お',
+  
+  'が': 'か', 'ぎ': 'き', 'ぐ': 'く', 'げ': 'け', 'ご': 'こ',
+  'ざ': 'さ', 'じ': 'し', 'ず': 'す', 'ぜ': 'せ', 'ぞ': 'そ',
+  'だ': 'た', 'ぢ': 'ち', 'づ': 'つ', 'で': 'て', 'ど': 'と',
+  'ば': 'は', 'び': 'ひ', 'ぶ': 'ふ', 'べ': 'へ', 'ぼ': 'ほ',
+  'ぱ': 'は', 'ぴ': 'ひ', 'ぷ': 'ふ', 'ぺ': 'へ', 'ぽ': 'ほ',
+}))
+export const composeList = Array.from(composeMap.keys())
 
 /**
  * Remove duplicate lyric lines based on their content.
