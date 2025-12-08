@@ -116,7 +116,10 @@
       let exph = toHiragana(exp)
       let res = fuzzyEquals(char, exp)
       // Need to compose, stop here
-      if (res !== 'right' && !imeUsed && !isComposed && composeList.includes(exph) && composeMap.get(exph) === char) return
+      if (res !== 'right' && !imeUsed && !isComposed 
+        && composeList.includes(exph) && composeMap.get(exph) === char
+        && inp.length === 1
+      ) return
       states[li][wi] = res
 
       // Record stats
