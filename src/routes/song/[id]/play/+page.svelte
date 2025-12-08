@@ -113,9 +113,10 @@
 
       // Check if it matches current character
       let { cLine, cSeg, exp } = findLoc()
+      let exph = toHiragana(exp)
       let res = fuzzyEquals(char, exp)
       // Need to compose, stop here
-      if (res !== 'right' && !imeUsed && !isComposed && composeList.includes(exp) && composeMap.get(exp) === char) return
+      if (res !== 'right' && !imeUsed && !isComposed && composeList.includes(exph) && composeMap.get(exph) === char) return
       states[li][wi] = res
 
       // Record stats
