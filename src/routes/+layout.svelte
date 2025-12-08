@@ -51,6 +51,8 @@
   <meta property="twitter:title" content="🍬アマオケ🎤" />
   <meta property="twitter:description" content="是一个日语卡拉 OK 阅读打字唱歌练习软件！" />
   <meta property="twitter:image" content="https://amaoke.app/images/meta.png" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, interactive-widget=resizes-content">
 </svelte:head>
 
 <div id="layout-view" class="vbox box-border overflow-hidden relative max-w-1200px mx-auto">
