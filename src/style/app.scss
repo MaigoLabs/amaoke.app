@@ -1,0 +1,3 @@
+:root { --svh: 100vh; --dvh: 100vh; --svw: 100vw; --dvw: 100vw; }
+@supports (height: 100svh) { :root { --svh: 100svh; --svw: 100svw; } }
+@supports (height: 100dvh) { :root { --dvh: 100dvh; --dvw: 100dvw; } }

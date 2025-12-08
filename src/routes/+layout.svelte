@@ -3,6 +3,7 @@
   import "@fontsource/roboto"
   import 'virtual:uno.css'
   import "../style/app.sass"
+  import "../style/app.scss"
   import "../style/material.scss"
   import '@unocss/reset/normalize.css'
   import '@unocss/reset/tailwind-v4.css'
@@ -52,7 +53,7 @@
   <meta property="twitter:image" content="https://amaoke.app/images/meta.png" />
 </svelte:head>
 
-<div class="vbox h-screen min-h-screen box-border overflow-hidden relative max-w-1200px mx-auto">
+<div id="layout-view" class="vbox box-border overflow-hidden relative max-w-1200px mx-auto">
   {@render children()}
 </div>
 
