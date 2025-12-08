@@ -50,6 +50,7 @@ Practice Japanese Karaoke lyrics reading and typing at the same time with amaoke
 * [ ] Intro popup
 * [ ] Re-encode songs using opus
 * [x] Meta tags
+* [ ] Allow deleting incorrect characters
 
 ## 自搭服务器文档 / Self-hosting Guide
 
