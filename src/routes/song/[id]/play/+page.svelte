@@ -117,7 +117,7 @@
       let res = fuzzyEquals(char, exp)
       // Need to compose, stop here
       if (res !== 'right' && !imeUsed && !isComposed 
-        && composeList.includes(exph) && composeMap.get(exph) === char
+        && composeList.includes(exph) && composeMap.get(exph)?.includes(char)
         && inp.length === 1
       ) return
       states[li][wi] = res
