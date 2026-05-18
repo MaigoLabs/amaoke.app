@@ -6,9 +6,13 @@
 
 ### 1. Environment setup
 1. Create your `.env` file by renaming `.env.example` to `.env`
-2. Add the following variable:
-   OPENROUTER_API_KEY=your_key_here
+2. Add the following variables:
+   AI_BASE_URL=https://openrouter.ai/api/v1
+   AI_KEY=your_key_here
+   AI_MODEL=openai/gpt-5.4-mini
    (Request the key from the repository owner)
+
+   `OPENROUTER_API_KEY` is still supported as a legacy fallback for `AI_KEY`.
 
 ### 2. Start the database
 Run in the project root:

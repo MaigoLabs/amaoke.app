@@ -1,4 +1,4 @@
-import * as ne from '@neteasecloudmusicapienhanced/api'
+import ne from '@neteasecloudmusicapienhanced/api'
 import { aiParseLyrics } from './tools/lyrics'
 import type { NeteaseSong, UserDocument } from '../types'
 import { dbs } from './db'

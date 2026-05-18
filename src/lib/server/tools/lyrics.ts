@@ -3,13 +3,18 @@ import type { LyricLine, LyricSegment } from '../../types'
 import { isKana, isKanji } from 'wanakana'
 import { building } from '$app/environment'
 
-// Please put OPENROUTER_API_KEY in your environment variables.
-if (!building && !process.env.OPENROUTER_API_KEY) throw new Error('Please set OPENROUTER_API_KEY in your environment variables.')
+const aiKey = process.env.AI_KEY || process.env.OPENROUTER_API_KEY
+const aiBaseUrl = process.env.AI_BASE_URL
+const aiModel = process.env.AI_MODEL || "openai/gpt-5.4-mini"
+
+if (!building && !aiKey) throw new Error('Please set AI_KEY in your environment variables. OPENROUTER_API_KEY is still supported for backwards compatibility.')
+
 const client = new OpenRouter({
-  apiKey: process.env.OPENROUTER_API_KEY ?? ""
+  apiKey: aiKey ?? "",
+  ...(aiBaseUrl ? { serverURL: aiBaseUrl } : {})
 })
 const req = {
-  model: "openai/gpt-5-mini",
+  model: aiModel,
   // model: "gpt-4.1",
   // model: 'x-ai/grok-4.1-fast:free',
   messages: [

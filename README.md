@@ -74,7 +74,9 @@ cd amaoke.app/deploy
 2. 创建一个叫 `.env` 的文件，把下面这些写进去
 
 ```.env
-OPENROUTER_API_KEY="你的 openrouter.ai API key"
+AI_BASE_URL="https://openrouter.ai/api/v1"
+AI_KEY="你的 openrouter.ai API key"
+AI_MODEL="openai/gpt-5.4-mini"
 ADMIN_PASSWORD=一个随机管理密码
 ```
 

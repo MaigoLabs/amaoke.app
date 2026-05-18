@@ -1,4 +1,4 @@
-import * as ne from '@neteasecloudmusicapienhanced/api'
+import ne from '@neteasecloudmusicapienhanced/api'
 import { error, json } from '@sveltejs/kit'
 import { env } from '$env/dynamic/private'
 import { loginWithSyncCode } from '$lib/server/user'
