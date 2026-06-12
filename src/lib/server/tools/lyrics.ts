@@ -33,21 +33,9 @@ function normalizeSocks5ProxyUrl(proxyUrl: string): string {
   return normalizeProxyUrl(proxyUrl) as string
 }
 
-function maskProxyCredentials(proxyUrl: string): string {
-  const parsed = new URL(proxyUrl)
-  if (parsed.username) parsed.username = '***'
-  if (parsed.password) parsed.password = '***'
-  return parsed.toString()
-}
-
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error)
-}
-
 function createSocks5Fetcher(proxyUrl: string): Fetcher {
   const proxy = normalizeSocks5ProxyUrl(proxyUrl)
-  const maskedProxy = maskProxyCredentials(proxy)
-  console.log(`LLM SOCKS proxy enabled: ${maskedProxy}`)
+  console.log(`LLM SOCKS proxy enabled: ${proxy}`)
 
   return async (input, init) => {
     try {
@@ -59,7 +47,8 @@ function createSocks5Fetcher(proxyUrl: string): Fetcher {
       } as Parameters<typeof proxyFetch>[1]) as unknown as Response
     } catch (error) {
       const requestUrl = input instanceof Request ? input.url : input.toString()
-      console.warn(`LLM SOCKS proxy request failed via ${maskedProxy} for ${requestUrl}: ${errorMessage(error)}`)
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`LLM SOCKS proxy request failed via ${proxy} for ${requestUrl}: ${message}`)
       throw error
     }
   }
