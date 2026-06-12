@@ -77,8 +77,11 @@ cd amaoke.app/deploy
 AI_BASE_URL="https://openrouter.ai/api/v1"
 AI_KEY="你的 openrouter.ai API key"
 AI_MODEL="openai/gpt-5.4-mini"
+AI_SOCKS_PROXY=""
 ADMIN_PASSWORD=一个随机管理密码
 ```
+
+如果 LLM 请求需要走 SOCKS5 代理，可以设置 `AI_SOCKS_PROXY`，例如 `socks5://127.0.0.1:1080`。
 
 3. 运行
 

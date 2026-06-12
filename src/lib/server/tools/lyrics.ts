@@ -1,17 +1,68 @@
-import { OpenRouter } from '@openrouter/sdk'
+import { HTTPClient, OpenRouter, type Fetcher } from '@openrouter/sdk'
+import { socksDispatcher } from 'fetch-socks'
+import { fetch as undiciFetch, type Dispatcher } from 'undici'
 import type { LyricLine, LyricSegment } from '../../types'
-import { isKana, isKanji } from 'wanakana'
+import { isKanji } from 'wanakana'
 import { building } from '$app/environment'
 
+const defaultAiModel = "openai/gpt-5.4-mini"
+const aiModel = process.env.AI_MODEL || defaultAiModel
 const aiKey = process.env.AI_KEY || process.env.OPENROUTER_API_KEY
 const aiBaseUrl = process.env.AI_BASE_URL
-const aiModel = process.env.AI_MODEL || "openai/gpt-5.4-mini"
+const aiSocksProxy = process.env.AI_SOCKS_PROXY
+
+function parseSocks5Proxy(proxyUrl: string): Parameters<typeof socksDispatcher>[0] {
+  let parsed: URL
+  try {
+    parsed = new URL(proxyUrl)
+  } catch {
+    throw new Error('AI_SOCKS_PROXY must be a valid SOCKS5 URL, for example socks5://127.0.0.1:1080')
+  }
+
+  if (!['socks5:', 'socks5h:'].includes(parsed.protocol)) {
+    throw new Error('AI_SOCKS_PROXY must use the socks5:// or socks5h:// protocol.')
+  }
+  if (!parsed.hostname || !parsed.port) {
+    throw new Error('AI_SOCKS_PROXY must include a host and port, for example socks5://127.0.0.1:1080')
+  }
+
+  const port = Number.parseInt(parsed.port, 10)
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error('AI_SOCKS_PROXY must include a valid port between 1 and 65535.')
+  }
+
+  const host = parsed.hostname.replace(/^\[(.*)\]$/, '$1')
+  const proxy = {
+    type: 5 as const,
+    host,
+    port,
+  }
+
+  if (parsed.username) Object.assign(proxy, { userId: decodeURIComponent(parsed.username) })
+  if (parsed.password) Object.assign(proxy, { password: decodeURIComponent(parsed.password) })
+
+  return proxy
+}
+
+function createSocks5Fetcher(proxyUrl: string): Fetcher {
+  const dispatcher = socksDispatcher(parseSocks5Proxy(proxyUrl)) as Dispatcher
+
+  return async (input, init) => {
+    return await undiciFetch(input as Parameters<typeof undiciFetch>[0], {
+      ...init,
+      dispatcher,
+    } as Parameters<typeof undiciFetch>[1]) as unknown as Response
+  }
+}
 
 if (!building && !aiKey) throw new Error('Please set AI_KEY in your environment variables. OPENROUTER_API_KEY is still supported for backwards compatibility.')
 
+const httpClient = aiSocksProxy ? new HTTPClient({ fetcher: createSocks5Fetcher(aiSocksProxy) }) : undefined
+
 const client = new OpenRouter({
   apiKey: aiKey ?? "",
-  ...(aiBaseUrl ? { serverURL: aiBaseUrl } : {})
+  ...(aiBaseUrl ? { serverURL: aiBaseUrl } : {}),
+  ...(httpClient ? { httpClient } : {}),
 })
 const req = {
   model: aiModel,
