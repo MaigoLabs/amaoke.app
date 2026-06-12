@@ -81,7 +81,7 @@ AI_SOCKS_PROXY=""
 ADMIN_PASSWORD=一个随机管理密码
 ```
 
-如果 LLM 请求需要走 SOCKS5 代理，可以设置 `AI_SOCKS_PROXY`，例如 `socks5://127.0.0.1:1080`。
+如果 LLM 请求需要走 SOCKS5 代理，可以设置 `AI_SOCKS_PROXY`，例如 `socks5://127.0.0.1:1080`。Docker 部署时，`localhost` 指的是 web 容器本身；如果代理跑在宿主机或其他容器上，请填写 web 容器能访问到的地址。
 
 3. 运行
 

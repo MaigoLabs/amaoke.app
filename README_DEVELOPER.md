@@ -14,7 +14,7 @@
    (Request the key from the repository owner)
 
    `OPENROUTER_API_KEY` is still supported as a legacy fallback for `AI_KEY`.
-   `AI_SOCKS_PROXY` is optional and applies only to LLM requests, for example `socks5://127.0.0.1:1080`.
+   `AI_SOCKS_PROXY` is optional and applies only to LLM requests, for example `socks5://127.0.0.1:1080`. In Docker, `localhost` means the web container itself; use an address reachable from that container when the proxy runs on the host or in another container.
 
 ### 2. Start the database
 Run in the project root:

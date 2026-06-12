@@ -1,6 +1,5 @@
 import { HTTPClient, OpenRouter, type Fetcher } from '@openrouter/sdk'
-import { socksDispatcher } from 'fetch-socks'
-import { fetch as undiciFetch, type Dispatcher } from 'undici'
+import { convert as normalizeProxyUrl, fetch as proxyFetch } from 'netbun'
 import type { LyricLine, LyricSegment } from '../../types'
 import { isKanji } from 'wanakana'
 import { building } from '$app/environment'
@@ -11,7 +10,7 @@ const aiKey = process.env.AI_KEY || process.env.OPENROUTER_API_KEY
 const aiBaseUrl = process.env.AI_BASE_URL
 const aiSocksProxy = process.env.AI_SOCKS_PROXY
 
-function parseSocks5Proxy(proxyUrl: string): Parameters<typeof socksDispatcher>[0] {
+function normalizeSocks5ProxyUrl(proxyUrl: string): string {
   let parsed: URL
   try {
     parsed = new URL(proxyUrl)
@@ -19,8 +18,8 @@ function parseSocks5Proxy(proxyUrl: string): Parameters<typeof socksDispatcher>[
     throw new Error('AI_SOCKS_PROXY must be a valid SOCKS5 URL, for example socks5://127.0.0.1:1080')
   }
 
-  if (!['socks5:', 'socks5h:'].includes(parsed.protocol)) {
-    throw new Error('AI_SOCKS_PROXY must use the socks5:// or socks5h:// protocol.')
+  if (parsed.protocol !== 'socks5:') {
+    throw new Error('AI_SOCKS_PROXY must use the socks5:// protocol.')
   }
   if (!parsed.hostname || !parsed.port) {
     throw new Error('AI_SOCKS_PROXY must include a host and port, for example socks5://127.0.0.1:1080')
@@ -31,27 +30,38 @@ function parseSocks5Proxy(proxyUrl: string): Parameters<typeof socksDispatcher>[
     throw new Error('AI_SOCKS_PROXY must include a valid port between 1 and 65535.')
   }
 
-  const host = parsed.hostname.replace(/^\[(.*)\]$/, '$1')
-  const proxy = {
-    type: 5 as const,
-    host,
-    port,
-  }
+  return normalizeProxyUrl(proxyUrl) as string
+}
 
-  if (parsed.username) Object.assign(proxy, { userId: decodeURIComponent(parsed.username) })
-  if (parsed.password) Object.assign(proxy, { password: decodeURIComponent(parsed.password) })
+function maskProxyCredentials(proxyUrl: string): string {
+  const parsed = new URL(proxyUrl)
+  if (parsed.username) parsed.username = '***'
+  if (parsed.password) parsed.password = '***'
+  return parsed.toString()
+}
 
-  return proxy
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
 }
 
 function createSocks5Fetcher(proxyUrl: string): Fetcher {
-  const dispatcher = socksDispatcher(parseSocks5Proxy(proxyUrl)) as Dispatcher
+  const proxy = normalizeSocks5ProxyUrl(proxyUrl)
+  const maskedProxy = maskProxyCredentials(proxy)
+  console.log(`LLM SOCKS proxy enabled: ${maskedProxy}`)
 
   return async (input, init) => {
-    return await undiciFetch(input as Parameters<typeof undiciFetch>[0], {
-      ...init,
-      dispatcher,
-    } as Parameters<typeof undiciFetch>[1]) as unknown as Response
+    try {
+      return await proxyFetch(input as Parameters<typeof proxyFetch>[0], {
+        ...init,
+        proxy: {
+          url: proxy,
+        },
+      } as Parameters<typeof proxyFetch>[1]) as unknown as Response
+    } catch (error) {
+      const requestUrl = input instanceof Request ? input.url : input.toString()
+      console.warn(`LLM SOCKS proxy request failed via ${maskedProxy} for ${requestUrl}: ${errorMessage(error)}`)
+      throw error
+    }
   }
 }
 
