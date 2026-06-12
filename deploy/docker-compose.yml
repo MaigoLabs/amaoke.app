@@ -12,6 +12,8 @@ services:
       - ORIGIN=http://localhost:3000
       - MONGO_URL=mongodb://cat:meow@db:27017/amaoke?authSource=admin
       - AUDIO_SEPARATOR_API=http://ai:24801
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file: .env
     depends_on:
       - db
