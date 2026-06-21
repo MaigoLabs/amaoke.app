@@ -6,12 +6,13 @@ import { franc } from 'franc'
 import { error } from '@sveltejs/kit'
 import type { ObjectId } from 'mongodb'
 import '../ext'
-import { promises as fs } from 'fs'
-import path from 'path'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 import { waitFor } from '../utils'
 import { separateSong } from './separator'
 
 const CACHE_DIR = path.resolve('static/audio')
+const fileExists = async (filePath: string) => fs.access(filePath).then(() => true, () => false)
 
 const neCookie = async () => (await dbs.serverProps
     .findOne({ name: 'global_settings' }))?.netease_login_cookie
@@ -108,11 +109,11 @@ export const getSongUrl = async (id: number | string) => {
     const vocalsPath = path.join(CACHE_DIR, `${id}/vocals.opus`)
     const instrumentalPath = path.join(CACHE_DIR, `${id}/instrumental.opus`)
     
-    if (await fs.exists(filePath)) {
+    if (await fileExists(filePath)) {
         return {
             url: publicUrl,
-            vocalsUrl: (await fs.exists(vocalsPath)) ? `/audio/${id}/vocals.opus` : undefined,
-            instrumentalUrl: (await fs.exists(instrumentalPath)) ? `/audio/${id}/instrumental.opus` : undefined
+            vocalsUrl: (await fileExists(vocalsPath)) ? `/audio/${id}/vocals.opus` : undefined,
+            instrumentalUrl: (await fileExists(instrumentalPath)) ? `/audio/${id}/instrumental.opus` : undefined
         }
     }
 

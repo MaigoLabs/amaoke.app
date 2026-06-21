@@ -1,8 +1,9 @@
-import { error } from 'console'
-import { promises as fs } from 'fs'
-import path from 'path'
+import { error } from '@sveltejs/kit'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
 const API_URL = process.env.AUDIO_SEPARATOR_API
+const fileExists = async (filePath: string) => fs.access(filePath).then(() => true, () => false)
 
 /**
  * Separates a song into vocals and instrumental tracks using the Python API server.
@@ -12,7 +13,7 @@ const API_URL = process.env.AUDIO_SEPARATOR_API
 export async function separateSong(inputPath: string, outputDir: string) {
     const vocalsPath = path.join(outputDir, 'vocals.opus')
     const instrumentalPath = path.join(outputDir, 'instrumental.opus')
-    if (await fs.exists(vocalsPath) && await fs.exists(instrumentalPath)) {
+    if (await fileExists(vocalsPath) && await fileExists(instrumentalPath)) {
         console.log(`Separation already done for ${inputPath}`)
         return
     }
