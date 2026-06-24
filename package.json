@@ -46,7 +46,7 @@
     "vite": "^7.1.10"
   },
   "dependencies": {
-    "@neteasecloudmusicapienhanced/api": "4.29.17",
+    "@neteasecloudmusicapienhanced/api": "4.29.18",
     "@openrouter/sdk": "^0.1.17",
     "mongodb": "^7.0.0",
     "openai": "^6.9.0",

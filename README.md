@@ -95,6 +95,8 @@ docker compose up -d
 http://127.0.0.1:3000/admin/netease-login?pwd=你的管理密码
 ```
 
+页面支持网易云二维码登录和短信验证码登录。
+
 5. 让小猫喵喵
 6. 完成了！
 
