@@ -18,10 +18,31 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
     import Button from "$lib/ui/Button.svelte";
 
     const t = getI18n().admin.neteaseLogin;
+    const yidunCaptchaId = '73a18dc827b24b18ad0783701a75277d';
 
     type LoginMode = 'qr' | 'sms';
-    type QrStatus = 'loading' | 'waiting_scan' | 'waiting_confirm' | 'success' | 'error';
+    type QrStatus = 'loading' | 'waiting_scan' | 'waiting_confirm' | 'secondary_verification' | 'success' | 'error';
     type SmsStatus = 'idle' | 'sending' | 'sent' | 'logging_in' | 'success';
+    type YidunCaptchaInstance = {
+        popUp: () => void;
+        refresh: () => void;
+        destroy: () => void;
+    };
+    type YidunCaptchaConfig = {
+        captchaId: string;
+        element?: HTMLElement;
+        mode: 'popup';
+        width: string;
+        onVerify: (error: unknown, data?: { validate?: string }) => void;
+        onClose: () => void;
+    };
+    type NeteaseWindow = Window & typeof globalThis & {
+        initNECaptcha?: (
+            config: YidunCaptchaConfig,
+            onload: (instance: YidunCaptchaInstance) => void,
+            onerror: (error: unknown) => void
+        ) => void;
+    };
 
     let mode = $state<LoginMode>('qr');
     let status = $state<QrStatus>('loading');
@@ -32,6 +53,11 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
     let captcha = $state('');
     let errorMessage = $state('');
     let timer: any;
+    let yidunElement: HTMLDivElement | undefined;
+    let yidunCaptcha: YidunCaptchaInstance | undefined;
+    let yidunScriptPromise: Promise<void> | undefined;
+    let captchaOpen = $state(false);
+    let captchaLoading = $state(false);
 
     const pwd = () => $page.url.searchParams.get('pwd') ?? undefined;
 
@@ -48,10 +74,90 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
         if (next === 'qr' && status !== 'success') check();
     }
 
-    async function check() {
-        if (mode !== 'qr' || status === 'success') return;
+    function loadYidunScript() {
+        const neteaseWindow = window as NeteaseWindow;
+        if (neteaseWindow.initNECaptcha) return Promise.resolve();
+        if (yidunScriptPromise) return yidunScriptPromise;
+
+        yidunScriptPromise = new Promise<void>((resolve, reject) => {
+            const existing = document.querySelector<HTMLScriptElement>('script[data-netease-yidun]');
+            if (existing) {
+                existing.addEventListener('load', () => resolve(), { once: true });
+                existing.addEventListener('error', () => reject(new Error('Failed to load NetEase security verification')), { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.src = 'https://cstaticdun.126.net/load.min.js';
+            script.async = true;
+            script.dataset.neteaseYidun = 'true';
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Failed to load NetEase security verification'));
+            document.body.appendChild(script);
+        }).then(() => {
+            if (!neteaseWindow.initNECaptcha) throw new Error('NetEase security verification unavailable');
+        });
+
+        return yidunScriptPromise;
+    }
+
+    async function ensureYidunCaptcha() {
+        if (yidunCaptcha) return yidunCaptcha;
+        if (!yidunElement) throw new Error('NetEase security verification is not ready');
+
+        captchaLoading = true;
         try {
-            const res = await API.netease.checkLogin(pwd());
+            await loadYidunScript();
+            const neteaseWindow = window as NeteaseWindow;
+            if (!neteaseWindow.initNECaptcha) throw new Error('NetEase security verification unavailable');
+
+            yidunCaptcha = await new Promise<YidunCaptchaInstance>((resolve, reject) => {
+                neteaseWindow.initNECaptcha?.({
+                    captchaId: yidunCaptchaId,
+                    element: yidunElement,
+                    mode: 'popup',
+                    width: '320px',
+                    onVerify: (verifyError, data) => {
+                        if (!verifyError && data?.validate) void handleSecureCaptcha(data.validate);
+                    },
+                    onClose: () => {
+                        captchaOpen = false;
+                    }
+                }, resolve, reject);
+            });
+            return yidunCaptcha;
+        } finally {
+            captchaLoading = false;
+        }
+    }
+
+    async function requestSecureCaptcha() {
+        if (captchaOpen) return;
+        status = 'secondary_verification';
+        try {
+            const captcha = await ensureYidunCaptcha();
+            captchaOpen = true;
+            captcha.popUp();
+        } catch (e: any) {
+            console.error(e);
+            errorMessage = e.message || 'Unknown error';
+            status = 'error';
+            captchaOpen = false;
+        }
+    }
+
+    async function handleSecureCaptcha(secureCaptcha: string) {
+        captchaOpen = false;
+        status = 'waiting_confirm';
+        setTimeout(() => yidunCaptcha?.refresh(), 1000);
+        await check(secureCaptcha);
+    }
+
+    async function check(secureCaptcha?: string) {
+        if (mode !== 'qr' || status === 'success') return;
+        if (status === 'secondary_verification' && !secureCaptcha) return;
+        try {
+            const res = await API.netease.checkLogin(pwd(), secureCaptcha);
             if (res.code === 801) {
                 if (status !== 'waiting_scan') {
                     status = 'waiting_scan';
@@ -59,6 +165,8 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
                 }
             } else if (res.code === 802) {
                 status = 'waiting_confirm';
+            } else if (res.code === 8821) {
+                await requestSecureCaptcha();
             } else if (res.code === 803) {
                 status = 'success';
                 finishLogin();
@@ -107,6 +215,7 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
 
     onDestroy(() => {
         if (timer) clearInterval(timer);
+        yidunCaptcha?.destroy();
     });
 </script>
 
@@ -156,6 +265,24 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
                             <p class="m3-font-title-large mfg-on-surface font-bold">{t.scanned}</p>
                             <p class="m3-font-body-medium mfg-on-surface-variant">{t.confirm}</p>
                         </div>
+                    </div>
+                {:else if status === 'secondary_verification'}
+                    <div class="vbox items-center gap-16px" in:fade>
+                        <div class="size-80px rounded-full cbox mbg-secondary-container mfg-secondary">
+                            <div class="i-material-symbols:shield-outline text-48px"></div>
+                        </div>
+                        <div class="vbox items-center">
+                            <p class="m3-font-title-large mfg-on-surface font-bold">{t.securityVerification}</p>
+                            <p class="m3-font-body-medium mfg-on-surface-variant text-center">{t.securityTip}</p>
+                        </div>
+                        <Button
+                            class="!w-auto"
+                            icon={captchaLoading ? 'i-material-symbols:sync animate-spin' : 'i-material-symbols:verified-user-outline'}
+                            disabled={captchaLoading}
+                            onclick={requestSecureCaptcha}
+                        >
+                            {captchaLoading ? t.verifying : t.openSecurityVerification}
+                        </Button>
                     </div>
                 {:else if status === 'success'}
                     <div class="vbox items-center gap-16px" in:fade>
@@ -224,4 +351,5 @@ This page is vibe-coded. It's not a part of the regular UI intended for users an
             </div>
         {/if}
     </div>
+    <div bind:this={yidunElement} class="absolute left-0 top-0 size-0 overflow-hidden"></div>
 </div>

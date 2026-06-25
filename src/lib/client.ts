@@ -25,7 +25,7 @@ export const API = {
     netease: {
         startImport: async (link: string) => await post('/api/import/netease/start', { link }),
         checkProgress: async (id: string) => await post('/api/import/netease/progress', { id }),
-        checkLogin: async (pwd?: string) => await post('/admin/netease-login', { pwd }),
+        checkLogin: async (pwd?: string, secureCaptcha?: string) => await post('/admin/netease-login', { pwd, secureCaptcha }),
         sendLoginCaptcha: async (phone: string, ctcode: string, pwd?: string) => await post('/admin/netease-login', {
             action: 'sms-send',
             pwd,

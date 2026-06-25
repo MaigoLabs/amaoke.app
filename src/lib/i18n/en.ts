@@ -33,6 +33,10 @@ export default {
       generating: 'Generating QR Code...',
       scanned: 'Scanned',
       confirm: 'Please confirm login on your phone',
+      securityVerification: 'Security Verification',
+      securityTip: 'Complete NetEase browser verification to finish this QR login.',
+      openSecurityVerification: 'Open Verification',
+      verifying: 'Opening...',
       success: 'Login Successful',
       errorPrefix: 'Error: '
     }

@@ -5,7 +5,7 @@
     "": {
       "name": "amaoke",
       "dependencies": {
-        "@neteasecloudmusicapienhanced/api": "github:AzaContrib/api-enhanced#bb3db23",
+        "@neteasecloudmusicapienhanced/api": "github:AzaContrib/api-enhanced#b7bf2b5",
         "@openrouter/sdk": "^0.1.17",
         "chart.js": "^4.5.1",
         "franc": "^6.2.0",
@@ -199,7 +199,7 @@
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@0.2.12", "", { "dependencies": { "@emnapi/core": "^1.4.3", "@emnapi/runtime": "^1.4.3", "@tybys/wasm-util": "^0.10.0" } }, "sha512-ZVWUcfwY4E/yPitQJl481FjFo3K22D6qF0DuFH6Y/nbnE11GY5uguDxZMGXPQ8WQ0128MXQD7TnfHyK4oWoIJQ=="],
 
-    "@neteasecloudmusicapienhanced/api": ["@neteasecloudmusicapienhanced/api@github:AzaContrib/api-enhanced#bb3db23", { "dependencies": { "@neteasecloudmusicapienhanced/unblockmusic-utils": "^0.3.3", "axios": "^1.18.0", "crypto-js": "^4.2.0", "dotenv": "^17.4.2", "express": "^5.2.1", "express-fileupload": "^1.5.2", "gzip": "^0.1.0", "music-metadata": "^11.13.0", "node-forge": "^1.4.0", "pac-proxy-agent": "^7.2.0", "qrcode": "^1.5.4", "safe-decode-uri-component": "^1.2.1", "tunnel": "^0.0.6", "xml2js": "^0.6.2", "yargs": "^18.0.0" }, "bin": "./app.js" }, "AzaContrib-api-enhanced-bb3db23", "sha512-+5buqlorM/Y+G4AsULeZaZEi9xFguWoNT1X+8ytzpRV8gIYzwDYBtap5v7V4yO6Jb3gBNYM3Wri0uVdi+IR5Kw=="],
+    "@neteasecloudmusicapienhanced/api": ["@neteasecloudmusicapienhanced/api@github:AzaContrib/api-enhanced#b7bf2b5", { "dependencies": { "@neteasecloudmusicapienhanced/unblockmusic-utils": "^0.3.3", "axios": "^1.18.0", "crypto-js": "^4.2.0", "dotenv": "^17.4.2", "express": "^5.2.1", "express-fileupload": "^1.5.2", "gzip": "^0.1.0", "music-metadata": "^11.13.0", "node-forge": "^1.4.0", "pac-proxy-agent": "^7.2.0", "qrcode": "^1.5.4", "safe-decode-uri-component": "^1.2.1", "tunnel": "^0.0.6", "xml2js": "^0.6.2", "yargs": "^18.0.0" }, "bin": "./app.js" }, "AzaContrib-api-enhanced-b7bf2b5", "sha512-IrMbc9/38YDxbNjEm55u7SIGR3D4C8j/4PfCGbwDuT30vdeC47irr3bWxIS9N8MVugFhWcBLF/TG1l9wOO4+1g=="],
 
     "@neteasecloudmusicapienhanced/unblockmusic-utils": ["@neteasecloudmusicapienhanced/unblockmusic-utils@0.3.3", "", { "dependencies": { "@unblockneteasemusic/server": "^0.28.0", "axios": "^1.16.1", "dotenv": "^17.4.2", "express": "^4.22.2", "https": "^1.0.0" }, "bin": { "unblockmusic-utils": "index.js" } }, "sha512-Lm2Zxod4Qfhp3HNDmaHxzJPLiMfMNkUT2PXp0VVrDW+/dDZBfSANO+pnCHx+MkK7tDUb3wGwYp5q2w9Kw1+4OA=="],
 

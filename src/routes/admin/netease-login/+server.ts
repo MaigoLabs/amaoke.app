@@ -121,7 +121,7 @@ function apiErrorMessage(body: any, fallback: string) {
 }
 
 export const POST: RequestHandler = async ({ request }) => {
-  const { action = 'qr-check', pwd, phone, captcha, ctcode } = await request.json().catch(() => ({}))
+  const { action = 'qr-check', pwd, phone, captcha, ctcode, secureCaptcha } = await request.json().catch(() => ({}))
   if (env.ADMIN_PASSWORD && pwd !== env.ADMIN_PASSWORD) {
     throw error(403, 'Invalid password')
   }
@@ -180,20 +180,21 @@ export const POST: RequestHandler = async ({ request }) => {
 
   // Check key validity
   const checkRes = await callNetease(
-    () => ne.login_qr_check({ key: globalSession.key, cookie: globalSession.cookie }) as any,
+    () => ne.login_qr_check({ key: globalSession.key, cookie: globalSession.cookie, secureCaptcha }) as any,
     'NetEase QR login failed',
     cookies => globalSession.cookie = mergeCookieHeaders(globalSession.cookie, cookies)
   )
   const check = checkRes.body
   globalSession.cookie = mergeCookieHeaders(globalSession.cookie, checkRes.cookie)
   logQrStatus(check.code, check.cookie, checkRes.cookie)
-  // 800: 过期, 801: 等待扫码, 802/8821: 等待确认, 803: 登录成功
+  // 800: 过期, 801: 等待扫码, 802: 等待确认, 8821: 网页安全验证, 803: 登录成功
   if (check.code === 800) {
     await createQr()
     check.code = 801
   }
   if (check.code === 801) return json({ code: 801, img: globalSession.qrImg })
-  if (check.code === 802 || check.code === 8821) return json({ code: 802 })
+  if (check.code === 802) return json({ code: 802 })
+  if (check.code === 8821) return json({ code: 8821 })
   if (check.code === 803) {
     await saveLoginCookie(check.cookie)
     return json({ code: 803, cookie: check.cookie })

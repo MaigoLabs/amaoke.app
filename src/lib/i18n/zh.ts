@@ -33,6 +33,10 @@ export default {
       generating: '正在生成二维码...',
       scanned: '已扫描',
       confirm: '请在手机上确认登录',
+      securityVerification: '安全验证',
+      securityTip: '请完成网易云网页登录验证以继续二维码登录',
+      openSecurityVerification: '打开验证',
+      verifying: '打开中...',
       success: '登录成功',
       errorPrefix: '错误: '
     }

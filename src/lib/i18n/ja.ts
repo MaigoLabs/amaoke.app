@@ -33,6 +33,10 @@ export default {
       generating: 'QRコードを生成中...',
       scanned: 'スキャン完了',
       confirm: '携帯電話でログインを確認してください',
+      securityVerification: 'セキュリティ認証',
+      securityTip: 'NetEaseのブラウザ認証を完了してQRログインを続行してください',
+      openSecurityVerification: '認証を開く',
+      verifying: '開いています...',
       success: 'ログイン成功',
       errorPrefix: 'エラー: '
     }
