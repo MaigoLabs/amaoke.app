@@ -23,6 +23,7 @@ interface NeteaseResponse {
 }
 
 const defaultCtcode = '86'
+const smsLoginPlatform = 'ios'
 
 function setCookiesToCookieHeader(setCookies?: string[]) {
   return setCookies
@@ -97,7 +98,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
     const countryCode = ctcode || defaultCtcode
     const sent = await callNetease(
-      () => ne.captcha_sent({ phone, ctcode: countryCode, cookie: smsSession.cookie }) as any,
+      () => ne.captcha_sent({
+        phone,
+        ctcode: countryCode,
+        cookie: smsSession.cookie,
+        platform: smsLoginPlatform
+      }) as any,
       'Failed to send SMS code',
       cookies => smsSession.cookie = mergeCookieHeaders(smsSession.cookie, cookies)
     )
@@ -122,7 +128,8 @@ export const POST: RequestHandler = async ({ request }) => {
         phone,
         captcha,
         countrycode: countryCode,
-        cookie
+        cookie,
+        platform: smsLoginPlatform
       }) as any,
       'NetEase SMS login failed',
       cookies => smsSession.cookie = mergeCookieHeaders(smsSession.cookie, cookies)
@@ -146,13 +153,13 @@ export const POST: RequestHandler = async ({ request }) => {
   )
   const check = checkRes.body
   globalSession.cookie = mergeCookieHeaders(globalSession.cookie, checkRes.cookie)
-  // 800: 过期, 801: 等待扫码, 802: 等待确认, 803: 登录成功
+  // 800: 过期, 801: 等待扫码, 802/8821: 等待确认, 803: 登录成功
   if (check.code === 800) {
     await createQr()
     check.code = 801
   }
   if (check.code === 801) return json({ code: 801, img: globalSession.qrImg })
-  if (check.code === 802) return json({ code: 802 })
+  if (check.code === 802 || check.code === 8821) return json({ code: 802 })
   if (check.code === 803) {
     await saveLoginCookie(check.cookie)
     return json({ code: 803, cookie: check.cookie })
