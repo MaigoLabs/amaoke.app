@@ -8,6 +8,7 @@ const globalSession = {
   key: "",
   qrImg: "",
   cookie: "",
+  lastLog: "",
 }
 
 const smsSession = {
@@ -46,6 +47,36 @@ function mergeCookieHeaders(current: string, setCookies?: string[]) {
   return [...merged].map(([name, value]) => `${name}=${value}`).join('; ')
 }
 
+function cookieHasMusicU(cookie?: string) {
+  return Boolean(cookie?.split(';').some(part => part.trim().startsWith('MUSIC_U=')))
+}
+
+function cookieNames(cookie?: string) {
+  return cookie
+    ?.split(';')
+    .map(part => part.trim().split('=')[0])
+    .filter(Boolean) ?? []
+}
+
+function setCookieNames(cookies?: string[]) {
+  return cookies
+    ?.map(cookie => cookie.split(';')[0]?.trim().split('=')[0])
+    .filter(Boolean) ?? []
+}
+
+function logQrStatus(code: number, bodyCookie?: string, setCookies?: string[]) {
+  const marker = `${code}:${cookieHasMusicU(bodyCookie)}:${setCookieNames(setCookies).join(',')}`
+  if (marker === globalSession.lastLog) return
+  globalSession.lastLog = marker
+  console.info('NetEase QR status', {
+    code,
+    hasBodyCookie: Boolean(bodyCookie),
+    hasMusicU: cookieHasMusicU(bodyCookie),
+    bodyCookieNames: cookieNames(bodyCookie),
+    setCookieNames: setCookieNames(setCookies),
+  })
+}
+
 async function callNetease(
   fn: () => Promise<NeteaseResponse>,
   fallback: string,
@@ -62,6 +93,7 @@ async function callNetease(
 async function createQr() {
   const key = await callNetease(() => ne.login_qr_key({}) as any, 'Failed to create NetEase QR login key')
   globalSession.key = key.body.data.unikey
+  globalSession.lastLog = ""
   globalSession.cookie = mergeCookieHeaders(globalSession.cookie, key.cookie)
   globalSession.qrImg = (await callNetease(
     () => ne.login_qr_create({ key: globalSession.key, qrimg: true, cookie: globalSession.cookie }) as any,
@@ -71,6 +103,7 @@ async function createQr() {
 
 async function saveLoginCookie(cookie?: string) {
   if (!cookie) throw error(500, 'NetEase login did not return a cookie')
+  if (!cookieHasMusicU(cookie)) throw error(500, 'NetEase login did not return a MUSIC_U cookie')
   await db.collection('server_props').updateOne(
     { name: 'global_settings' },
     { $set: { netease_login_cookie: cookie } },
@@ -153,6 +186,7 @@ export const POST: RequestHandler = async ({ request }) => {
   )
   const check = checkRes.body
   globalSession.cookie = mergeCookieHeaders(globalSession.cookie, checkRes.cookie)
+  logQrStatus(check.code, check.cookie, checkRes.cookie)
   // 800: 过期, 801: 等待扫码, 802/8821: 等待确认, 803: 登录成功
   if (check.code === 800) {
     await createQr()
