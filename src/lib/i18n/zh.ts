@@ -16,11 +16,27 @@ export default {
   admin: {
     neteaseLogin: {
       title: '网易云登录',
+      qrMode: '二维码',
+      smsMode: '短信',
       scanTitle: '扫码登录',
       scanTip: '请使用网易云音乐 APP 扫码',
+      smsTitle: '短信登录',
+      smsTip: '向网易云手机号发送验证码',
+      countryCode: '区号',
+      phone: '手机号',
+      captcha: '验证码',
+      sendCaptcha: '发送验证码',
+      sendingCaptcha: '发送中...',
+      captchaSent: '验证码已发送，请输入后登录',
+      loginBySms: '登录',
+      loggingIn: '登录中...',
       generating: '正在生成二维码...',
       scanned: '已扫描',
       confirm: '请在手机上确认登录',
+      securityVerification: '安全验证',
+      securityTip: '请完成网易云网页登录验证以继续二维码登录',
+      openSecurityVerification: '打开验证',
+      verifying: '打开中...',
       success: '登录成功',
       errorPrefix: '错误: '
     }

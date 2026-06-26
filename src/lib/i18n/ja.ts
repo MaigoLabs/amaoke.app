@@ -16,11 +16,27 @@ export default {
   admin: {
     neteaseLogin: {
       title: 'NetEaseログイン',
+      qrMode: 'QRコード',
+      smsMode: 'SMS',
       scanTitle: 'スキャンしてログイン',
       scanTip: 'NetEase Musicアプリでスキャンしてください',
+      smsTitle: 'SMSログイン',
+      smsTip: 'NetEaseの電話番号にコードを送信します',
+      countryCode: '国番号',
+      phone: '電話番号',
+      captcha: 'SMSコード',
+      sendCaptcha: 'コード送信',
+      sendingCaptcha: '送信中...',
+      captchaSent: 'コードを送信しました。入力してログインしてください',
+      loginBySms: 'ログイン',
+      loggingIn: 'ログイン中...',
       generating: 'QRコードを生成中...',
       scanned: 'スキャン完了',
       confirm: '携帯電話でログインを確認してください',
+      securityVerification: 'セキュリティ認証',
+      securityTip: 'NetEaseのブラウザ認証を完了してQRログインを続行してください',
+      openSecurityVerification: '認証を開く',
+      verifying: '開いています...',
       success: 'ログイン成功',
       errorPrefix: 'エラー: '
     }
